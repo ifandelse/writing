@@ -7,7 +7,7 @@ When I travelled to Africa in 1998, my luggage was stolen. I spent several hours
 
 Why is this important? In a great piece by [Toby Shapshak](), he notes some interesting facts about Africa:
 
-* More people have access to a mobile phone than electricity
+* More people have access to a mobile phone than electricity (i.e. - no home electrical power			)
 * "Mobile money" - payment systems that allow you to transfer money to another phone user - is expected "to become a $617 billion industry by 2016".
 * "80% of the *world's* mobile money transactions are happening in East Africa…" (with *half* of Kenya's GDP moving through mobile payment services!)
 * In 2012, Google reported that 25% of its weekday searches in South Africa occur on mobile devices – and that figure jumps to 65% on the weekends
@@ -18,7 +18,7 @@ Perhaps the most bellweather-like point from Tony's article is that the Economis
 
 > "Great - but I write line of business applications for my company in Europe. I'm not writing payment, radio or apps like [Farmerline](http://farmerline.org/). How is this relevant?"
 
-If you don't want to be caught by surprise, or unprepared, it's relevant. The largest players in  the development world (and myriads of smaller ones) are heavily investing in mobile innovation, with a particular common theme of open web standards throughout many of the advancements. Mozilla is working on the exciting FirefoxOS (an OS that will be capable of impressive features on even lower-quality phones). Microsoft debuted the ability to write Windows 8 desktop & tablet applications in HTML, JavaScript & CSS. Adobe purchased Nitobi - the company that created Cordova/PhoneGap (more on this in minute, don't worry) – and are actively developing it. I probably don't need to mention Apple and Google!
+If you don't want to be caught by surprise, or unprepared, it's relevant. If you - like many developers in the world - desire to further your career and be a part of compelling projects, it's relevant. The largest players in the development world (and myriads of smaller ones) are heavily investing in mobile innovation, with a particular common theme of open web standards throughout many of the advancements. Mozilla is working on the exciting FirefoxOS (an OS that will be capable of impressive features on even lower-quality phones). Microsoft debuted the ability to write Windows 8 desktop & tablet applications in HTML, JavaScript & CSS. Adobe purchased Nitobi - the company that created Cordova/PhoneGap (more on this in minute, don't worry) – and are actively developing it. I probably don't need to mention Apple and Google!
 
 The mobile tsunami is already underway - the question is, what will you do when it reaches you? What are your options, when the time comes that your next project is a mobile application? What does this mean for your team? Will you need to hire new talent? Which mobile platforms should you focus on supporting?
 
