@@ -1,4 +1,4 @@
-#Why Mobile Should Be On Your Mind
+#First - Why Mobile Should Be On Your Mind
 Ever since Luke Wroblewkski coined the phase "mobile first" [in 2011](http://www.lukew.com/resources/mobile_first.asp), the zeitgeist of software development (at least the vast portions of it that touch mobile devices in some way) has been building towards a critical mass of not only "mobile first", but – as the CEO of Twitter [recently said](http://venturebeat.com/2013/05/29/twitter-ceo-were-not-competing-with-tv-and-news-media-were-complementary/#WYqDjtpkpw4gBlJp.99) – "all-in on mobile." 
 
 I know I don't need to remind you of how quickly the world has changed. If you've been developing software for as little as 2 years, you've already witnessed unprecedented shifts in focus and innovation, much of it occurring in a language once considered an also-ran by many –  JavaScript. The odds are *very* high that you – the reader – have access to electricity at home and at work, and you most likely interact with the internet through multiple devices - desktop, notebook, tablet and/or mobile phone. It's easy, then, to not fully grasp the groundswell of change headed our way. That being the case, let's step outside of our normal techno-cultural environment for a moment to see the change through the eyes of East Africa (and of course, if you're reading this from Kenya, asante sana).
@@ -7,8 +7,8 @@ When I travelled to Africa in 1998, my luggage was stolen. I spent several hours
 
 Why is this important? In a great piece by [Toby Shapshak](), he notes some interesting facts about Africa:
 
-* More people have access to a mobile phone than electricity (i.e. - no home electrical power			)
-* "Mobile money" - payment systems that allow you to transfer money to another phone user - is expected "to become a $617 billion industry by 2016".
+* More people have access to a mobile phone than electricity (i.e. - no home electrical power)
+* "Mobile money" - payment systems that allows you to transfer money to another phone user - is expected "to become a $617 billion industry by 2016".
 * "80% of the *world's* mobile money transactions are happening in East Africa…" (with *half* of Kenya's GDP moving through mobile payment services!)
 * In 2012, Google reported that 25% of its weekday searches in South Africa occur on mobile devices – and that figure jumps to 65% on the weekends
 
@@ -39,14 +39,14 @@ As you might already suspect, there are a host of trade-offs you will confront i
 #Comparing Trade-Offs
 Let's start with a high-level view of pros and cons:
 
-<table cellspacing="0">
+<table class="table table-bordered">
 	<tr>
  		<th>Approach</th>
  		<th>Pros</th>
  		<th>Cons</th>
 	</tr>
 	<tr>
- 		<td style="font-weight: bold;">Native</td>
+ 		<td><b>Native</b></td>
  		<td>
  			<ul>
  				<li>Full Access to Device/Platform/APIs</li>
@@ -63,7 +63,7 @@ Let's start with a high-level view of pros and cons:
  		</td>
 	</tr>
 	<tr>
- 		<td style="font-weight: bold;">Mobile Web</td>
+ 		<td><b>Mobile Web</b></td>
  		<td>
  			<ul>
  				<li>Arguably the broadest reach</li>
@@ -81,7 +81,7 @@ Let's start with a high-level view of pros and cons:
  		</td>
 	</tr>
 	<tr>
- 		<td style="font-weight: bold;">Hybrid (CPT)</td>
+ 		<td><b>Hybrid (CPT)</b></td>
  		<td>
  			<ul>
  				<li>Natively-installed & run, but built with JavaScript, HTML & CSS</li>
@@ -98,7 +98,7 @@ Let's start with a high-level view of pros and cons:
  		</td>
 	</tr>
 	<tr>
- 		<td style="font-weight: bold;">Cross-Compiled (CPT)</td>
+ 		<td><b>Cross-Compiled (CPT)</b></td>
  		<td>
  			<ul>
  				<li>Can re-use existing skills if source language matches team skills</li>
@@ -142,6 +142,9 @@ If going native is off the table as an option, how do you know which alternative
 * Are you OK with no app store presence, you need the ability to frequently update the application and you're not nessarily concerned with heavy monetization of the app? (Believe it or not, this happens - particularly when an established company is expanding its reach to mobile to establish presence before other mobile initiatives.) If yes to all 3, then mobile web could be your answer (assuming you don't need heavy device API availability).
 * Do you need to be able to access device APIs (accelerometer, camera, GPS, key chain, use push notifications, etc.)? Then mobile-web is out.
 
+> <em>What's the fuss about app store presence?</em>
+> Many companies may not already have existing customer accounts. Being in an app store provides the ability to reach & bill customers, as well as a means of distribution and discoverability for lesser-known companies/apps. If monetizing your app is critical, and you don't already have solid channels via which you can reach your customers, then having an app store presence is something you shouldn't ignore!
+
 From the above questions, you can begin to see the logic behind answering "When should I go mobile web?". In many cases, this is best answered with: "When you don't need an app store presence, aren't really using device APIs, aren't *as* concerned about app monetization, and want to potentially take advantage of re-using a responsively-designed desktop site". Don't underestimate what's possible here. Both [time.com](http://time.com) and [forecast.io](http://forecast.io) are good examples of what's possible with this approach. (It's worth noting that some device-level APIs are available to mobile web applications - good examples being geolocation, media capture, contacts and others.)
 
 #Cross Platform Tools - Democratizing Mobile Development
@@ -150,56 +153,54 @@ Since hybrid mobile applications utilize many of the exact same skills necessary
 ##Apache Cordova/PhoneGap
 Cordova-based options are among the most popular hybrid mobile approaches (you will often hear "PhoneGap" used interchangably with "Cordova" – see [this](http://www.icenium.com/blog/icenium-team-blog/2013/03/26/demystifying-cordova-and-phonegap) for more explanation). The native 'webview' of the device is used to run the application you create in HTML/JavaScript/CSS - effectively within a full-screen, chrome-less browser window. As a baseline, it's relatively safe these days to assume that most, if not all, of these APIs will be available to you:
 
-<table>
-    <tbody>
-        <tr>
-            <td>Accelerometer</td>
-            <td>Camera</td>
-            <td>Compass</td>
-            <td>Contacts</td>
-        </tr>
-        <tr>
-            <td>File</td>
-            <td>Geolocation</td>
-            <td>Media</td>
-            <td>Network</td>
-        </tr>
-        <tr>
-            <td>Notification - Alert</td>
-            <td>Notification - Sound</td>
-            <td>Notification -Vibration</td>
-            <td>Storage</td>
-        </tr>
-    </tbody>
+<table class="table table-bordered">
+    <tr>
+        <td>Accelerometer</td>
+        <td>Camera</td>
+        <td>Compass</td>
+        <td>Contacts</td>
+    </tr>
+    <tr>
+        <td>File</td>
+        <td>Geolocation</td>
+        <td>Media</td>
+        <td>Network</td>
+    </tr>
+    <tr>
+        <td>Notification - Alert</td>
+        <td>Notification - Sound</td>
+        <td>Notification -Vibration</td>
+        <td>Storage</td>
+    </tr>
 </table>
 
 As far as devices, Apache Cordova/PhoneGap supports, to some degree or another, the following platforms:
 
-<table>
-    <tbody>
-        <tr>
-            <td>Android</td>
-            <td>Bada</td>
-            <td>Blackberry</td>
-            <td>iOS</td>
-        </tr>
-        <tr>
-            <td>Symbian</td>
-            <td>Tizen</td>
-            <td>webOS</td>
-            <td>Windows Phone 7</td>
-        </tr>
-        <tr>
-            <td>Windows Phone 8</td>
-            <td>Windows 8</td>
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
+<table class="table table-bordered">
+    <tr>
+        <td>Android</td>
+        <td>Bada</td>
+        <td>Blackberry</td>
+        <td>iOS</td>
+    </tr>
+    <tr>
+        <td>Symbian</td>
+        <td>Tizen</td>
+        <td>webOS</td>
+        <td>Windows Phone 7</td>
+    </tr>
+    <tr>
+        <td>Windows Phone 8</td>
+        <td>Windows 8</td>
+        <td></td>
+        <td></td>
+    </tr>
 </table>
 
 Not bad for platform coverage. But what do you do when access to a native API doesn't exist? You can write a [Cordova Plugin](http://docs.cordova.io/en/edge/guide_plugin-development_index.md.html#Plugin%20Development%20Guide) to open up a native API to your JavaScript. This is both a strength and weakness of this type of hybrid approach. [Many Cordova plugins already exist](https://github.com/phonegap/phonegap-plugins) (with generous open source licenses), which is a positive. However, if you need the functionality on (for example) iOS, Android and Blackberry – this entails writing a version for each platform. So now we're back to needing other skills like Java and Objective C. The silver lining, though, is that the need for these skills is focused on the plugin only - and it's reasonable to outsource the creation of these plugins to experienced contractors if you don't have the skills in-house.	
+
 If you decide to go the Cordova/PhoneGap route, three of the biggest challeneges you need to prepare for are:
+
 ###1.) UI Performance
 It's not rocket science - running an app *inside* a container can have performance concerns. Cordova/PhoneGap has gotten a bad rap in some cases due to slow webview implementations (looking at you, Android 2.x), as well as popular (ahem) UI frameworks that excel at causing reflow due to how they manage the DOM. Desktop browsers often cover up inefficient DOM and JavaScript due to the sheer brute force processing power available. You can't assume the same level of power will be available on mobile devices. This means that even your experienced web team needs to pay close attention to things that can help or harm performance. I recommend starting with [this post by Andrew Trice](http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/). The performance of webview implementations has improved to the point to where hybrid approaches work well for line-of-business style applications that don't need game-intensive UI performance.
 
