@@ -408,6 +408,7 @@ My first exposure to promise implementations in JavaScript was through jQuery. W
 ###Pros
 * **Reduces Complexity of Nesting & Flow** - Flattening pyramids of doom is nearly always a win. Being able to express certain aspects of asynchronous code in a synchronous style (with return values, etc.) empowers developers at nearly any level to quickly understand what a section of code is doing.
 * **Results Can be "Cached"** - If you need to keep a resolved promise around, any additional success handlers added to it are immediately invoked and passed the resulting value. This can save you some boilerplate as well as prevent unnecessary operations (like a duplicate AJAX request, for example).
+
 ###Cons
 * **Results Can be "Cached"** - Wait - wasn't this a PRO?! Yes - but it's a double-edged sword. If you're keeping promise instances around, avoid doing so for values that frequently change (and, for example, might require another HTTP request to fetch the latest).
 * **Opinionated on OSS APIs** - If you're an open source author writing libraries for general consumption, please use a spec-compliant library! When you don't, you force a highly opinionated dependency on consuming developers.
@@ -578,13 +579,11 @@ You'll notice that our FSM above makes use of continuation-passing as well as ev
 
 ##FSM Conclusion
 ###Pros
-####Extremely Versatile
-FSMs model so many real-world problems well, it's hard to find a scenario that they don't work well for.
-####Wokflow
-FSMs handle long-running, asynchronous workflow well.
+* **Extremely Versatile** - FSMs model so many real-world problems well, it's hard to find a scenario that they don't work well for.
+* **Wokflow** - FSMs handle long-running, asynchronous workflow well.
+
 ###Cons
-####Lesser known Pattern
-FSM awareness in the JavaScript developer community *appears* to be low. As a result, the pattern is often not known, feared or rejected as too complex.
+* **Lesser known Pattern** - FSM awareness in the JavaScript developer community *appears* to be low. As a result, the pattern is often not known, feared or rejected as too complex.
 
 #Conclusion
 
