@@ -280,7 +280,7 @@ So, let's tackle what I've avoided until now:
 * Many of these implementations provide event-emitting behaviors, with the intent that the API is on the prototype, or mixed-in as instance members, etc. However, many developers take these event-emitting libraries and create a singleton instance and use this instance as a generalized "emitter", so subjects no longer have the on/off/etc. calls themselves. When this happens, we are, in my opinion, leaving the observer pattern behind and we've begun to wander into the territory of messaging...
 
 #3.) Messaging
-Well, it turns out that [Jonathan Creamer]() found out Alex is with some friends playing Halo 4 and he's curious to hear how things are going. Only problem is, he has no idea how to get to my house and, in fact, doesn't want to leave his own house. So he calls Alex asks to be notified whenever we win or lose, when we start a game, and when we earn a medal. Alex is now acting as a mediator, or broker. Jonathan isn't subscribing directly to me or Doug (in fact, he may not have any idea who's playing), instead he's told Alex what he's interested in, and Alex will relay any relevant information back to Jonathan, whether it comes from me, Doug or someone else. This is the essence of "messaging" in JavaScript.
+Well, it turns out that [Jonathan Creamer]() found out Alex is with some friends playing Halo 4 and he's curious to hear how things are going. Only problem is, he has no idea how to get to my house and, in fact, doesn't want to leave his own house. So he calls Alex and asks to be notified whenever we win or lose, when we start a game, and when we earn a medal. Alex is now acting as a mediator, or broker. Jonathan isn't subscribing directly to me or Doug (in fact, he may not have any idea who's playing), instead he's told Alex what he's interested in, and Alex will relay any relevant information back to Jonathan, whether it comes from me, Doug or someone else. This is the essence of "messaging" in JavaScript.
 
 This is much like the Observer pattern, in that we have observers interested in events occuring - but we've introduced a third party to handle managing subscriptions and matching events (which we'll now refer to as messages) to the correct subscribers. There's some debate about the best pattern name to apply here, but here are some descriptions that can be legitimately argued:
 
@@ -484,7 +484,7 @@ The above example responds differently to the same input (`doSomething`), depend
 * It can transition from one state to another
 
 ##Promises are Specialized State Machines
-You might have already put these together, but a promise is an FSM. It can be in one of three states: unfulfilled, fulfilled or failed. It accepts input (at least) from callers using the `then` method. It transitions from unfulfilled to fulfilled or failed, and won't transition again. Let's take a lot at a directed graph representation of a promise-FSM (this is a common way to represent FSMs visually):
+You might have already put these together, but a promise is an FSM. It can be in one of three states: unfulfilled, fulfilled or failed. It accepts input (at least) from callers using the `then` method. It transitions from unfulfilled to fulfilled or failed, and won't transition again. Let's take a look at a directed graph representation of a promise-FSM (this is a common way to represent FSMs visually):
 
 ![](./PromisesFSM.png)
 
@@ -579,7 +579,7 @@ So - machina provides features such as (but not limited to):
 * deferring input until a later time without requiring the caller to do anything
 * the ability to provide "catch-all" handlers to match unexpected input (this isn't shown above - check the examples in the repo for more information)
 * FSMs are event emitters, so other components can observe them as subjects
-* _onEnter and _onExit handlers for any state (not shown above)
+* \_onEnter and \_onExit handlers for any state (not shown above)
 
 ##Complementary Patterns 
 You'll notice that our FSM above makes use of continuation-passing as well as events. In fact, our entire journey through these 5 patterns has progressively advanced to higher-level abstractions. Don't be surprised to see yourself mixing these patterns together to produce the abstraction you need. If anything, focusing on *just* the lower level pattern of passing callbacks and using promises to eliminate nesting has, in my opinion, done our community a disservice. In addition to grasping these patterns, we need to see the potential of higher-level abstractions which we can create from these patterns working *together*.
