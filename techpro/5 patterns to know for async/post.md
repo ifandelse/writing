@@ -131,19 +131,13 @@ We could spend an entire post on binding and context alone, but we'll stop there
 ##Callback Conclusion
 ###Pros
 
-####Simplicity 
-Callbacks are simple! (The caveat being that you are responsible for maintaining the correct context, if needed.) You pass a function, it gets invoked at some point in the future.
-
-####Lightweight
-No extra libs required. Functions-as-first-class-citizens is built into the language. No need for additional code to make it work.
+* **Simplicity** - Callbacks are simple! (The caveat being that you are responsible for maintaining the correct context, if needed.) You pass a function, it gets invoked at some point in the future.
+* **Lightweight** - No extra libs required. Functions-as-first-class-citizens is built into the language. No need for additional code to make it work.
 
 ###Cons
 
-#####Can Be An Insufficient Abstraction
-Sometimes you need additional 'sugar'. This is where patterns 4-5 will come into play, each build upon the foundation of callbacks in different ways.
-
-#####Complex When Nested
-Callbacks are difficult to read, debug and maintain when deeply nested. The goto-example these days to describe this problem is "the pyramid of doom":
+* **Can Be An Insufficient Abstraction** - Sometimes you need additional 'sugar'. This is where patterns 4-5 will come into play, each build upon the foundation of callbacks in different ways.
+* **Complex When Nested** - Callbacks are difficult to read, debug and maintain when deeply nested. The goto-example these days to describe this problem is "the pyramid of doom". Let's take a look...
 
 ```
 var allTheCustomerThings;
@@ -264,14 +258,13 @@ Many popular libaries already provide built-in event-emitting behavior – backb
 
 ##Events Conclusion
 ###Pros
-####Encourages Good De-coupling
-Using the Observer pattern will help you tease apart behaviors in your application since it's forcing you to think through the interactions that can occur. This leads to well-encapsulated components, and typically results in a design more resistant to the traps of deeply nested callbacks.
-####Lends Itself to Testability
-Due to the bias towards de-coupling that comes with this approach, you end up with components that are testable in isolation and easy to mock in most cases.
+
+* **Encourages Good De-coupling** - Using the Observer pattern will help you tease apart behaviors in your application since it's forcing you to think through the interactions that can occur. This leads to well-encapsulated components, and typically results in a design more resistant to the traps of deeply nested callbacks.
+* **Lends Itself to Testability** - Due to the bias towards de-coupling that comes with this approach, you end up with components that are testable in isolation and easy to mock in most cases.
 
 ###Cons
-####Direct Reference Required
-This is the Achilles' heel for event-emitters. If you have a subject that's *very* interesting to most of your application, you will end up passing a reference to it everywhere. This begins to undermine any 'loose coupling' gains you've racked up, creating a kind of tight coupling that can be harder to detect until you have to change the subject's API and break most of your app in the process.
+
+* **Direct Reference Required** - This is the Achilles' heel for event-emitters. If you have a subject that's *very* interesting to most of your application, you will end up passing a reference to it everywhere. This begins to undermine any 'loose coupling' gains you've racked up, creating a kind of tight coupling that can be harder to detect until you have to change the subject's API and break most of your app in the process.
 
 ##Elephant, Meet Room
 So, let's tackle what I've avoided until now:
@@ -311,6 +304,11 @@ This example is using [postal.js]() – a JavaScript message bus implemention I'
 ```
 
 ```
+
+##Messaging Conclusion
+###Pros
+
+###Cons
 
 #4.) Promises
 Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec]() defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error and 'finally' callbacks). You get an idea of the power it provides when you see it in action. Consider this nested-callback-laden login viewmodel:
@@ -408,21 +406,15 @@ My first exposure to promise implementations in JavaScript was through jQuery. W
 
 ##Promises Conclusion
 ###Pros
-####Reduces Complexity of Nesting & Flow
-Flattening pyramids of doom is nearly always a win. Being able to express certain aspects of asynchronous code in a synchronous style (with return values, etc.) empowers developers at nearly any level to quickly understand what a section of code is doing.
-####Results Can be "Cached" 
-If you need to keep a resolved promise around, any additional success handlers added to it are immediately invoked and passed the resulting value. This can save you some boilerplate as well as prevent unnecessary operations (like a duplicate AJAX request, for example).
+* **Reduces Complexity of Nesting & Flow** - Flattening pyramids of doom is nearly always a win. Being able to express certain aspects of asynchronous code in a synchronous style (with return values, etc.) empowers developers at nearly any level to quickly understand what a section of code is doing.
+* **Results Can be "Cached"** - If you need to keep a resolved promise around, any additional success handlers added to it are immediately invoked and passed the resulting value. This can save you some boilerplate as well as prevent unnecessary operations (like a duplicate AJAX request, for example).
 ###Cons
-####Results Can be "Cached" 
-Wait - wasn't this a PRO?! Yes - but it's a double-edged sword. If you're keeping promise instances around, avoid doing so for values that frequently change (and, for example, might require another HTTP request to fetch the latest).
-####Opinionated on OSS APIs
-If you're an open source author writing libraries for general consumption, please use a spec-compliant library! When you don't, you force a highly opinionated dependency on consuming developers.
-####Many Non-Spec-Adhering Implementations Exist
-Choosing one of these can get you past that:
-
-* [Q](https://github.com/kriskowal/q)
-* [when.js](https://github.com/cujojs/when)
-* [RSVP.js](https://github.com/tildeio/rsvp.js)
+* **Results Can be "Cached"** - Wait - wasn't this a PRO?! Yes - but it's a double-edged sword. If you're keeping promise instances around, avoid doing so for values that frequently change (and, for example, might require another HTTP request to fetch the latest).
+* **Opinionated on OSS APIs** - If you're an open source author writing libraries for general consumption, please use a spec-compliant library! When you don't, you force a highly opinionated dependency on consuming developers.
+* **Many Non-Spec-Adhering Implementations Exist** - Choosing one of these can get you past that:
+	* [Q](https://github.com/kriskowal/q)
+	* [when.js](https://github.com/cujojs/when)
+	* [RSVP.js](https://github.com/tildeio/rsvp.js)
 
 ##One More Thought
 Promises are not the only alternative to plain callbacks. We've already discussed eventing and messaging, and we're about to discuss finite state machines (FSMs). In my experience I've found promises to be a powerful tool for concise units of behavior (handling a login, handling an HTTP request, etc.). However, I've seen promises used in longer-running workflows where an FSM is better suited to the task, and also in high level UI management between views where something more reactive (events, messaging) would have been a better choice.
@@ -583,6 +575,16 @@ So - machina provides features such as (but not limited to):
 
 ##Complementary Patterns 
 You'll notice that our FSM above makes use of continuation-passing as well as events. In fact, our entire journey through these 5 patterns has progressively advanced to higher-level abstractions. Don't be surprised to see yourself mixing these patterns together to produce the abstraction you need. If anything, focusing on *just* the lower level pattern of passing callbacks and using promises to eliminate nesting has, in my opinion, done our community a disservice. In addition to grasping these patterns, we need to see the potential of higher-level abstractions which we can create from these patterns working *together*.
+
+##FSM Conclusion
+###Pros
+####Extremely Versatile
+FSMs model so many real-world problems well, it's hard to find a scenario that they don't work well for.
+####Wokflow
+FSMs handle long-running, asynchronous workflow well.
+###Cons
+####Lesser known Pattern
+FSM awareness in the JavaScript developer community *appears* to be low. As a result, the pattern is often not known, feared or rejected as too complex.
 
 #Conclusion
 
