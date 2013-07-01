@@ -359,11 +359,17 @@ _.each(['newgame', 'newmedal', 'lostgame', 'wongame'], function(evnt){
 	});
 });
 ```
+The above example is just a *taste* of messaging. We have a websocket connection, over which we're subscribing to `newgame`, `newmedal`, `lostgame` and `wongame` events. As we handle those websocket events (which will happen asynchronously, btw), we publish the received data to our local message bus and any subscriber will receive the message without having to know anything about the websocket connection, nor any other subscriber to the same data. This kind of loose coupling lends itself to good testability, portability (across boundaries such as iFrames and Web Workers) and composability. When messaging is the communications glue between your modules, the message is the contract. As long as you honor the contract – or even go a step further and version your message types – you can compose your app of any number of drop-in modules that subscribe to the topics they need and adhere to message contracts on what they publish.
 
 ##Messaging Conclusion
 ###Pros
+* **Promotes clean separation of concerns** - you don't have to build a large app. Instead, build several smaller ones and use messaging for communications between them.
+* **Very testable** - it's super easy to fake a message or test for message output.
+* **Complements events nicely** - Observer pattern 'events' work nicely for local concerns. Messaging complements this when those events need to be promoted to app-level messages.
 
 ###Cons
+* **Can be prone to "boilerplate proliferation"** - you can mitigate this by writing app-specific helpers
+* **Can be confusing to devs who are new to the concept in general** - take the proper time to explain and teach.
 
 #4.) Promises
 Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec]() defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error – if the promise failed – and 'finally' callbacks).
