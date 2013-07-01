@@ -142,7 +142,7 @@ No extra libs required. Functions-as-first-class-citizens is built into the lang
 #####Can Be An Insufficient Abstraction
 Sometimes you need additional 'sugar'. This is where patterns 4-5 will come into play, each build upon the foundation of callbacks in different ways.
 
-#####Complext When Nested
+#####Complex When Nested
 Callbacks are difficult to read, debug and maintain when deeply nested. The goto-example these days to describe this problem is "the pyramid of doom":
 
 ```
@@ -165,7 +165,7 @@ $("#getCustomer").click(function(cust) {
 });
 ```
 
-The deeper the nesting, the more you see the pyramid. This is both a *real problem* and a *straw man*. It's real problem in that I've seen it happen - but primarily by developers new to JavaScript and/or developers not spending the time to properly plan and architect their application. It's a straw man in that it's often blindly cited as *the knee-jerk reason* to use promises, without proper attention being paid to good design, even *if* promises are used to mitigate the nesting. (There are legitimate and compelling reasons to use promises, of course! But I can just as easily slap promises on a terribly written code base just to eliminate nesting.) Low level patterns don't fix higher level design problems - so be sure to think through how you are modeling a problem in code if you end up with deep callback nesting, and consider it both a code *and* design smell that should prompt you to address the systemic issue(s) with the overall design and not just the nesting strategy.
+The deeper the nesting, the more you see the pyramid. This is both a *real problem* and a *straw man*. It's real problem in that I've seen it happen - but primarily by developers new to JavaScript and/or developers not spending the time to properly plan and architect their application. It's a straw man in that it's often blindly cited as *the knee-jerk reason* to use promises, without proper attention being paid to good design, even *if* promises are used to mitigate the nesting. (There are legitimate and compelling reasons to use promises, of course! But I can just as easily slap promises on a terribly written code base only to eliminate nesting.) Low level patterns don't fix higher level design problems - so be sure to think through how you are modeling a problem in code if you end up with deep callback nesting, and consider it both a code *and* design smell that should prompt you to address the systemic issue(s) with the overall design and not just the nesting strategy.
 
 #2.) [Observer Pattern](http://en.wikipedia.org/wiki/Observer_pattern) (a.k.a. Events)
 One of the cons of plain callbacks – "Can Be An Insufficient Abstraction" – is the perfect segue to where events can be useful. What if we don't want to keep passing a callback each time we invoke the target method? What if we wanted our own callback to be invoked if *another piece of calling code* also invoked the target method? The [Observer Pattern](http://en.wikipedia.org/wiki/Observer_pattern) fits well here.
@@ -180,7 +180,7 @@ There are a few key details to bear in mind with the Observer Pattern:
 * Subjects are responsible for maintaining the internal state of subscriber callbacks
 * JavaScript implementations of this pattern usually involve subscriber callback method signatures of 0-n arguments (in other words, every event could have a different signature).
 
-Let's roll an observer example, describing our Halo 4 example (you can view this in a fiddle [here](http://jsfiddle.net/ifandelse/gstrW/)):
+Let's demonstrate the Observer pattern in code, describing our Halo 4 example (you can view this in a fiddle [here](http://jsfiddle.net/ifandelse/gstrW/)):
 
 ```
 // This observer object can be mixed into any object, giving it the basic
