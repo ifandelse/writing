@@ -57,7 +57,7 @@ $("#clickity").on("click", function(e) {
 });
 ```
 
-Even if you're new to JavaScript, if you've spent *any* amount of time in the web, you've probably written something similar to the above code. Both `addEventListener` and `on` take a callback argument - the second argument being passed. This function will be invoked when the `click` event occurs. At the moment, we're just taking advantage of the fact our DOM element (presumably a button) has the underlying functionality to store the callback we pass to it and invoke it later when the event occurs (btw - this is an implementation of the [Observer Pattern](), more on that later when we talk about Events). However - it's very easy to write your own objects to be capable of invoking callbacks:
+Even if you're new to JavaScript, if you've spent *any* amount of time in the web, you've probably written something similar to the above code. Both `addEventListener` and `on` take a callback argument - the second argument being passed. This function will be invoked when the `click` event occurs. At the moment, we're just taking advantage of the fact our DOM element (presumably a button) has the underlying functionality to store the callback we pass to it and invoke it later when the event occurs (btw - this is an implementation of the [Observer Pattern](http://en.wikipedia.org/wiki/Observer_pattern), more on that later when we talk about Events). However - it's very easy to write your own objects to be capable of invoking callbacks:
 
 ```
 var worker = {
@@ -254,9 +254,9 @@ jim.dangItDoug(++i);
 
 Many popular libaries already provide built-in event-emitting behavior – backbone.js & jQuery, for example. There are several other stand-alone implementations worth checking out as well – here are a few:
 
-* [EventEmitter]()
-* [EventEmitter2]()
-* [Monologue.js]()
+* [EventEmitter](https://github.com/Wolfy87/EventEmitter)
+* [EventEmitter2](https://github.com/hij1nx/EventEmitter2)
+* [monologue.js](https://github.com/postaljs/monologue.js)
 
 ##Events Conclusion
 ###Pros
@@ -275,13 +275,13 @@ So, let's tackle what I've avoided until now:
 * Many of these implementations provide event-emitting behaviors, with the intent that the API is on the prototype, or mixed-in as instance members, etc. However, many developers take these event-emitting libraries and create a singleton instance and use this instance as a generalized "emitter", so subjects no longer have the on/off/etc. calls themselves. When this happens, we are, in my opinion, leaving the observer pattern behind and we've begun to wander into the territory of messaging...
 
 #3.) Messaging
-Well, it turns out that [Jonathan Creamer]() found out Alex is with some friends playing Halo 4 and he's curious to hear how things are going. Only problem is, he has no idea how to get to my house and, in fact, doesn't want to leave his own house. So he calls Alex and asks to be notified whenever we win or lose, when we start a game, and when we earn a medal. Alex is now acting as a mediator, or broker. Jonathan isn't subscribing directly to me or Doug (in fact, he may not have any idea who's playing), instead he's told Alex what he's interested in, and Alex will relay any relevant information back to Jonathan, whether it comes from me, Doug or someone else. This is the essence of "messaging" in JavaScript.
+Well, it turns out that [Jonathan Creamer](http://freshbrewedcode.com/jonathancreamer/) found out Alex is watching some friends play Halo 4 and he's curious to hear how things are going. Only problem is, he has no idea how to get to my house and, in fact, doesn't want to leave his own house. So he calls Alex and asks to be notified whenever we win or lose, when we start a game, and when we earn a medal. Alex is now acting as a mediator, or broker. Jonathan isn't subscribing directly to me or Doug (in fact, he may not have any idea who's playing), instead he's told Alex what he's interested in, and Alex will relay any relevant information back to Jonathan, whether it comes from me, Doug or someone else. This is the essence of "messaging" in JavaScript.
 
 This is much like the Observer pattern, in that we have observers interested in events occuring - but we've introduced a third party to handle managing subscriptions and matching events (which we'll now refer to as messages) to the correct subscribers. There's some debate about the best pattern name to apply here, but here are some descriptions that can be legitimately argued:
 
-* [Mediator]() - "Communication between objects is encapsulated within a mediator. Objects no longer communicate directly with each other, but instead communicate through the mediator."
-* [Event Aggregator]() - "Channel events from multiple objects into a single object to simplify registration for clients."
-* [Client-side Message Broker]() - "Receives messages from multiple destinations, determines the correct destination & routes the message."
+* [Mediator](http://en.wikipedia.org/wiki/Mediator_pattern) - "Communication between objects is encapsulated within a mediator. Objects no longer communicate directly with each other, but instead communicate through the mediator."
+* [Event Aggregator](http://martinfowler.com/eaaDev/EventAggregator.html) - "Channel events from multiple objects into a single object to simplify registration for clients."
+* [Client-side Message Broker](http://www.enterpriseintegrationpatterns.com/MessageBroker.html) - "Receives messages from multiple destinations, determines the correct destination & routes the message."
 
 <div style="margin-left:auto; margin-right:auto;text-align:center;">
     <div style="font-size:24pt;line-height:26pt;">Regardless of the actual pattern used,<br/> people still call it "PubSub".</div>
@@ -298,10 +298,10 @@ I personally lean towards "message broker", though I'm guilty of using all three
 ##Why Would I Choose This Over Events?
 You wouldn't. In fact, some of the most elegant scenarios I've seen used the Observer and Message Broker patterns in tandem. As you look at your application's JavaScript, you'll often see several distinct "bounded contexts" (to steal a phrase from Mr. Evans). Within these contexts (for example, a Backbone view and model), the Observer pattern fits very well, since the observers already have a direct reference to the subject. However, it's often the case that separate "contexts" (often in separate modules) within the application are interested in the same data. Instead of coupling those separate modules just to share the data, we can have both modules subscribe to a message bus. So - using messaging in tandem with events can help you de-couple components at a different level of abstraction as you move from finer grained instance-to-instance communication (events) up to module-to-module communication (messaging).
 
-Another important benefit arises if you follow the general rule of "Don't publish behavior on a message" (in other words, your message data shouldn't have functions, only data). You now have the ability to easily extend the reach of your messages across iFrames, Web Workers or even Websocket connections. [postal.js]() – a library I've written – has a [federation]() add-on that allows this kind of bridging. These approaches will become more important as larger numbers of web applications are taking advantage of background processing in Web Workers and iFrames.
+Another important benefit arises if you follow the general rule of "Don't publish behavior on a message" (in other words, your message data shouldn't have functions, only data). You now have the ability to easily extend the reach of your messages across iFrames, Web Workers or even Websocket connections. [postal.js](https://github.com/postaljs/postal.js) – a library I've written – has a [federation](https://github.com/postaljs/postal.federation) add-on that allows this kind of bridging. These approaches will become more important as larger numbers of web applications are taking advantage of background processing in Web Workers and iFrames.
 
 ##Less Talk, More Code
-This example is using [postal.js]() – a JavaScript message bus implemention I've created:
+This example is using [postal.js](https://github.com/postaljs/postal.js) – a JavaScript message bus implemention I've created:
 
 ```
 var jonathan = (function() {
@@ -372,7 +372,7 @@ The above example is just a *taste* of messaging. We have a websocket connection
 * **Can be confusing to devs who are new to the concept in general** - take the proper time to explain and teach.
 
 #4.) Promises
-Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec]() defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error – if the promise failed – and 'finally' callbacks).
+Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec](http://wiki.commonjs.org/wiki/Promises/A) defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error – if the promise failed – and 'finally' callbacks).
 
 > It's my understanding that the Promises/A+ spec states that success/error handlers added after a promise has fulfilled/failed will be queued to execute with a setTimeout of 0ms. This will potentially be a change from current Promises/A compliant libs. I'm happy to correct this if I'm wrong here.
 
@@ -655,11 +655,45 @@ So - we survived our whirlwind tour together through these 5 patterns. It's wort
 
 #Additional Reading
 ##Callbacks/Continuation Passing Style
+* ["Asynchronous programming and continuation-passing style in JavaScript"](http://www.2ality.com/2012/06/continuation-passing-style.html) by [Dr. Axel Rauschmayer](https://twitter.com/rauschma)
+* [A beginner's primer on callbacks in JavaScript](http://recurial.com/programming/understanding-callback-functions-in-javascript/) 
+* [By example: Continuation-passing style in JavaScript](http://matt.might.net/articles/by-example-continuation-passing-style/)
 
-##Eventing/Observer Pattern
+##Eventing & Messaging
+* [Client-side Messaging Essentials](http://www.freshbrewedcodes.com/jimcowart/2013/02/07/client-side-messaging-essentials/)
+* Client-side Messaging in JavaScript – [Part 1](http://www.freshbrewedcodes.com/jimcowart/2011/12/05/client-side-messaging-with-postal-js-part-1/), [Part 2](http://www.freshbrewedcodes.com/jimcowart/2012/02/02/client-side-messaging-in-javascript-part-2-postal-js/) and [Part 3 (anti-patterns)](http://www.freshbrewedcodes.com/jimcowart/2012/03/19/client-side-messaging-in-javascript-part-3-anti-patterns/)
+* [Cross Frame Messaging with postal.xframe](http://www.freshbrewedcodes.com/jimcowart/2013/02/26/cross-frame-messaging-with-postal-xframe/)
+* [Patterns For Large-Scale JavaScript Application Architecture](http://addyosmani.com/largescalejavascript/)
 
-##Messaging
+###Libraries
+* [postal.js](https://github.com/postaljs/postal.js) (shameless plug on my part)
+* [EventEmitter](https://github.com/Wolfy87/EventEmitter)
+* [EventEmitter2](https://github.com/hij1nx/EventEmitter2)
+* [monologue.js](https://github.com/postaljs/monologue.js)
+* [js-signals](https://github.com/millermedeiros/js-signals)
+* [msgs](https://github.com/cujojs/msgs)
+
 
 ##Promises
+* [You're Missing the Point of Promises](http://domenic.me/2012/10/14/youre-missing-the-point-of-promises/)
+* [What's the Point of Promises](http://www.kendoui.com/blogs/teamblog/posts/13-03-28/what-is-the-point-of-promises.aspx)
+* [Promises/A+ spec](http://promises-aplus.github.io/promises-spec/)
+* [Async JavaScript (book by Trevor Burnham)](http://pragprog.com/book/tbajs/async-javascript)
+
+###Libraries
+* [Q](https://github.com/kriskowal/q)
+* [when.js](https://github.com/cujojs/when)
+* [RSVP.js](https://github.com/tildeio/rsvp.js)
+
 
 ##Finite State Machines
+* [State Machines – Basics of Computer Science](http://blog.markwshead.com/869/state-machines-computer-science/)* [http://machina-js.org/](http://machina-js.org/) (shameless plug!)* [Finite state machines in JavaScript, Part 1](http://www.ibm.com/developerworks/library/wa-finitemach1/) (great additional reading resources on this one)* [Learn You Some Erlang - Finite State Machines](http://learnyousomeerlang.com/finite-state-machines)
+* [Harvey Mudd CS paper on FSMs](http://www.cs.hmc.edu/~keller/cs60book/12%2520Finite-State%2520Machines.pdf)
+* [Finite State Machine - Wikipedia](http://en.wikipedia.org/wiki/Finite-state_machine)
+* Is This Thing On? - [Part 1](http://www.icenium.com/blog/icenium-team-blog/2013/04/23/is-this-thing-on-(part-1), [Part 2](http://www.icenium.com/blog/icenium-team-blog/2013/05/09/is-this-thing-on-(part-2), [Part 3](http://www.icenium.com/blog/icenium-team-blog/2013/05/30/is-this-thing-on-(part-3) and [Part 4](http://www.icenium.com/blog/icenium-team-blog/2013/06/04/is-this-thing-on-(part-4)
+* [Taking Control With machina.js (presentation by Doug Neiner)](http://code.dougneiner.com/presentations/machina/)
+
+###Libraries
+* [machina.js](https://github.com/ifandelse/machina.js)
+* [state](https://github.com/nickfargo/state)
+* [javascript-state-machine](https://github.com/jakesgordon/javascript-state-machine)
