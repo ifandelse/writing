@@ -585,6 +585,16 @@ You'll notice that our FSM above makes use of continuation-passing as well as ev
 ###Cons
 * **Lesser known Pattern** - FSM awareness in the JavaScript developer community *appears* to be low. As a result, the pattern is often not known, feared or rejected as too complex.
 
-#Conclusion
+#Wrapping Up
+So - we survived our whirlwind tour together through these 5 patterns. It's worth emphasizing that these aren't the *only* five that can be useful in taming asynchronous code, but I do consider them "*must-know*". I'm interested in your feedback & war stories, as well - what have you found to be useful in this space?
 
 #Additional Reading
+##Callbacks/Continuation Passing Style
+
+##Eventing/Observer Pattern
+
+##Messaging
+
+##Promises
+
+##Finite State Machines
