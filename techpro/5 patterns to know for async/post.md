@@ -1,5 +1,7 @@
 You can hardly write ten lines of JavaScript before you're confronted with asynchronous behavior. In this post we're going to look at 5 patterns that can help you tame the beast - or at least keep it at bay. It would be nearly impossible to cover each pattern in depth in this post alone, but my aim is to provide enough information to get you started, with an additional reading section at the end.
 
+Let me emphasize here that none of these patterns are *only* asynchronous. In fact, all of them work well in synchronous contexts also. 
+
  
 #What's 'Asynchronous'? A Quick Primer…
 Your JavaScript code is executed in an event loop, on a single thread. The reality is that *all* JavaScript executes synchronously - it's the event loop that allows you to queue up an action that won't take place until the loop is available some time *after* the code that queued the action has finished executing. So code is said to execute asynchronoulsy when it is queued to run sometime after the event loop is available. Or, as Trevor Burnham said in his book [Asynchronous JavaScript](http://pragprog.com/book/tbajs/async-javascript):
@@ -323,6 +325,8 @@ var jonathan = (function() {
     }
     var module = {
         handleMessage: function(data, env) {
+        	// if we have a reaction for this kind of message
+        	// we'll call makeComment….
             if(reactions[env.topic]) {
                 this.makeComment(reactions[env.topic](data, env));    
             }
@@ -347,11 +351,13 @@ var jonathan = (function() {
 }());
 
 var chan = postal.channel("xbox");
-chan.publish("newgame", { type: "Big Team Slayer", level: "Ragnorok" });
-chan.publish("lostgame");
-chan.publish("newgame");
-chan.publish("newmedal");
-chan.publish("wongame");
+// we're briding a socket.io connection to our message bus
+var socket = io.connect(location.origin);
+_.each(['newgame', 'newmedal', 'lostgame', 'wongame'], function(evnt){
+	socket.on(evnt, function(data){
+		chan.publish(evnt, data);
+	});
+});
 ```
 
 ##Messaging Conclusion
@@ -360,7 +366,11 @@ chan.publish("wongame");
 ###Cons
 
 #4.) Promises
-Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec]() defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error and 'finally' callbacks). You get an idea of the power it provides when you see it in action. Consider this nested-callback-laden login viewmodel:
+Promises provide a very powerful way to express asynchronous code. Instead of "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (which we see with plain callbacks), our target methods return a promise - an "eventual value". The [Promises/A spec]() defines a promise as "an object that has a function as the value for the property then". The `then` property on a promise is a method that takes a success and (optional) error callback argument, and returns a new promise. Under the hood, a promise can be in 1 of 3 states: unfulfilled, fulfilled or failed. Once it has been fulfilled (resolved) or failed (rejected), the state should NOT change again. Success callbacks are invoked when the promise is fulfilled, error callbacks when it fails. If the success handler(s) are added after the promise has already been fulfilled, they will be invoked immediately (same goes for error – if the promise failed – and 'finally' callbacks).
+
+> It's my understanding that the Promises/A+ spec states that success/error handlers added after a promise has fulfilled/failed will be queued to execute with a setTimeout of 0ms. This will potentially be a change from current Promises/A compliant libs. I'm happy to correct this if I'm wrong here.
+
+You get an idea of the power a promise provides when you see it in action. Consider this nested-callback-laden login viewmodel:
 
 ```
 // functional viewmodel for a mobile login screen
