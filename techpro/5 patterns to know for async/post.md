@@ -302,7 +302,56 @@ Another important benefit arises if you follow the general rule of "Don't publis
 This example is using [postal.js]() – a JavaScript message bus implemention I've created:
 
 ```
+var jonathan = (function() {
+	// postal allows you to group topics by channel.
+	// Here we get a channel for "xbox" related topics.
+	// From it we can publish and subscribe.
+    var xboxChannel = postal.channel("xbox");
+    var reactions = {
+        newgame: function(data, env) {
+            return "I hope this goes better than the last one did!";
+        },
+        newmedal: function(data, env) {
+            return "Nice, a new medal - about time!";
+        },
+        lostgame: function(data, env) {
+            return "Ouch, you got pwned!";  
+        },
+        wongame: function(data, env) {
+            return "Stroke of luck, perhaps?";
+        }
+    }
+    var module = {
+        handleMessage: function(data, env) {
+            if(reactions[env.topic]) {
+                this.makeComment(reactions[env.topic](data, env));    
+            }
+        },
+        makeComment: function(msg) {
+            $('body').append("<div>" + msg + "</div>");
+        }
+    };
+    
+    // we are subscribing using the "#" wildcard
+    // which would match ANY topic of any length
+    // (postal follows the AMQP binding approach)
+    // notice we're using a 'fluent' configuration 
+    // method to provide the function context we
+    // want to be present (the value of "this")
+    // in our subscriber callback
+    xboxChannel
+        .subscribe("#", module.handleMessage)
+        .withContext(module);
+    
+    return module;
+}());
 
+var chan = postal.channel("xbox");
+chan.publish("newgame", { type: "Big Team Slayer", level: "Ragnorok" });
+chan.publish("lostgame");
+chan.publish("newgame");
+chan.publish("newmedal");
+chan.publish("wongame");
 ```
 
 ##Messaging Conclusion
