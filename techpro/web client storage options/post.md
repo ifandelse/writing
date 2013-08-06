@@ -77,6 +77,132 @@ Overall - `localStorage` can be a reliable workhorse - with older browser suppor
 The **bad** news is – as with ANY of these client-side storage options – you should *never* assume that the data will be truly persistent (after all, the user can nuke it from orbit if they desire), and you should be careful as to the kinds of data you store (it's not hard for any user to view stored data via browser tools).
 
 #Indexed DB
+The conventional wisdom is that `localStorage` works well for smaller amounts of data (especially when there's no heavy searching & filtering). When you need something more, that will most likely be IndexedDB (assuming you have browser support). Like `localStorage`, IndexedDB allows you to store data persistently on the client, and it follows the [same-origin policy](http://www.w3.org/Security/wiki/Same_Origin_Policy). Here are a few defining characteristics of IndexedDB:
+
+* It's a key/value store. Values can be objects, and keys can be a property of those objects.
+* It uses a transaction model - so each operation is tied to a transaction, including reads. (There are three transaction modes: `read-only`, `read/write`, and `versionchange`)
+* You can create indexes (using any of the properties on the stored objects) for searching and sorting.
+* The spec defines an asynchronous *and* synchronous API, though no major browser has implemented the synchronous version yet.
+
+I put together another [jsFiddle](http://jsfiddle.net/ifandelse/f5mNW/) to demonstrate some of IndexedDB's features. In our fiddle, we have a `storageContainer` object that very lightly wraps IndexedDB. I've intentionally avoided bringing a UI framework into this example (though I did pull in an event emitter and message bus). I think it's important to see IndexedDB's API - once you get the hang of it, it starts to make sense. However, it can be awkward even *after* you've gotten used to it. Many API calls return a "request" (an [IDBRequest object](https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest?redirectlocale=en-US&redirectslug=IndexedDB%2FIDBRequest)) - which typically has an `onsuccess` and `onerror` member which you can assign a handler to (and some requests have addition handler hooks besides these two). It might feel like you're stuck half way between pure-event emitting and promises. I personally prefer event-emitting style APIs, so I brought in a message bus ([postal.js]()) to act as the communications bridge between the hand-rolled view models and our `storageContainer` instance. Our `storageContainer` instance listens for a couple of different messages and reacts appropriately when one arrives. If any of this is unfamiliar to you, don't worry. The code in the fiddle itself is focused only on the `storageContainer`.
+
+Let's break down some of the snippets a piece at a time:
+
+##Opening and/or Creating a Database
+The `init` function of our `storageContainer` is as follows:
+
+	var storageContainer = {
+		//other members...
+		init: function () {
+			// open our DB and create object stores if it's the
+			// first time this DB has been created on this client
+			var self = this;
+			var request = indexedDB.open("BandPrefs", version);
+			request.onerror = jimIsAnIdiot;
+			request.onsuccess = function (e) {
+				self.db = e.target.result;
+				if (firstTime) {
+					self.loadSeedData();
+				}
+				if (!firstTime && self.db.objectStoreNames.contains('prefs')) {
+					self.loadExistingPrefs();
+				}
+			};
+			// We can only create Object stores in a versionchange transaction.
+			// We know that if this gets called, it's the first time
+			// that the code has run on this client
+			request.onupgradeneeded = function (e) {
+				var prefStore;
+				firstTime = true;
+				self.db = e.target.result;
+				prefStore = self.db.createObjectStore("prefs", {
+					keyPath: "_id"
+				});
+				prefStore.createIndex("fullName", "fullName", {
+					unique: false
+				});
+			};
+		}
+	};
+ 
+One of the first steps we take in `init` is the call to `indexedDB.open`. The first argument is the name of the database, and the second is the version. This is one of the confusing aspects of the API if you're new to IndexedDB in general. Due to the transactional nature of IndexedDB, you can only modify the schema (e.g. - create object stores and/or indexes) in a version upgrade transaction. If the database has never been created before on the client, OR if you provide a version number higher than what exists, then you get the chance to modify the schema as part of the version upgrade by utilizing the `onupgradeneeded` hook. You can see that inside our `onupgradeneeded` handler, we're creating an object store named 'prefs' (for storing band/artist preferences). The key for the prefs object store will be the `_id` member of the object passed into the store. We're also creating a non-unique index on the prefs object store called "fullName" and the key of the index will be the `fullName` property of the pref object. Having this index will make it easy to retrieve a list of band preferences using the name of the person who liked the band - rather than needing to know the key of each one.
+ 
+##Storing Data
+
+The `storePref` method on our `storageContainer` looks as follows:
+
+	var storageContainer = {
+		// stores one band preference record
+		storePref: function (pref) {
+		    var self = this;
+		    var transaction = self.db.transaction(["prefs"], "readwrite");
+		    transaction.oncomplete = function (event) {
+		        self.emit("transaction.oncomplete");
+		    };
+		    transaction.onerror = jimIsAnIdiot; //self-deprecation FTW
+		    var prefs = transaction.objectStore("prefs");
+		    var addRequest = prefs.add(pref);
+		    addRequest.onsuccess = function (event) {
+		        self.emit("cursor.onsuccess", pref);
+		    };
+		}
+		// other members, etc.
+	};
+
+As a user enters their name and a band/artist they like, the viewmodel for the form publishes a message that our `storageContainer` listens for. When that message arrives, the `storePref` method is invoked. Again, you'll notice we're dealing with transactions. We start a transaction via `self.db.transaction`. The first argument is an array of object store names that this transaction will involve. We only have one - "prefs". The second argument is the transaction mode. We're writing data, so we use `readwrite`. Notice that our transaction request has `oncomplete` and `onerror` hooks, but the `add` request also has `onsuccess` (and an `onerror` that I'm not using in this example). That's it for adding a record to our "prefs" object store.
+
+## Retrieving Data
+Our `storageContainer` supports two ways to retrieve data - everything, or all the preferences for a given name. The two methods involve look as follows:
+
+	var storageContainer = {
+		// looks for existing band preferences and emits an
+        // event containing the list if any exist.
+        loadExistingPrefs: function () {
+            var prefs = [],
+                self = this;
+            self.db.transaction(["prefs"])
+                .objectStore("prefs")
+                .openCursor().onsuccess = getIterator(self, prefs, "prefs.exist");
+        },
+        // filters using an index based on the name of the person
+        // and emits an event containing the results
+        filterPrefs: function (name) {
+            var prefs = [],
+                self = this;
+            self.db.transaction(["prefs"])
+                .objectStore("prefs")
+                .index("fullName")
+                .openCursor(IDBKeyRange.only(name)).onsuccess = getIterator(self, prefs, "prefs.filtered");
+        }
+        // other members, etc.
+	};
+	
+For the most part, what these two methods do is nearly identical. We start a transaction (with `self.db.transaction(["prefs"])`). Then we indicate which object store we're going to work with (via `.objectStore("prefs")`). This is where the two diverge. On each one, we're opening a cursor that will allow us to iterate over results. However, the `filterPrefs` method (which allows us to find the band/artist preferences for a specific person) passes `IDBKeyRange.only(name)` to the cursor. This tells IndexedDB that we only want the items in this index that have the specified key. (The kinds of key constraints possible are very helpful - see [this](https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB#Specifying_the_range_and_direction_of_cursors) for more detail.) Both methods are using the same function as the onsuccess handler. (The `onsuccess` handler will be called for each record the cursor returns). The function returned from `getIterator` will be our `onsuccess` handler:
+
+	var getIterator = function(container, prefs, topic) {
+        return function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                prefs.push({
+                    fullName: cursor.value.fullName,
+                    bandName: cursor.value.bandName
+                });
+                cursor.
+                continue ();
+            } else {
+                container.emit(topic, prefs);
+            }
+        };
+    };
+    
+As long as our cursor is truthy, we continue compiling our results (the `prefs` array). Once we've iterated over all the rows, the cursor will be falsy. At this point, we emit an event with the results we've compiled.
+
+This example only shows you a few features of IndexedDB - but it shows enough to demonstrate not only the powerful capabilities, but (IMO) the need to wrap and abstract the API away from your application logic. The limited functionality in our `storageContainer` still has a decent amount of boilerplate code. Abstracting it into a separate infrastrucutre-focused component will help keep your application from buckling under the weight of confusing & noisy boilerplate.
+
+##Support
+Browser support for IndexedDB is improving - but it's still very new. Safari still doesn't have support, nor does <= IE 9.
+
+<iframe src="http://caniuse.com/indexeddb/embed/" width="100%"></iframe>
 
 #Using the File System
 ## Normal Web Clients
