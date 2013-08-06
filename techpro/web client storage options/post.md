@@ -6,10 +6,10 @@ For a long time, the web limped along with one primary form of client side stora
 Thankfully, browsers didn't stop there:
 
 * The ["Web Storage" spec](http://dev.w3.org/html5/webstorage/) – introduced in 2009 – provided APIs for `sessionStorage` & `localStorage`. The name `localStorage` has become nearly synonymous in usage with "Web Storage" - and you will often hear it used instead. Most implementations give you between 2MB and 5MB of key/value storage (with exceptions, of course).
-* [Indexed DB]() (called an "indexed table system") is a key/value store – not a relational database like Web SQL. You can persist JavaScript objects to an "object store" - but it does not require you to define a schema for your object structure (though you *do* define a key). In addition, you can define indexes to improve performance.
-* Chrome 27+, Opera 15+ and Blackberry 10 have a [FileSystem API]() as well. While the opportunities to utilize the FileSystem API won't be as common as the other scenarios **yet**, this option is especially useful when local storage and Indexed DB fall short of your needs.
-* If you're writing hybrid mobile applications – using a framework like Apache Cordova (a.k.a. - "PhoneGap") – in addition to having access to features like local storage (assuming the mobile webview supports it) you have a [File API]() that allows you to read & write from the device's file system which follows the W3C spec that the FileSytsem API is based on.
-* Though it's currently deprecated (as of 2010), you may still come across applications making use of a [Web SQL database](). Web SQL - supported primarily in Webkit browsers - provided a means to manipulate client-side data storage using a variant of SQL. It comes with all of the power and headaches of working with a relational database - sporting larger size limitations than local storage (Safari, for example, let Web SQL DBs get up to 50MB). The W3C abandoned Web SQL databases in favor of the [Indexed DB]() specification.
+* [Indexed DB](https://developer.mozilla.org/en-US/docs/IndexedDB) (called an "indexed table system") is a key/value store – not a relational database like Web SQL. You can persist JavaScript objects to an "object store" - but it does not require you to define a schema for your object structure (though you *do* define a key). In addition, you can define indexes to improve performance.
+* Chrome 27+, Opera 15+ and Blackberry 10 have a [FileSystem API](http://www.w3.org/TR/file-system-api/) as well. While the opportunities to utilize the FileSystem API won't be as common as the other scenarios **yet**, this option is especially useful when local storage and Indexed DB fall short of your needs.
+* If you're writing hybrid mobile applications – using a framework like [Apache Cordova](http://www.icenium.com/blog/icenium-team-blog/2013/03/26/demystifying-apache-cordova-and-phonegap) (a.k.a. - "PhoneGap") – in addition to having access to features like local storage (assuming the mobile webview supports it) you have a [File API](http://cordova.apache.org/docs/en/3.0.0/cordova_file_file.md.html#File) that allows you to read & write from the device's file system which follows the W3C spec that the FileSytsem API is based on.
+* Though it's currently deprecated (as of 2010), you may still come across applications making use of a [Web SQL database](http://www.w3.org/TR/webdatabase/). Web SQL - supported primarily in Webkit browsers - provided a means to manipulate client-side data storage using a variant of SQL. It comes with all of the power and headaches of working with a relational database - sporting larger size limitations than local storage (Safari, for example, let Web SQL DBs get up to 50MB). The W3C abandoned Web SQL databases in favor of the [Indexed DB](https://developer.mozilla.org/en-US/docs/IndexedDB) specification.
 
 #Web (Local & Session) Storage
 Of the storage options we'll cover, Web Storage is the most widely supported option available to you as of today. The Web Storage spec gives us `sessionStorage` and `localStorage` – which share the same API (both implement the `Storage` prototype). `sessionStorage` is used to store data for the duration of the current browser session. It will persist between page reloads, but will be cleared when the browser is closed. Data stored in `localStorage` is persistent. It will only be cleared when the user specifically clears it via browser tools, or when your code removes items previously stored, etc.
@@ -71,7 +71,7 @@ You can see from the above code that the `localStorage` API is quite simple. In 
 	* The need to proactively serialize, and the fact that the API is synchronous *might* cause you performance headaches. I've never had an issue here, though.
 	* Since you aren't required to define a schema, validating the stored data is up to you. 
 	
-Overall - `localStorage` can be a reliable workhorse - with older browser support often made possible via polyfills.  I've used [ampllify.store](http://amplifyjs.com/api/store/) for API normalization and fallbacks in many apps. The **good** news is that current support looks good:
+Overall - `localStorage` can be a reliable workhorse - with older browser support often made possible via polyfills.  I've used [ampllify.store](http://amplifyjs.com/api/store/) for API normalization and fallbacks in many apps, for example. The **good** news is that current support looks good:
 
 ![](./WebStorageSupport.png)
 *(taken from [http://caniuse.com/#feat=namevalue-storage](http://caniuse.com/#feat=namevalue-storage))*
@@ -86,7 +86,9 @@ The conventional wisdom is that `localStorage` works well for smaller amounts of
 * You can create indexes (using any of the properties on the stored objects) for searching and sorting.
 * The spec defines an asynchronous *and* synchronous API, though no major browser has implemented the synchronous version yet.
 
-I put together another [jsFiddle](http://jsfiddle.net/ifandelse/f5mNW/) to demonstrate some of IndexedDB's features. In our fiddle, we have a `storageContainer` object that very lightly wraps IndexedDB. I've intentionally avoided bringing a UI framework into this example (though I did pull in an event emitter and message bus). I think it's important to see IndexedDB's API - once you get the hang of it, it starts to make sense. However, it can be awkward even *after* you've gotten used to it. Many API calls return a "request" (an [IDBRequest object](https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest?redirectlocale=en-US&redirectslug=IndexedDB%2FIDBRequest)) - which typically has an `onsuccess` and `onerror` member which you can assign a handler to (and some requests have addition handler hooks besides these two). It might feel like you're stuck half way between pure-event emitting and promises. I personally prefer event-emitting style APIs, so I brought in a message bus ([postal.js]()) to act as the communications bridge between the hand-rolled view models and our `storageContainer` instance. Our `storageContainer` instance listens for a couple of different messages and reacts appropriately when one arrives. If any of this is unfamiliar to you, don't worry. The code in the fiddle itself is focused only on the `storageContainer`.
+I put together another [jsFiddle](http://jsfiddle.net/ifandelse/f5mNW/) to demonstrate some of IndexedDB's features. In our fiddle, we have a `storageContainer` object that very lightly wraps IndexedDB. I've intentionally avoided bringing a UI framework into this example (though I did pull in an [event emitter](https://github.com/postaljs/monologue.js) and [message bus](https://github.com/postaljs/postal.js)). I think it's important to see IndexedDB's API - once you get the hang of it, it starts to make sense. However, it can be awkward even *after* you've gotten used to it.
+
+Many API calls return a "request" (an [IDBRequest object](https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest?redirectlocale=en-US&redirectslug=IndexedDB%2FIDBRequest)) - which typically has an `onsuccess` and `onerror` member which you can assign a handler to (and some requests have addition handler hooks besides these two). It might feel like you're stuck half way between pure-event emitting and promises. I personally prefer event-emitting style APIs, so I brought in a message bus ([postal.js](https://github.com/postaljs/postal.js)) to act as the communications bridge between the hand-rolled view models and our `storageContainer` instance. Our `storageContainer` instance listens for a couple of different messages and reacts appropriately when one arrives. If any of this is unfamiliar to you, don't worry. The code in the fiddle itself is focused only on the `storageContainer`.
 
 You can take the example for a test drive here if your browser supports IndexedDB:
 <iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/f5mNW/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
@@ -130,7 +132,9 @@ The `init` function of our `storageContainer` is as follows:
 		}
 	};
  
-One of the first steps we take in `init` is the call to `indexedDB.open`. The first argument is the name of the database, and the second is the version. This is one of the confusing aspects of the API if you're new to IndexedDB in general. Due to the transactional nature of IndexedDB, you can only modify the schema (e.g. - create object stores and/or indexes) in a version upgrade transaction. If the database has never been created before on the client, OR if you provide a version number higher than what exists, then you get the chance to modify the schema as part of the version upgrade by utilizing the `onupgradeneeded` hook. You can see that inside our `onupgradeneeded` handler, we're creating an object store named 'prefs' (for storing band/artist preferences). The key for the prefs object store will be the `_id` member of the object passed into the store. We're also creating a non-unique index on the prefs object store called "fullName" and the key of the index will be the `fullName` property of the pref object. Having this index will make it easy to retrieve a list of band preferences using the name of the person who liked the band - rather than needing to know the key of each one.
+One of the first steps we take in `init` is the call to `indexedDB.open`. The first argument is the name of the database, and the second is the version. This is one of the confusing aspects of the API if you're new to IndexedDB in general. Due to the transactional nature of IndexedDB, you can only modify the schema (e.g. - create object stores and/or indexes) in a version upgrade transaction. If the database has never been created before on the client, OR if you provide a version number higher than what exists, then you get the chance to modify the schema as part of the version upgrade by utilizing the `onupgradeneeded` hook. 
+
+You can see that inside our `onupgradeneeded` handler, we're creating an object store named 'prefs' (for storing band/artist preferences). The key for the prefs object store will be the `_id` member of the object passed into the store. We're also creating a non-unique index on the prefs object store called "fullName" and the key of the index will be the `fullName` property of the pref object. Having this index will make it easy to retrieve a list of band preferences using the name of the person who liked the band - rather than needing to know the key of each one. It's also important to note that `onupgradeneeded` will fire *before* `onsuccess`.
  
 ##Storing Data
 
@@ -154,10 +158,10 @@ The `storePref` method on our `storageContainer` looks as follows:
 		// other members, etc.
 	};
 
-As a user enters their name and a band/artist they like, the viewmodel for the form publishes a message that our `storageContainer` listens for. When that message arrives, the `storePref` method is invoked. Again, you'll notice we're dealing with transactions. We start a transaction via `self.db.transaction`. The first argument is an array of object store names that this transaction will involve. We only have one - "prefs". The second argument is the transaction mode. We're writing data, so we use `readwrite`. Notice that our transaction request has `oncomplete` and `onerror` hooks, but the `add` request also has `onsuccess` (and an `onerror` that I'm not using in this example). That's it for adding a record to our "prefs" object store.
+As a user enters their name and a band/artist they like, the viewmodel for the form publishes a message that our `storageContainer` listens for. When that message arrives, the `storePref` method is invoked. Again, you'll notice we're dealing with transactions. We start a transaction via `self.db.transaction`. The first argument is an array of object store names that this transaction will involve. We only have one - "prefs". The second argument is the transaction mode. We're writing data, so we use `readwrite`. Notice that our transaction request has `oncomplete` and `onerror` hooks, but the `add` request also has `onsuccess` (and an `onerror` that I'm not using in this example). Our new pref object gets added to the store when we call `prefs.add(pref)` - that's all it takes.
 
 ## Retrieving Data
-Our `storageContainer` supports two ways to retrieve data - everything, or all the preferences for a given name. The two methods involve look as follows:
+Our `storageContainer` supports two ways to retrieve data - everything, or all the preferences for a given name. The two methods involved are `loadExistingPrefs` and `filterPrefs`:
 
 	var storageContainer = {
 		// looks for existing band preferences and emits an
@@ -182,7 +186,9 @@ Our `storageContainer` supports two ways to retrieve data - everything, or all t
         // other members, etc.
 	};
 	
-For the most part, what these two methods do is nearly identical. We start a transaction (with `self.db.transaction(["prefs"])`). Then we indicate which object store we're going to work with (via `.objectStore("prefs")`). This is where the two diverge. On each one, we're opening a cursor that will allow us to iterate over results. However, the `filterPrefs` method (which allows us to find the band/artist preferences for a specific person) passes `IDBKeyRange.only(name)` to the cursor. This tells IndexedDB that we only want the items in this index that have the specified key. (The kinds of key constraints possible are very helpful - see [this](https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB#Specifying_the_range_and_direction_of_cursors) for more detail.) Both methods are using the same function as the onsuccess handler. (The `onsuccess` handler will be called for each record the cursor returns). The function returned from `getIterator` will be our `onsuccess` handler:
+For the most part, what these two methods do is *nearly* identical. We start a transaction (with `self.db.transaction(["prefs"])`). Then we indicate which object store we're going to work with (via `.objectStore("prefs")`). This is where the two diverge. On each one, we're opening a cursor that will allow us to iterate over results. However, the `filterPrefs` method (which allows us to find the band/artist preferences for a specific person) passes `IDBKeyRange.only(name)` to the cursor. This tells IndexedDB that we only want the items in this index that have the specified key. (The kinds of key constraints possible are very helpful - see [this](https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB#Specifying_the_range_and_direction_of_cursors) for more detail.) 
+
+Both methods are using the same function to generate an onsuccess handler. (The `onsuccess` handler will be called for each record the cursor returns). The function returned from `getIterator` will be our `onsuccess` handler:
 
 	var getIterator = function(container, prefs, topic) {
         return function (event) {
@@ -200,7 +206,7 @@ For the most part, what these two methods do is nearly identical. We start a tra
         };
     };
     
-As long as our cursor is truthy, we continue compiling our results (the `prefs` array). Once we've iterated over all the rows, the cursor will be falsy. At this point, we emit an event with the results we've compiled.
+As long as our cursor is truthy, we continue compiling our results (by adding them to the `prefs` array). Once we've iterated over all the rows, the cursor will be falsy. At this point, we emit an event with the results we've compiled.
 
 This example only shows you a few features of IndexedDB - but it shows enough to demonstrate not only the powerful capabilities, but (IMO) the need to wrap and abstract the API away from your application logic. The limited functionality in our `storageContainer` still has a decent amount of boilerplate code. Abstracting it into a separate infrastrucutre-focused component will help keep your application from buckling under the weight of confusing & noisy boilerplate.
 
@@ -210,8 +216,16 @@ Browser support for IndexedDB is improving - but it's still very new. Safari sti
 ![](./IndexedDBSupport.png)
 *(taken from [http://caniuse.com/#feat=indexeddb](http://caniuse.com/#feat=indexeddb))*
 
+It's possible to enable IndexedDB on browsers that don't support if they support Web SQL by using the [IndexedDB Polyfill](https://github.com/axemclion/IndexedDBShim).
+
+Size limits for IndexedDB vary by browser:
+
+* Firefox currently allows a site to use up to 50MB, after which it will prompt the user for permission. Firefox Mobile defaults to 5MB, and prompts for permission after that.
+* IE 10 will allow up to a whopping 250MB per domain (but that appears to include both File API *and* IndexedDB size quotas).
+* I haven't been able to find a hard limit in Chrome, though [this developer](http://productforums.google.com/forum/#!msg/chrome/-fgX6UPY-Q4/itG2KEHyZv4J) managed to get up to 400MB while testing the size limits before Chrome crashed. The [API docs](https://developers.google.com/chrome/whitepapers/storage) indicate that you have to request a size for Persistent Storage (which the user must approve), and that it can get "as large as the available space on the hard drive. It has no fixed pool of storage" (Chrome also has quote rules around "unlimited" and "temporary" storage).
+
 #Using the File System
-It's still early in the game for browser support of writing to the client file system. The only native support currently exists in Chrome 27+, Opera 15+ and Blackberry 10. [Burke Holland]() mentioned [idb.filesystem.js](https://github.com/ebidel/idb.filesystem.js), an IndexedDB-based polyfill that emulates FileSystem API support browsers that don't currently have it but *do* support IndexedDB. We'll focus on the native API in our example, but you could easily adapt it to use the polyfill if you wanted to have a fun evening project.
+It's still early in the game for browser support of writing to the client file system. The only native support currently exists in Chrome 27+, Opera 15+ and Blackberry 10. [Burke Holland](https://twitter.com/burkeholland/) mentioned [idb.filesystem.js](https://github.com/ebidel/idb.filesystem.js), an IndexedDB-based polyfill that emulates FileSystem API support browsers that don't currently have it but *do* support IndexedDB. We'll focus on the native API in our example, but you could easily adapt it to use the polyfill if you wanted to have a fun evening project.
 
 If you've worked with file system APIs in any language, then the FileSystem API won't seem foreign. In [this jsFiddle example](http://jsfiddle.net/ifandelse/T7Tpz/), I've adapted most of the earlier IndexedDB example to use FileSystem instead. 
 
@@ -334,15 +348,17 @@ The first thing we do is load the existing prefs into memory. ()Technically, I c
 Our `getWriter` function takes the contents we want to save and a callback, and returns a function that handles writing the data. Inside it you can see that we're using the fileEntry handle passed in (`getFile` passes this arg into the success callback) to create a writer. Once we have the `fileWriter` instance (yet another level deep in nested callbacks, sigh), we hook up a `onwriteend` and `onerror` handler. Then we stored our serialized `contents` array in a BLOG and write it to our file. It's important to note that I'm overwriting the file in this case, not appending. You *can* append, though. If you simply wanted to add something to the end of the file, then you could include `fileWriter.seek(fileWriter.length);` before you call `fileWriter.write(blob)`.
 
 ##Mobile Device File System APIs
-In my role as a Developer Advocate for [Icenium](), I definitely run into the need to store data in a mobile device's file system when building [hybrid mobile apps](). Icenium, like PhoneGap, uses [Apache Cordova](), which already supports file system access. The good news is the Apachae Cordova File API is based on the W3C File API spec - which means nearly everything you saw in the above examples will be relevant. The main exception is that you won't need to use webkit-prefixed methods (e.g. - use `window.requestFileSystem` instead of `window.webkitRequestFileSystem`). In fact, it's quite common to see developers normalizing the webkit-prefixed methods in web applications like this:
+In my role as a Developer Advocate for [Icenium](http://www.icenium.com/), I definitely run into the need to store data in a mobile device's file system when building [hybrid mobile apps](http://tech.pro/blog/1355/when-to-go-native-mobile-web-or-cross-platformhybrid). Icenium, like PhoneGap, uses [Apache Cordova](http://cordova.apache.org/), which already supports file system access. The good news is the Apachae Cordova File API is based on the W3C File API spec - which means nearly everything you saw in the above examples will be relevant. The main exception is that you won't need to use webkit-prefixed methods (e.g. - use `window.requestFileSystem` instead of `window.webkitRequestFileSystem`). In fact, it's quite common to see developers normalizing the webkit-prefixed methods in web applications like this:
 
 	window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
 ##Support
-Current browser support data, via [caniuse](http://caniuse.com):
+Current browser support:
 
 ![](./FileSystemSupport.png)
 *(taken from [http://caniuse.com/#feat=filesystem](http://caniuse.com/#feat=filesystem))*
+
+However, you might improve on the above support if you use the [idb.filesystem.js](https://github.com/ebidel/idb.filesystem.js) polyfill mentioned earlier.
 
 ##Web SQL
 As I mentioned earlier, Web SQL has been deprecated, so we're not going to spend much time on it. However, there are quite a number of applications in the wild using this feature, so you may run into one.
@@ -441,7 +457,38 @@ Just like the other commands, we start with a transaction, and pass in a DELETE 
 *(taken from [http://caniuse.com/#feat=sql-storage](http://caniuse.com/#feat=sql-storage))*
 
 #Wrapping Up
+Thus far in my experience with client-side storage, two recurring themes have popped up:
+
+* Do *NOT* assume the data will be there. Exceptions to this are understandable when you're dealing with hybrid mobile apps, or Chrome Apps - but if it's a standard web site, be sure your site can continue chugging along if the data it persisted there last time has since disappeared.
+* Libraries that normalize APIs and handle fallback support can be extremely useful. Some of the ones I've run across are listed in the next section 
+
+I've linked to (below) a few of the source articles I've referred to a lot in my own development, but I'm also very interested in hearing about your experiences using any of these storage options in your apps. If you have more information on size limits (or other features) you feel I should have mentioned or focused on - what would that be?
+
+Finally - I *intentionally did not cover using cookies* as a client side storage option, though you certainly &lt;airquote&gt;**can**&lt;/airquote&gt;. Aside from (mostly marginalized) [stubborn ancient hold-outs](http://www.ie6countdown.com/), the web has matured well beyond being stuck with 4KB mini-key-value stores. However, if the need arises, there are many libraries out there to make dealing with cookies less painful - the most popular, perhaps, being [jquery-cookie](https://github.com/carhartl/jquery-cookie).
+
 
 #Further Reading & Libs To Checkout
+
+## Libraries
+
+* [amplify.store](http://amplifyjs.com/api/store/) - I've used amplify.store on several projects. It definitely takes away the headaches of Web Storage support on legacy browsers.
+* [lawnchair](http://brian.io/lawnchair/) - very slick library by Brian Leroux that enables key/value storage over several types of underlying storage implementations (you can write adapters for your storage medium of choice if one doesn't already exist)
+* [pouchdb](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CCsQFjAA&url=http%3A%2F%2Fpouchdb.com%2F&ei=kD0BUpeZJ4_s9AS7sYGwAQ&usg=AFQjCNGgF7SsYLGNlISRoB7WTqc39kXMSg&bvm=bv.50310824,d.eWU) - interesting wrapper around IndexedDB that allows it to synchronize with a CouchDB backend. If you're using CouchDB, and want to let someone else handle the heavy lifting of data synch - check this out.
+* [IndexedDB Polyfill](https://github.com/axemclion/IndexedDBShim)
+* [idb.filesystem.js](https://github.com/ebidel/idb.filesystem.js)
+
+##Other Links
+
+* [MDN - DOM Storage Guide](https://developer.mozilla.org/en-US/docs/Web/Guide/DOM/Storage)
+* [W3C - Web Storage Recommendation](http://www.w3.org/TR/webstorage/)
+* [MDN - IndexedDB](https://developer.mozilla.org/en-US/docs/IndexedDB)
+* [MDN - Using IndexedDB](https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB)
+* [W3C - IndexedDB Spec](http://www.w3.org/TR/IndexedDB/)
+* [Real-world example of the HTML5 FileSystem API](http://www.adobe.com/devnet/html5/articles/real-world-example-html5-filesystem-api.html)
+* [W3C - File API](http://www.w3.org/TR/file-system-api/)
+* [5 Obscure Facts About HTML5 LocalStorage](http://htmlui.com/blog/2011-08-23-5-obscure-facts-about-html5-localstorage.html)
+* [HTML5 Rocks - Client-Side Storage](http://www.html5rocks.com/en/tutorials/offline/storage/)
+* [idb.filesystem.js - Bringing the HTML5 Filesystem API to More Browsers](http://ericbidelman.tumblr.com/post/21649963613/idb-filesystem-js-bringing-the-html5-filesystem-api)
+
 
 
