@@ -72,7 +72,9 @@ Take the example for a test drive:
 	* Since you aren't required to define a schema, validating the stored data is up to you. 
 	
 Overall - `localStorage` can be a reliable workhorse - with older browser support often made possible via polyfills. The **good** news is that current support looks good:
-<iframe src="http://caniuse.com/namevalue-storage/embed/" width="100%"></iframe>
+
+![](./WebStorageSupport.png)
+*(taken from [http://caniuse.com/#feat=namevalue-storage](http://caniuse.com/#feat=namevalue-storage))*
 
 The **bad** news is – as with ANY of these client-side storage options – you should *never* assume that the data will be truly persistent (after all, the user can nuke it from orbit if they desire), and you should be careful as to the kinds of data you store (it's not hard for any user to view stored data via browser tools).
 
@@ -85,6 +87,9 @@ The conventional wisdom is that `localStorage` works well for smaller amounts of
 * The spec defines an asynchronous *and* synchronous API, though no major browser has implemented the synchronous version yet.
 
 I put together another [jsFiddle](http://jsfiddle.net/ifandelse/f5mNW/) to demonstrate some of IndexedDB's features. In our fiddle, we have a `storageContainer` object that very lightly wraps IndexedDB. I've intentionally avoided bringing a UI framework into this example (though I did pull in an event emitter and message bus). I think it's important to see IndexedDB's API - once you get the hang of it, it starts to make sense. However, it can be awkward even *after* you've gotten used to it. Many API calls return a "request" (an [IDBRequest object](https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest?redirectlocale=en-US&redirectslug=IndexedDB%2FIDBRequest)) - which typically has an `onsuccess` and `onerror` member which you can assign a handler to (and some requests have addition handler hooks besides these two). It might feel like you're stuck half way between pure-event emitting and promises. I personally prefer event-emitting style APIs, so I brought in a message bus ([postal.js]()) to act as the communications bridge between the hand-rolled view models and our `storageContainer` instance. Our `storageContainer` instance listens for a couple of different messages and reacts appropriately when one arrives. If any of this is unfamiliar to you, don't worry. The code in the fiddle itself is focused only on the `storageContainer`.
+
+You can take the example for a test drive here if your browser supports IndexedDB:
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/f5mNW/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 Let's break down some of the snippets a piece at a time:
 
@@ -202,14 +207,237 @@ This example only shows you a few features of IndexedDB - but it shows enough to
 ##Support
 Browser support for IndexedDB is improving - but it's still very new. Safari still doesn't have support, nor does <= IE 9.
 
-<iframe src="http://caniuse.com/indexeddb/embed/" width="100%"></iframe>
+![](./IndexedDBSupport.png)
+*(taken from [http://caniuse.com/#feat=indexeddb](http://caniuse.com/#feat=indexeddb))*
 
 #Using the File System
-## Normal Web Clients
-## Hybrid Mobile Apps
-## Chrome Web Store Apps?
+It's still early in the game for browser support of writing to the client file system. The only native support currently exists in Chrome 27+, Opera 15+ and Blackberry 10. [Burke Holland]() mentioned [idb.filesystem.js](https://github.com/ebidel/idb.filesystem.js), an IndexedDB-based polyfill that emulates FileSystem API support browsers that don't currently have it but *do* support IndexedDB. We'll focus on the native API in our example, but you could easily adapt it to use the polyfill if you wanted to have a fun evening project.
+
+If you've worked with file system APIs in any language, then the FileSystem API won't seem foreign. In [this jsFiddle example](http://jsfiddle.net/ifandelse/T7Tpz/), I've adapted most of the earlier IndexedDB example to use FileSystem instead. 
+
+You can take the example for a test drive here if you're in Chrome or Opera:
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/T7Tpz/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+## Requesting Access to the File System
+Our FileSystem-based `storageContainer` has an init method that sets up initial access to the client file system. Here's the relevant snippet:
+
+	var module = $.extend({
+        fs: undefined,
+        init: function () {
+            var self = this;
+            // we request 5MB of storage, though we won't use it all here
+            navigator.webkitPersistentStorage.requestQuota(
+                5 * 1024 * 1024,
+                function (grantedBytes) {
+                    // we request a handle to the file system
+                    window.webkitRequestFileSystem(
+                        PERSISTENT,
+                        grantedBytes,
+                        // the fs arg in this callback is our filesystem ref
+                        function (fs) {
+                            self.fs = fs;
+                            self.loadExistingPrefs(function(contents) {
+                                if(contents.length) {
+                                    console.log("We already have content we'll use");
+                                    self.emit("prefs.exist", contents);
+                                } else {
+                                    console.log("We need to load seed data....");
+                                    self.loadSeedData(function() {
+                                        self.loadExistingPrefs(); 
+                                    });   
+                                }
+                            });
+                        },
+                        errorHandler);
+                },
+                errorHandler
+            );
+        }
+        // other members, etc.
+	}, Monologue.prototype);
+	
+First, we ask the user for permission to store persistent data (via `navigator.webkitPersistentStorage.requestQuota`). It's worth noting that most examples you'll find on the web today will use `window.webkitStorageInfo.requestQuota` for this. However, that has recently been deprecated in favor of the one used above. The first argument is the size we're requesting (5MB). Assuming the user is OK with this, our success handler (the second argument) will be invoked, with the size the user approved passed in as the callback arg.
+
+Once we have the user's permission and the size they approved, we call `window.webkitRequestFileSystem` to request access to the file system. The first arg is the type of storage: `PERSISTENT` or `TEMPORARY`. `TEMPORARY` storage can be cleaned by the browser at any time, where `PERSISTENT` will only be cleared if the user explicitly does so. The third arg to `webkitRequestFileSystem` is the success callback. You can see that it receives a handle to the FileSystem via the `fs` argument. Inside our callback we're storing a reference to `fs` on our `storageContainer` and then we attempt to load any existing data for our example app. If no data exists, we populate the file system with our seed data and then load it up.
+
+##Loading File System Data
+Our `storageContainer` has a `loadExistingPrefs` method that will load any existing band/artist preferences from a `data.json` file, if it exists:
+
+	var module = $.extend({
+        loadExistingPrefs: function (cb) {
+            this.fs.root.getFile('data.json', { create: true }, function (fileEntry) {
+                fileEntry.file(function (file) {
+                    var reader = new FileReader();
+                    reader.onloadend = function (e) {
+                        var contents = JSON.parse(this.result || "[]");
+                        if(cb) {
+                            cb(contents);
+                        }
+                    };
+                    reader.readAsText(file);
+                }, errorHandler);
+            }, errorHandler);
+        }
+        // other members, etc.
+	}, Monologue.prototype);
+	
+By calling `this.fs.root.getFile`, we're telling the file system that we want to load the `data.json` file (first arg) and create it if it doesnt already exist (`{ create: true }`, second arg). The third arg is the success callback that's invoked once the file is opened. Inside our callback we use the `fileEntry` instance passed to us to get a handle to the file and read it. We hook up an `onloadend` handler (which will fire once the file read has completed), in which we parse the JSON contents into the `contents` variable. The code that called `loadExistingPrefs` should have passed in a callback for us to invoke once we have the parsed contents - so we pass the `contents` variable to that callback. Finally, we kick the read off by invoked `reader.readAsText(file)`.
+
+Overall reading isn't terribly complicated, but it could be a bit confusing if you're brand new to the asynchronous nature of JavaScript (and passing continuation callbacks around).
+
+##Writing Data to the File System
+Our `storageContainer` instance contains a `storePref` method, in which we append a new band/artist preference from the user to the existing file and save it.
+
+	var module = $.extend({
+        storePref: function (pref) {
+            var currentContents, self = this;
+            self.loadExistingPrefs(function(contents) {
+                contents.push(pref);
+                self.fs.root.getFile(
+                    'data.json',
+                    { create: false }, 
+                    getWriter(
+                        contents, 
+                        function() { 
+                            self.emit("prefs.exist", contents); 
+                        }
+                    ), 
+                    errorHandler
+                );
+            }); 
+        }
+        // other members, etc.
+	}, Monologue.prototype);
+
+The first thing we do is load the existing prefs into memory. ()Technically, I could have held onto the already-parsed contents from when we loaded the preferences earlier, but I wanted to show these actions together.) Once we have the existing preferences loaded, they get passed to our callback (as the `contents` arg). We push the new band/artist preference into the existing `contents` array. Then we call `self.fs.root.getFile` to open the `data.json` file (first arg) for writing. I've specified that we're not creating the file, since it should already exist. The third arg to `getFile` is our success callback. We're calling `getWriter`, which returns a properly configured success callback:
+
+	var getWriter = function(contents, cb) {
+        return function (fileEntry) {
+            // Create a FileWriter object for data.json.
+            fileEntry.createWriter(function (fileWriter) {
+                fileWriter.onwriteend = function (e) {
+                    console.log('Write completed.');
+                    if(cb) { cb(); }
+                };
+                fileWriter.onerror = function (e) {
+                    alert('Write failed: ' + e.toString());
+                };
+                // Create a new Blob and write it to data.json.
+                var blob = new Blob([JSON.stringify(contents)], {
+                    type: 'text/plain'
+                });
+                fileWriter.write(blob);
+            }, errorHandler);
+        }    
+    };
+    
+Our `getWriter` function takes the contents we want to save and a callback, and returns a function that handles writing the data. Inside it you can see that we're using the fileEntry handle passed in (`getFile` passes this arg into the success callback) to create a writer. Once we have the `fileWriter` instance (yet another level deep in nested callbacks, sigh), we hook up a `onwriteend` and `onerror` handler. Then we stored our serialized `contents` array in a BLOG and write it to our file. It's important to note that I'm overwriting the file in this case, not appending. You *can* append, though. If you simply wanted to add something to the end of the file, then you could include `fileWriter.seek(fileWriter.length);` before you call `fileWriter.write(blob)`.
+
+##Mobile Device File System APIs
+In my role as a Developer Advocate for [Icenium](), I definitely run into the need to store data in a mobile device's file system when building [hybrid mobile apps](). Icenium, like PhoneGap, uses [Apache Cordova](), which already supports file system access. The good news is the Apachae Cordova File API is based on the W3C File API spec - which means nearly everything you saw in the above examples will be relevant. The main exception is that you won't need to use webkit-prefixed methods (e.g. - use `window.requestFileSystem` instead of `window.webkitRequestFileSystem`). In fact, it's quite common to see developers normalizing the webkit-prefixed methods in web applications like this:
+
+	window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+
+##Support
+Current browser support data, via [caniuse](http://caniuse.com):
+
+![](./FileSystemSupport.png)
+*(taken from [http://caniuse.com/#feat=filesystem](http://caniuse.com/#feat=filesystem))*
 
 ##Web SQL
 As I mentioned earlier, Web SQL has been deprecated, so we're not going to spend much time on it. However, there are quite a number of applications in the wild using this feature, so you may run into one.
+
+The [jsFiddle example](http://jsfiddle.net/ifandelse/rNbq5/) for this storage option adapts our earlier `localStorage` example to use Web SQL instead:
+
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/rNbq5/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+##Creating/Opening a Database
+At the top of the fiddle's code, you see this:
+
+	var db = openDatabase('yaysql', '1.0', 'SQL in the web - my worst nightmare', 1 * 1024 * 1024);
+    db.transaction(function (tx) {
+        tx.executeSql(
+            "create table if not exists " +
+            "example(name string, location string)",
+            [],
+            function () {
+                console.log("table created...maybe :-)");
+            }
+        );
+    });
+    
+Thankfully, `openDatabase` will create one automatically if it doesn't already exist. The first arg is the name of the database, second is the version, third is the description of the database and the last arg is the estimated size.
+
+Next I start a transaction by calling `db.transaction`. The callback receives a handle to the transaction via the `tx` arg. From here we call `executeSql` to create our "example" table if it doesn't already exist. The first argument to `executeSql` is the command text. The second arg is an optional array of parameters that can be mapped to placeholders in the command text (we'll see more of this in a moment). The third arg is the callback to be invoked after the command has executed.
+
+##Saving Data to the Database
+Our `saveToDB` method looks as follows:
+
+	var store = {
+        saveToDB: function () {
+            var vals = this.getInputValues();
+            db.transaction(function (tx) {
+                tx.executeSql(
+                    "INSERT INTO example (name, location) VALUES (?, ?)",
+                    [vals.fullName, vals.location],
+                    function () {
+                        console.log("Saved");
+                    }
+                );
+            });
+        }
+        // more members, etc.
+    };
+    
+To save the data, we start a new transaction. Inside the transaction callback, we call `executeSql` again, this time passing an INSERT command. Note the `(?, ?)` placeholder for the value to be inserted. The items we pass in the second argument array will be mapped, in order, to the `?` placeholders. Our third arg, like before, is a callback to be invoked once the command has executed.
+
+##Retrieving Data
+Let's look at the `loadFromDB` method:
+
+	var store = {
+        loadFromDB: function (cb) {
+            db.transaction(function (tx) {
+                tx.executeSql(
+                    'SELECT name, location FROM example',
+                    [],
+                    function (tx, results) {
+                        if (!results.rows.length) {
+                            alert("Nothing is stored in the DB currently.");
+                            return;
+                        }
+                        // we're only using the first row...example cheating FTW
+                        cb(results.rows.item(0).name, results.rows.item(0).location);
+                    }
+                );
+            });
+        }
+        // more members, etc.
+    };
+    
+I'm cheating a bit in this example, since I'm only concerned with the first row returned from our query - but this looks a lot like the other commands we've run, with the exception of the fact that we're actually making use of the arguments passed to our third argument callback. The second arg to that callback, `results` contains the records returned from our query. If we have rows, we grab the name and location from the first one and pass them into the `cb` callback, which was passed by the code that invoked `loadFromDB`. You can, of course, but more substantial SQL commands if necessary (specifying a WHERE clause, for example).
+
+##Deleting Data
+Just like the other commands, we start with a transaction, and pass in a DELETE command as our command text, removing all the rows currently in the "example" table.
+
+	var store = {
+		clearDB: function () {
+            db.transaction(function (tx) {
+                tx.executeSql(
+                    'DELETE FROM example',
+                    [],
+                    function () {
+                        console.log("Deleted data from DB");
+                    }
+                );
+            });
+        }
+        // more members, etc.
+    };
+
+## Support
+
+![](./WebSqlSupport.png)
+*(taken from [http://caniuse.com/#feat=sql-storage](http://caniuse.com/#feat=sql-storage))*
 
 #Wrapping Up
