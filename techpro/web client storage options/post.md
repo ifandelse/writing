@@ -111,7 +111,7 @@ The `init` function of our `storageContainer` is as follows:
 				if (firstTime) {
 					self.loadSeedData();
 				}
-				if (!firstTime && self.db.objectStoreNames.contains('prefs')) {
+				if (!firstTime && self.db.objectStoreNames.contains("prefs")) {
 					self.loadExistingPrefs();
 				}
 			};
@@ -279,7 +279,7 @@ Our `storageContainer` has a `loadExistingPrefs` method that will load any exist
 
 	var module = $.extend({
         loadExistingPrefs: function (cb) {
-            this.fs.root.getFile('data.json', { create: true }, function (fileEntry) {
+            this.fs.root.getFile("data.json", { create: true }, function (fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
                     reader.onloadend = function (e) {
@@ -308,7 +308,7 @@ Our `storageContainer` instance contains a `storePref` method, in which we appen
             self.loadExistingPrefs(function(contents) {
                 contents.push(pref);
                 self.fs.root.getFile(
-                    'data.json',
+                    "data.json",
                     { create: false }, 
                     getWriter(
                         contents, 
@@ -334,11 +334,11 @@ The first thing we do is load the existing prefs into memory. ()Technically, I c
                     if(cb) { cb(); }
                 };
                 fileWriter.onerror = function (e) {
-                    alert('Write failed: ' + e.toString());
+                    alert("Write failed: " + e.toString());
                 };
                 // Create a new Blob and write it to data.json.
                 var blob = new Blob([JSON.stringify(contents)], {
-                    type: 'text/plain'
+                    type: "text/plain"
                 });
                 fileWriter.write(blob);
             }, errorHandler);
