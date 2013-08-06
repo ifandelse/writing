@@ -489,6 +489,7 @@ Finally - I *intentionally did not cover using cookies* as a client side storage
 * [5 Obscure Facts About HTML5 LocalStorage](http://htmlui.com/blog/2011-08-23-5-obscure-facts-about-html5-localstorage.html)
 * [HTML5 Rocks - Client-Side Storage](http://www.html5rocks.com/en/tutorials/offline/storage/)
 * [idb.filesystem.js - Bringing the HTML5 Filesystem API to More Browsers](http://ericbidelman.tumblr.com/post/21649963613/idb-filesystem-js-bringing-the-html5-filesystem-api)
+* [Introducing Web SQL Databases](http://html5doctor.com/introducing-web-sql-databases/)
 
 
 
