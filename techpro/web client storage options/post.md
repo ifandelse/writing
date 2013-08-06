@@ -247,7 +247,7 @@ Our FileSystem-based `storageContainer` has an init method that sets up initial 
                     window.webkitRequestFileSystem(
                         PERSISTENT,
                         grantedBytes,
-                        // the fs arg in this callback is our filesystem ref
+                        // the fs argument in this callback is our filesystem ref
                         function (fs) {
                             self.fs = fs;
                             self.loadExistingPrefs(function(contents) {
@@ -270,9 +270,9 @@ Our FileSystem-based `storageContainer` has an init method that sets up initial 
         // other members, etc.
 	}, Monologue.prototype);
 	
-First, we ask the user for permission to store persistent data (via `navigator.webkitPersistentStorage.requestQuota`). It's worth noting that most examples you'll find on the web today will use `window.webkitStorageInfo.requestQuota` for this. However, that has recently been deprecated in favor of the one used above. The first argument is the size we're requesting (5MB). Assuming the user is OK with this, our success handler (the second argument) will be invoked, with the size the user approved passed in as the callback arg.
+First, we ask the user for permission to store persistent data (via `navigator.webkitPersistentStorage.requestQuota`). It's worth noting that most examples you'll find on the web today will use `window.webkitStorageInfo.requestQuota` for this. However, that has recently been deprecated in favor of the one used above. The first argument is the size we're requesting (5MB). Assuming the user is OK with this, our success handler (the second argument) will be invoked, with the size the user approved passed in as the callback argument.
 
-Once we have the user's permission and the size they approved, we call `window.webkitRequestFileSystem` to request access to the file system. The first arg is the type of storage: `PERSISTENT` or `TEMPORARY`. `TEMPORARY` storage can be cleaned by the browser at any time, where `PERSISTENT` will only be cleared if the user explicitly does so. The third arg to `webkitRequestFileSystem` is the success callback. You can see that it receives a handle to the FileSystem via the `fs` argument. Inside our callback we're storing a reference to `fs` on our `storageContainer` and then we attempt to load any existing data for our example app. If no data exists, we populate the file system with our seed data and then load it up.
+Once we have the user's permission and the size they approved, we call `window.webkitRequestFileSystem` to request access to the file system. The first argument is the type of storage: `PERSISTENT` or `TEMPORARY`. `TEMPORARY` storage can be cleaned by the browser at any time, where `PERSISTENT` will only be cleared if the user explicitly does so. The third argument to `webkitRequestFileSystem` is the success callback. You can see that it receives a handle to the FileSystem via the `fs` argument. Inside our callback we're storing a reference to `fs` on our `storageContainer` and then we attempt to load any existing data for our example app. If no data exists, we populate the file system with our seed data and then load it up.
 
 ##Loading File System Data
 Our `storageContainer` has a `loadExistingPrefs` method that will load any existing band/artist preferences from a `data.json` file, if it exists:
@@ -295,7 +295,7 @@ Our `storageContainer` has a `loadExistingPrefs` method that will load any exist
         // other members, etc.
 	}, Monologue.prototype);
 	
-By calling `this.fs.root.getFile`, we're telling the file system that we want to load the `data.json` file (first arg) and create it if it doesnt already exist (`{ create: true }`, second arg). The third arg is the success callback that's invoked once the file is opened. Inside our callback we use the `fileEntry` instance passed to us to get a handle to the file and read it. We hook up an `onloadend` handler (which will fire once the file read has completed), in which we parse the JSON contents into the `contents` variable. The code that called `loadExistingPrefs` should have passed in a callback for us to invoke once we have the parsed contents - so we pass the `contents` variable to that callback. Finally, we kick the read off by invoked `reader.readAsText(file)`.
+By calling `this.fs.root.getFile`, we're telling the file system that we want to load the `data.json` file (first argument) and create it if it doesnt already exist (`{ create: true }`, second argument). The third argument is the success callback that's invoked once the file is opened. Inside our callback we use the `fileEntry` instance passed to us to get a handle to the file and read it. We hook up an `onloadend` handler (which will fire once the file read has completed), in which we parse the JSON contents into the `contents` variable. The code that called `loadExistingPrefs` should have passed in a callback for us to invoke once we have the parsed contents - so we pass the `contents` variable to that callback. Finally, we kick the read off by invoked `reader.readAsText(file)`.
 
 Overall reading isn't terribly complicated, but it could be a bit confusing if you're brand new to the asynchronous nature of JavaScript (and passing continuation callbacks around).
 
@@ -323,14 +323,14 @@ Our `storageContainer` instance contains a `storePref` method, in which we appen
         // other members, etc.
 	}, Monologue.prototype);
 
-The first thing we do is load the existing prefs into memory. ()Technically, I could have held onto the already-parsed contents from when we loaded the preferences earlier, but I wanted to show these actions together.) Once we have the existing preferences loaded, they get passed to our callback (as the `contents` arg). We push the new band/artist preference into the existing `contents` array. Then we call `self.fs.root.getFile` to open the `data.json` file (first arg) for writing. I've specified that we're not creating the file, since it should already exist. The third arg to `getFile` is our success callback. We're calling `getWriter`, which returns a properly configured success callback:
+The first thing we do is load the existing prefs into memory. ()Technically, I could have held onto the already-parsed contents from when we loaded the preferences earlier, but I wanted to show these actions together.) Once we have the existing preferences loaded, they get passed to our callback (as the `contents` argument). We push the new band/artist preference into the existing `contents` array. Then we call `self.fs.root.getFile` to open the `data.json` file (first argument) for writing. I've specified that we're not creating the file, since it should already exist. The third argument to `getFile` is our success callback. We're calling `getWriter`, which returns a properly configured success callback:
 
 	var getWriter = function(contents, cb) {
         return function (fileEntry) {
             // Create a FileWriter object for data.json.
             fileEntry.createWriter(function (fileWriter) {
                 fileWriter.onwriteend = function (e) {
-                    console.log('Write completed.');
+                    console.log("Write completed.");
                     if(cb) { cb(); }
                 };
                 fileWriter.onerror = function (e) {
@@ -345,7 +345,7 @@ The first thing we do is load the existing prefs into memory. ()Technically, I c
         }    
     };
     
-Our `getWriter` function takes the contents we want to save and a callback, and returns a function that handles writing the data. Inside it you can see that we're using the fileEntry handle passed in (`getFile` passes this arg into the success callback) to create a writer. Once we have the `fileWriter` instance (yet another level deep in nested callbacks, sigh), we hook up a `onwriteend` and `onerror` handler. Then we stored our serialized `contents` array in a BLOG and write it to our file. It's important to note that I'm overwriting the file in this case, not appending. You *can* append, though. If you simply wanted to add something to the end of the file, then you could include `fileWriter.seek(fileWriter.length);` before you call `fileWriter.write(blob)`.
+Our `getWriter` function takes the contents we want to save and a callback, and returns a function that handles writing the data. Inside it you can see that we're using the fileEntry handle passed in (`getFile` passes this argument into the success callback) to create a writer. Once we have the `fileWriter` instance (yet another level deep in nested callbacks, sigh), we hook up a `onwriteend` and `onerror` handler. Then we stored our serialized `contents` array in a BLOG and write it to our file. It's important to note that I'm overwriting the file in this case, not appending. You *can* append, though. If you simply wanted to add something to the end of the file, then you could include `fileWriter.seek(fileWriter.length);` before you call `fileWriter.write(blob)`.
 
 ##Mobile Device File System APIs
 In my role as a Developer Advocate for [Icenium](http://www.icenium.com/), I definitely run into the need to store data in a mobile device's file system when building [hybrid mobile apps](http://tech.pro/blog/1355/when-to-go-native-mobile-web-or-cross-platformhybrid). Icenium, like PhoneGap, uses [Apache Cordova](http://cordova.apache.org/), which already supports file system access. The good news is the Apachae Cordova File API is based on the W3C File API spec - which means nearly everything you saw in the above examples will be relevant. The main exception is that you won't need to use webkit-prefixed methods (e.g. - use `window.requestFileSystem` instead of `window.webkitRequestFileSystem`). In fact, it's quite common to see developers normalizing the webkit-prefixed methods in web applications like this:
@@ -371,7 +371,7 @@ The [jsFiddle example](http://jsfiddle.net/ifandelse/rNbq5/) for this storage op
 ##Creating/Opening a Database
 At the top of the fiddle's code, you see this:
 
-	var db = openDatabase('yaysql', '1.0', 'SQL in the web - my worst nightmare', 1 * 1024 * 1024);
+	var db = openDatabase("yaysql", "1.0", "SQL in the web - my worst nightmare", 1 * 1024 * 1024);
     db.transaction(function (tx) {
         tx.executeSql(
             "create table if not exists " +
@@ -383,9 +383,9 @@ At the top of the fiddle's code, you see this:
         );
     });
     
-Thankfully, `openDatabase` will create one automatically if it doesn't already exist. The first arg is the name of the database, second is the version, third is the description of the database and the last arg is the estimated size.
+Thankfully, `openDatabase` will create one automatically if it doesn't already exist. The first argument is the name of the database, second is the version, third is the description of the database and the last argument is the estimated size.
 
-Next I start a transaction by calling `db.transaction`. The callback receives a handle to the transaction via the `tx` arg. From here we call `executeSql` to create our "example" table if it doesn't already exist. The first argument to `executeSql` is the command text. The second arg is an optional array of parameters that can be mapped to placeholders in the command text (we'll see more of this in a moment). The third arg is the callback to be invoked after the command has executed.
+Next I start a transaction by calling `db.transaction`. The callback receives a handle to the transaction via the `tx` argument. From here we call `executeSql` to create our "example" table if it doesn't already exist. The first argument to `executeSql` is the command text. The second argument is an optional array of parameters that can be mapped to placeholders in the command text (we'll see more of this in a moment). The third argument is the callback to be invoked after the command has executed.
 
 ##Saving Data to the Database
 Our `saveToDB` method looks as follows:
@@ -406,7 +406,7 @@ Our `saveToDB` method looks as follows:
         // more members, etc.
     };
     
-To save the data, we start a new transaction. Inside the transaction callback, we call `executeSql` again, this time passing an INSERT command. Note the `(?, ?)` placeholder for the value to be inserted. The items we pass in the second argument array will be mapped, in order, to the `?` placeholders. Our third arg, like before, is a callback to be invoked once the command has executed.
+To save the data, we start a new transaction. Inside the transaction callback, we call `executeSql` again, this time passing an INSERT command. Note the `(?, ?)` placeholder for the value to be inserted. The items we pass in the second argument array will be mapped, in order, to the `?` placeholders. Our third argument, like before, is a callback to be invoked once the command has executed.
 
 ##Retrieving Data
 Let's look at the `loadFromDB` method:
@@ -415,7 +415,7 @@ Let's look at the `loadFromDB` method:
         loadFromDB: function (cb) {
             db.transaction(function (tx) {
                 tx.executeSql(
-                    'SELECT name, location FROM example',
+                    "SELECT name, location FROM example",
                     [],
                     function (tx, results) {
                         if (!results.rows.length) {
@@ -431,7 +431,7 @@ Let's look at the `loadFromDB` method:
         // more members, etc.
     };
     
-I'm cheating a bit in this example, since I'm only concerned with the first row returned from our query - but this looks a lot like the other commands we've run, with the exception of the fact that we're actually making use of the arguments passed to our third argument callback. The second arg to that callback, `results` contains the records returned from our query. If we have rows, we grab the name and location from the first one and pass them into the `cb` callback, which was passed by the code that invoked `loadFromDB`. You can, of course, but more substantial SQL commands if necessary (specifying a WHERE clause, for example).
+I'm cheating a bit in this example, since I'm only concerned with the first row returned from our query - but this looks a lot like the other commands we've run, with the exception of the fact that we're actually making use of the arguments passed to our third argument callback. The second argument to that callback, `results` contains the records returned from our query. If we have rows, we grab the name and location from the first one and pass them into the `cb` callback, which was passed by the code that invoked `loadFromDB`. You can, of course, but more substantial SQL commands if necessary (specifying a WHERE clause, for example).
 
 ##Deleting Data
 Just like the other commands, we start with a transaction, and pass in a DELETE command as our command text, removing all the rows currently in the "example" table.
@@ -440,7 +440,7 @@ Just like the other commands, we start with a transaction, and pass in a DELETE 
 		clearDB: function () {
             db.transaction(function (tx) {
                 tx.executeSql(
-                    'DELETE FROM example',
+                    "DELETE FROM example",
                     [],
                     function () {
                         console.log("Deleted data from DB");
