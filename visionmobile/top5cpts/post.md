@@ -1,13 +1,13 @@
 #Pros and Cons of the Top 5 Cross-Platform Tools
 
-As the market temperature for cross-platform tools (CPTs) continues it's steep climb into hotter territory, it's understandable why many feel we are witnessing a mobile fragmentation that is perhaps much larger and more significant than the recent wars waged over the desktop. If this fragmentation tells us anything, it's that cross-platform tools for mobile development are often not a "one-size-fits-all" solution - and that there are numerous veteran users of these tools that do not believe the problem has been solved as well as it could be....*yet*. In our Developer Economics 2013 report, the breakdown of the top CPTs looks like this:
+As the market temperature for cross-platform tools (CPTs) continues it's steep climb into hotter territory, it's understandable why many feel we are witnessing a mobile fragmentation that is perhaps much larger and more significant than the recent wars waged over the desktop. If this fragmentation tells us anything, it's that cross-platform tools for mobile development are often not a "one-size-fits-all" solution - and that there are numerous veteran users of these tools that do not believe the problem has been solved as well as it could be....*yet*. In our [Developer Economics 2013](http://www.visionmobile.com/product/developer-economics-2013-the-tools-report/) report, the breakdown of the top CPTs looks like this:
 
 ![](TopCpts.png)
 
 As you'd expect, each approach comes with trade-offs. Let's examine the top five, and list out the more salient pros and cons of each. This is not an exhaustive list, of course, as each platform can't be explored in depth in one post alone.
 
 ##Apache Cordova/PhoneGap
-Apache Cordova (known by many as "PhoneGap") holds the top slot in developer mindshare. Cordova/PhoneGap developers write their mobile applications using HTML, JavaScript and CSS. These assets run in a "WebView" inside a native application container on the target platform. It is, conceptually, a web application packaged within a native application container where your JavaScript has access to device-level APIs that normal web applications would not (more on that below).
+[Apache Cordova](http://cordova.apache.org/) (known by many as "[PhoneGap](http://phonegap.com/)") holds the top slot in developer mindshare. Cordova/PhoneGap developers write their mobile applications using HTML, JavaScript and CSS. These assets run in a "WebView" inside a native application container on the target platform. It is, conceptually, a web application packaged within a native application container where your JavaScript has access to device-level APIs that normal web applications would not (more on that below).
 
 >The name "PhoneGap" is quite possibly one of the more recognizable names in this space. Originally created by Nitobi, the name was changed to "Apache Cordova" when it was donated to the Apache Software Foundation. Adobe purchased Nitobi – including rights to the PhoneGap name – and now distributes Cordova under that name.
 
@@ -17,11 +17,11 @@ Apache Cordova (known by many as "PhoneGap") holds the top slot in developer min
 
 * Cordova apps install just like a native application, and are able to leverage app store discoverability.
 
-* Cordova follows a plugin architecture, which means that access to native device APIs can be extended in a modular way. There are a lot Cordova/PhoneGap plugins to choose from - enabling developers to focus on the web-based skills they already have. (This is a weakness as well, as we'll see in a moment.)
+* Cordova follows a plugin architecture, which means that access to native device APIs can be extended in a modular way. There are a lot [Cordova](http://plugins.cordova.io/)/[PhoneGap](https://github.com/phonegap/phonegap-plugins) plugins to choose from - enabling developers to focus on the web-based skills they already have. (This is a weakness as well, as we'll see in a moment.)
 
 * Cordova is open source *and* free, so there are no licensing costs (also a potential weakness, mentioned below).
 
-* Cordova/PhoneGap solutions existed in this space early on, and have matured to the point where value-add offerings on top of the basic CPT are the norm. For example, both [Adobe's PhoneGap Build](https://build.phonegap.com/) and [Telerik's Icenium](http://www.icenium.com/) enable developers to build for supported target platforms in the cloud, without local SDKs (meaning non-Mac users can build iOS applications). In addition to Icenium's cloud build services, Telerik also provides Kendo UI mobile (an MVVM framework targeted for performance on mobile), app analytics via Eqatec and a Backend-as-a-Service (BaaS) offering named Everlive. Adobe has integrated PhoneGap Build capabilities into Brackets (a web based IDE) and Dreamweaver.
+* Cordova/PhoneGap solutions existed in this space early on, and have matured to the point where value-add offerings on top of the basic CPT are the norm. For example, both [Adobe's PhoneGap Build](https://build.phonegap.com/) and [Telerik's Icenium](http://www.icenium.com/) enable developers to build for supported target platforms in the cloud, without local SDKs (meaning non-Mac users can build iOS applications). In addition to Icenium's cloud build services, Telerik also provides [Kendo UI Mobile](http://www.kendoui.com/) (an MVVM framework targeted for performance on mobile), app analytics via [Eqatec](http://www.telerik.com/analytics) and a Backend-as-a-Service (BaaS) offering named [Everlive](http://telerik.com/everlive). Adobe has integrated PhoneGap Build capabilities into [Brackets](http://brackets.io/) (a web based IDE) and [Dreamweaver](http://www.adobe.com/products/dreamweaver.html).
 
 ###Cons
 
@@ -32,14 +32,14 @@ Apache Cordova (known by many as "PhoneGap") holds the top slot in developer min
 * The performance of Cordova/PhoneGap apps has often been criticized. Native UI will always outperform a hybrid solution, but improvements in device hardware and WebView implementations have narrowed the gap. Your web developers will need to pay close attention to performance, which means their knowledge of profiling tools as well as which web UI frameworks are mobile-friendly is essential.
 
 ##Appcelerator
-Appcelerator's Titanium provides a unified (across devices) JavaScript API, coupled with native-platform-specific features. Developers write JavaScript and utilize a UI abstraction (the Alloy MVC framework) that results in the use of native UI components, greatly aiding UI performance compared to other hybrid options.
+[Appcelerator's Titanium](http://www.appcelerator.com/titanium/) provides a unified (across devices) JavaScript API, coupled with native-platform-specific features. Developers write JavaScript and utilize a UI abstraction (the [Alloy MVC framework](http://docs.appcelerator.com/titanium/3.0/#!/guide/Alloy_Framework)) that results in the use of native UI components, greatly aiding UI performance compared to other hybrid options.
 
 ###Pros
 * The use of native UI components is a performance win, and the Alloy framework attempts to normalize UI across platforms. 
 
 * The use of JavaScript to normalize code across platforms enables you to leverage existing skills on multiple target platforms.
 
-* Appcelerator provides value-adds such as a Backend-as-a-Service (BaaS), app analytics and a marketplace for 3rd party components.
+* Appcelerator provides value-adds such as a [Backend-as-a-Service](http://www.appcelerator.com/cloud/) (BaaS), [app analytics](http://www.appcelerator.com/platform/appcelerator-analytics/) and a [marketplace](http://www.appcelerator.com/platform/appcelerator-platform/#marketplace) for 3rd party components.
 
 ###Cons
 
@@ -60,10 +60,10 @@ Appcelerator's Titanium provides a unified (across devices) JavaScript API, coup
 
 
 ##Sencha
-Sencha Touch is an HTML5 mobile application framework for building web applications that look and feel like native applications. Apps built with Sencha Touch can be used with Apache Cordova/PhoneGap or Sencha's native packager - either which will package the application in a native container and enable access to select device-level APIs unavailable to traditional web apps.
+[Sencha Touch](http://www.sencha.com/products/touch/) is an HTML5 mobile application framework for building web applications that look and feel like native applications. Apps built with Sencha Touch can be used with Apache Cordova/PhoneGap or Sencha's native packager - either which will package the application in a native container and enable access to select device-level APIs unavailable to traditional web apps.
 
 ###Pros
-* Sencha have produced a larger quite of interoperable products, from "Sencha Architect" (a visual HTML5 app builder) and "Sencha Touch Charts" (for data visualization) to IDE integration with the Sencha Eclipse Plugin and an secure Enterprise app deployment story with Sencha Space.
+* Sencha have produced a larger quite of interoperable products, from "[Sencha Architect](http://www.sencha.com/products/architect/)" (a visual HTML5 app builder) and "Sencha Touch Charts" (for data visualization) to IDE integration with the Sencha Eclipse Plugin and an secure Enterprise app deployment story with [Sencha Space](http://www.sencha.com/products/space/).
 
 * Sencha Touch offers an MVC style architecture, a library of UI components, an extensible API and UI themes among other features.
 
@@ -77,12 +77,12 @@ Sencha Touch is an HTML5 mobile application framework for building web applicati
 * Extending a Sencha Touch app with access to additional native APIs will likely involve writing custom Apache Cordova/PhoneGap plugins. This will require specialized platform skills (or training to acquire them).
 
 ##Qt
-Qt ("Cute") is a cross-platform development tool that targets a number of embedded, desktop and mobile platforms. Developers write using "QML", touted as a "CSS & JavaScript like language", and apps are backed with an extensive set of C++ libraries, and utilize graphics/UI components written in C++.
+[Qt ("Cute")](http://qt.digia.com/) is a cross-platform development tool that targets a number of embedded, desktop and mobile platforms. Developers write using "[QML](http://qt.digia.com/Product/Qt-Core-Features--Functions/qt-quick/)", touted as a "CSS & JavaScript like language", and apps are backed with an extensive set of C++ libraries, and utilize graphics/UI components written in C++.
 
 ###Pros
 
-* Qt provides a substantial set of libraries containing intuitive APIs for things like thread, networking, animations and more.
-* Qt's IDE tooling (Qt Creator IDE & Qt Designer) appear to be solid development tools, and code profiling is available in QML Profiler.
+* Qt provides a substantial set of libraries containing intuitive APIs for things like threading, networking, animations and more.
+* Qt's [IDE tooling](http://qt.digia.com/Product/Qt-Core-Features--Functions/Developer-Tools/) (Qt Creator IDE & Qt Designer) appear to be solid development tools, and code profiling is available in QML Profiler.
 * Qt Linguist enables translation and internationalization in applications - giving you the support of multiple languages within your app (in a single binary).
 
 ###Cons
