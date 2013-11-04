@@ -1,6 +1,6 @@
 #Pros and Cons of the Top 5 Cross-Platform Tools
 
-As the market temperature for cross-platform tools (CPTs) continues it's steep climb into hotter territory, it's understandable why many feel we are witnessing a mobile fragmentation that is perhaps much larger and more significant than the recent wars waged over the desktop. If this fragmentation tells us anything, it's that cross-platform tools for mobile development are often not a "one-size-fits-all" solution - and that there are numerous veteran users of these tools that do not believe the problem has been solved as well as it could be....*yet*. In our [Developer Economics 2013](http://www.visionmobile.com/product/developer-economics-2013-the-tools-report/) report, the breakdown of the top CPTs looks like this:
+As the market temperature for cross-platform tools (CPTs) continues its steep climb into hotter territory, it's understandable why many feel we are witnessing a mobile fragmentation that is perhaps much larger and more significant than the recent wars waged over the desktop. If this fragmentation tells us anything, it's that cross-platform tools for mobile development are often not a "one-size-fits-all" solution - and that there are numerous veteran users of these tools that do not believe the problem has been solved as well as it could be....*yet*. In our [Developer Economics 2013](http://www.visionmobile.com/product/developer-economics-2013-the-tools-report/) report, the breakdown of the top CPTs looks like this:
 
 ![](TopCpts.png)
 
@@ -72,7 +72,7 @@ As you'd expect, each approach comes with trade-offs. Let's examine the top five
 ###Cons
 * Mobile apps written with Sencha Touch *can* suffer from the same performance pains as Cordova/PhoneGap apps if developers aren't disciplined in writing efficient JavaScript and DOM structure(s).
 
-* Many developers already have established opinions and experience with preferred frameworks for building HTML5/JavaScript/CSS based apps. Sencha's emphasis on its own stack will be percieved as vendor lock-in.
+* Many developers already have established opinions and experience with preferred frameworks for building HTML5/JavaScript/CSS based apps. Sencha's emphasis on its own stack will be perceived as vendor lock-in.
 
 * Extending a Sencha Touch app with access to additional native APIs will likely involve writing custom Apache Cordova/PhoneGap plugins. This will require specialized platform skills (or training to acquire them).
 
@@ -86,7 +86,7 @@ As you'd expect, each approach comes with trade-offs. Let's examine the top five
 * Qt Linguist enables translation and internationalization in applications - giving you the support of multiple languages within your app (in a single binary).
 
 ###Cons
-* Qt's tools are advertised as a "complete tool chain", and QML is a proprietary language specific to Qt's stack. Committing to this approach is perhaps the most hardended vendor lock-in of any of the approaches we've examined thus far.
+* Qt's tools are advertised as a "complete tool chain", and QML is a proprietary language specific to Qt's stack. Committing to this approach is perhaps the most hardened vendor lock-in of any of the approaches we've examined thus far.
 * Price. Of course, no one expects excellent tooling and cross-platform portability to come cheap. However, of the five options we've explored, Qt is the priciest (and you have to contact Digia for pricing specifics). Be prepared for a single developer, multiple OS license to exceed €4,000.
 
 #Reality: You'll Probably Use More Than One
