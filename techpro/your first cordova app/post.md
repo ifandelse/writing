@@ -1,6 +1,4 @@
-#Your First Cordova App
-
->tl;dr - Fasten your seat belts! We're going to take a whirlwind tour of what it's like to get off the ground writing mobile apps with [Adobe PhoneGap](http://phonegap.com/) and [Telerik Icenium](http://www.icenium.com/)) (both based on [Apache Cordova](http://cordova.apache.org/)).
+>tl;dr - Fasten your seat belts! We're going to take a whirlwind tour of what it's like to get off the ground writing mobile apps with [Adobe PhoneGap](http://phonegap.com/) and [Telerik Icenium](http://www.icenium.com/)) (both based on [Apache Cordova](http://cordova.apache.org/)). These are the only Cordova-based/compatible hybrid mobile options out there - but they're all we have space to cover today!
 
 If you're doing any kind of mobile development, then odds are you've heard of [PhoneGap](http://phonegap.com/). PhoneGap/[Apache Cordova](http://cordova.apache.org/) enables you to write a mobile app using HTML, JavaScript and CSS. Those assets run in a WebView (a full-screen native browser window) inside a native application container, and have access to a number of device APIs (thanks to the core plugins that come with Cordova/PhoneGap), and can get access to additional device APIs through custom plugins. Your HTML, JavaScript and CSS get packaged up (along with the native app container) inside a native application installer - so these "hybrid mobile" apps install just like a native app.
 
@@ -515,7 +513,7 @@ Next, we'll select "Splash Screens" under "iOS". I'll go ahead and update our iP
 ![](icenium-splash.png)
 
 ####Step 7.) Run the App
-Icenium Mist has a nice simulator option - but we have one glaring problem that will prevent us from using it (you might have already guessed what it is): CORS restrictions will bite us when our app attempts to make a call to http://facts.azurewebsites.net (since the calls are originating from http://app.icenium.com and our Azure services aren't configured for `Access-Control-Allow-Origin` headers). This will be a common situation for many PhoneGap/Cordova emulation environments. Let's work around this temporarily in Mist by hard-coding our external request:
+Icenium Mist has a nice simulator option - but we have one glaring problem that will prevent us from using it (you might have already guessed what it is): CORS restrictions will bite us when our app attempts to make a call to http://facts.azurewebsites.net (since the calls are originating from http://app.icenium.com and our Azure services aren't configured for `Access-Control-Allow-Origin` headers). This will be a common situation for many PhoneGap/Cordova emulation environments. Let's work around this temporarily in Mist by hard-coding our external request(s) for "funny" and "nerdy" jokes:
 
 	// get a random joke by category
     var getRandomJoke = function (category, viewModel) {
