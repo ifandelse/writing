@@ -85,7 +85,7 @@ Sencha Touch has a wide array of licensing options (which can be seen [here](htt
 <div>Chocolate Chip UI</div>
 </h2>
 
-Chocolate Chip UI's beta debuted on github roughly 3 years ago. Currently at version 3.0.6, the project has been gaining recognition as a powerful and performance-minded option for both mobile web and hybrid mobile applications targeting iOS, Android and Windows Phone 8. Chocolate Chip UI's site lists 12 widgets, but simply skimming the documentation will reveal many more. Chocolate Chip UI provides a substantial amount of UI/widget focused features, but also ventures somewhat into "application framework" territory by providing a number of utility methods & view transition features – though it stops short of client-side routing.
+Chocolate Chip UI's beta debuted on github roughly 3 years ago. Currently at version 3.0.6, the project has been gaining recognition as a powerful and performance-minded option for both mobile web and hybrid mobile applications targeting iOS, Android and Windows Phone 8. Chocolate Chip UI's site lists 12 widgets, but simply skimming the documentation will reveal many more. Chocolate Chip UI provides a substantial amount of UI/widget focused features, but also ventures somewhat into "application framework" territory by providing a number of utility methods & view transition features – though it stops short of client-side routing (though there's nothing preventing you from integrating any number of routing libraries).
 
 ###High Level Overview
 Developers using Chocolate Chip UI will encounter the following:
@@ -102,7 +102,9 @@ As mentioned above, Chocolate Chip UI's home page lists 12 widgets – among the
 ![](chui.gif)
 
 ###Licensing
-Chocolate Chip UI can be licensed either under BSD or commercially. For commercial terms, you need to [contact Sourcebits](http://www.sourcebits.com/#!/contact) to get a quote.
+Chocolate Chip UI can be licensed either under BSD or commercially. For commercial terms, you need to [contact Sourcebits](http://www.sourcebits.com/#!/contact) to get a quote. I reached out to Sourcebits to get more information on commercial licensing, and they were very prompt & friendly in replying:
+
+>"our terms for commercial use are an acknowledgment that Sourcebits’ Chocolate Chip UI was used in the creation of the app, something along the lines of "Powered by Chocolate Chip UI”, either in the app’s splash screen or ‘About’ page with tap/link back to ChUI’s awesome landing page, as well as permission to use the brand’s name/logo on our website. In addition we might also wish to collaborate with the brand to create a case study around their use of ChUI. We’d have the same asks if a ChUI web app were being deployed for internal use by an enterprise, too."
 
 ##Further Resources
 Markus Falk has a fantastic [mobile frameworks comparison tool](http://www.markus-falk.com/mobile-frameworks-comparison-chart/) which you may find quite useful in evaluating which options will work for your team.
