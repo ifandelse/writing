@@ -9,7 +9,7 @@ Deciding on a cross-platform tool (CPT) when developing mobile applications is r
 <div>jQuery Mobile</div>
 </h2>
 
-[jQuery Mobile](http://jquerymobile.com/) is arguably the most widely used mobile framework - benefiting from association with the nearly ubiquitous jQuery project. Due to it's recognition and association with jQuery-based open source development, jQuery Mobile boasts a huge number of 3rd party plugins, extensions, tools, themes and more.
+[jQuery Mobile](http://jquerymobile.com/) is arguably the most widely used mobile framework - benefiting from association with the nearly ubiquitous jQuery project. Due to its recognition and association with jQuery-based open source development, jQuery Mobile boasts a huge number of 3rd party plugins, extensions, tools, themes and more.
 
 ###High Level Overview
 Developers writing mobile and hybrid mobile apps using jQuery Mobile will encounter the following:
