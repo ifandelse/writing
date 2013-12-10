@@ -37,15 +37,15 @@ jQuery mobile is free and open source (MIT licensed).
 <div>Kendo UI Mobile</div>
 </h2>
 
-Telerik's [Kendo UI Mobile](http://www.kendoui.com/) framework has emerged as a powerful and performance-minded framework for mobile web and hybrid mobile applications. Kendo UI Mobile provides both UI widgets and app framework functionality. Kendo UI Mobile is part of a larger Kendo UI framework that can target both desktop and mobile devices. In addition, Kendo UI Dataviz is arguably one of the best data visualization libraries available for both desktop and mobile web clients.
+Telerik's [Kendo UI Mobile](http://www.kendoui.com/) framework has emerged as a powerful and performance-minded framework for mobile web and hybrid mobile applications. Kendo UI Mobile provides both UI widgets and app framework functionality. Kendo UI Mobile is part of a larger Kendo UI framework that can target both desktop and mobile devices. In addition, Kendo UI Dataviz is arguably one of the best data visualization libraries available for both desktop and mobile web clients*.
 
 ###High Level Overview
 Developers writing mobile and hybrid mobile apps will encounter the following:
 
 * Theming that matches the 'native' look and feel of iOS, Android, Blackberry and Windows Phone 8, as well as a "flat" theme that looks nice across multiple devices.
 * Similar to jQuery Mobile, Kendo UI Mobile makes use of HTML5 `data-*` attributes. For example, a "view" in a Kendo UI Mobile application is a DOM element with `data-role="view"`. This naturally extends to Kendo UI Mobile's widgets as well, since (for example) an unordered list element can be made into a "listview" element simply by adding `data-role="listview"` to the element.
-* Two-way binding, with a declarative syntax. Kendo UI Mobile provides some fairly sophisticated application framework features, with MVVM (model-view-viewmodel) infrastructure included. Application state is typically maintained in 'view models', which are bound to views (DOM templates). As data in views change, the view models are automatically updated (and vice versa). By "declarative" we mean that the metadata necessary to enable two-way binding can be provided in the actual markup. For example, to bind the text content of a `span` to the `firstName` value of a view model, developers simply include this in the markup: `<span data-bind="text: firstName"></span>`. Frameworks supporting two-way binding often help eliminate the same tired boilerplate code necessary in traversing DOM structures to retrieve state (user input, etc.). This can be a big producitivy boost for your team.
-* Also included in the application framework features: view transitions, navigation & layout templates (which can be highly customized) as well as "DataSources" - an abstraction over retrieving data from multiple kinds of sources (for example, simple HTTP services, local data or even some Back-end-as-a-Service offerings). The Kendo UI team has gone quite a ways further than primiarly UI/widget focused frameworks like jQuery Mobile in providing more substantial application architectural help.
+* Two-way binding, with a declarative syntax. Kendo UI Mobile provides some fairly sophisticated application framework features, with MVVM (model-view-viewmodel) infrastructure included. Application state is typically maintained in 'view models', which are bound to views (DOM templates). As data in views change, the view models are automatically updated (and vice versa). By "declarative" we mean that the metadata necessary to enable two-way binding can be provided in the actual markup. For example, to bind the text content of a `span` to the `firstName` value of a view model, developers simply include this in the markup: `<span data-bind="text: firstName"></span>`. Frameworks supporting two-way binding often help eliminate the same tired boilerplate code necessary in traversing DOM structures to retrieve state (user input, etc.). This can be a big productivity boost for your team.
+* Also included in the application framework features: view transitions, navigation & layout templates (which can be highly customized) as well as "DataSources" - an abstraction over retrieving data from multiple kinds of sources (for example, simple HTTP services, local data or even some Back-end-as-a-Service offerings). The Kendo UI team has gone quite a ways further than primarily UI/widget focused frameworks like jQuery Mobile in providing more substantial application architectural help.
 
 ###Widgets
 Kendo UI Mobile's site lists 13 built-in widgets, ranging from ListView, ModalView, and TabStrip to Navbar (including support for header & footer), Drawer and Scroller (and more). Kendo UI Mobile supports creating custom widgets as well. 
@@ -78,14 +78,14 @@ Components are a key part of Sencha Touch's architecture. Among the 50 built-in 
 ![](sencha.gif)
 
 ###Licensing
-Sencha Touch has a wide array of licensing options (which can be seen [here](http://www.sencha.com/products/touch/license/)). It's free for commerical use (and a GPLv3 option is also available). Sencha offers paid support options for Sencha Touch, starting at $1395 for a 5-developer package.
+Sencha Touch has a wide array of licensing options (which can be seen [here](http://www.sencha.com/products/touch/license/)). It's free for commercial use (and a GPLv3 option is also available). Sencha offers paid support options for Sencha Touch, starting at $1395 for a 5-developer package.
 
 <h2>
 <img height="100" src="https://pbs.twimg.com/profile_images/378800000376718815/968092011718d6ae94886081887c8f7f.png" />
 <div>Chocolate Chip UI</div>
 </h2>
 
-Chocolate Chip UI's beta debuted on github roughly 3 years ago. Currently at version 3.0.6, the project has been gaining recognition as a powerful and performance-minded option for both mobile web and hybrid mobile applications targeting iOS, Android and Windows Phone 8. Chocolate Chip UI's site lists 12 widgets, but simply skimming the documentation will reveal many more. Chocolate Chip UI provides a substantial amount of UI/widget focused features, but also ventures somewhat into "application framework" territory by providing a number of utility methods & view transition features – though it stops short of client-side routing (though there's nothing preventing you from integrating any number of routing libraries).
+Chocolate Chip UI's beta debuted on Github roughly 3 years ago. Currently at version 3.0.6, the project has been gaining recognition as a powerful and performance-minded option for both mobile web and hybrid mobile applications targeting iOS, Android and Windows Phone 8. Chocolate Chip UI's site lists 12 widgets, but simply skimming the documentation will reveal many more. Chocolate Chip UI provides a substantial amount of UI/widget focused features, but also ventures somewhat into "application framework" territory by providing a number of utility methods & view transition features – though it stops short of client-side routing (though there's nothing preventing you from integrating any number of routing libraries).
 
 ###High Level Overview
 Developers using Chocolate Chip UI will encounter the following:
@@ -94,7 +94,7 @@ Developers using Chocolate Chip UI will encounter the following:
 * Chocolate Chip UI encourages the use of their own JavaScript library (ChocolateChip.js) in lieu of jQuery. They maintain that it was created specifically for mobile use and that it is both faster and smaller. It *is* possible to use jQuery 2.0.3 on Chocolate Chip UI version 3.0.3 and newer. This may prove useful if your team has jQuery plugins which are essential to the project.
 * Chocolate Chip UI provides API hooks to create your own widgets which follow the same paradigm as creating jQuery plugins. This will aid your team's transition from jQuery to ChocolateChip.js.
 * Chocolate Chip UI uses OS-specific theming, allowing you to target a specific mobile platform (currently iOS, Android and Windows Phone 8) simply by sourcing the appropriate CSS file.
-* Chocolate Chip UI provides layout behaviors to help organize your DOM structure, as well as a number of ulitily methods inlcuding script loading, type testing, string utilities, AJAX communications and more.
+* Chocolate Chip UI provides layout behaviors to help organize your DOM structure, as well as a number of utility methods including script loading, type testing, string utilities, AJAX communications and more.
 
 ###Widgets
 As mentioned above, Chocolate Chip UI's home page lists 12 widgets – among them things like Popup, Paging, Range, Switch and multiple types of Lists. However, as you review the documentation, you'll notice mention of additional widgets such as slide out menus, masks (semi-transparent overlays), split layouts (for tablets) and more. You can see a few of these in the screen capture below (specifically, range/slider and pop-over):
@@ -107,7 +107,7 @@ Chocolate Chip UI can be licensed either under BSD or commercially. For commerci
 >"...our terms for commercial use are an acknowledgment that Sourcebits’ Chocolate Chip UI was used in the creation of the app, something along the lines of "Powered by Chocolate Chip UI”, either in the app’s splash screen or ‘About’ page with tap/link back to ChUI’s awesome landing page, as well as permission to use the brand’s name/logo on our website. In addition we might also wish to collaborate with the brand to create a case study around their use of ChUI. We’d have the same asks if a ChUI web app were being deployed for internal use by an enterprise, too."
 
 ##Further Resources
-Markus Falk has a fantastic [mobile frameworks comparison tool](http://www.markus-falk.com/mobile-frameworks-comparison-chart/) which you may find quite useful in evaluating which options will work for your team.
+Markus Falk has a fantastic [mobile frameworks comparison tool](http://www.markus-falk.com/mobile-frameworks-comparison-chart/) which you may find quite useful in evaluating which options will work for your team. One thing to bear in mind: this comparison chart doesn't differentiate between UI frameworks and cross-platform tools (like PhoneGap), so it's useful if you're looking up supported features for a given framework *or* comparing two frameworks of the same type (i.e. – apples-to-apples comparison of two or more UI libraries, or CPTs, etc).
 
 This post can't possibly cover all the UI framework options available - and choosing which ones to write about was extremely difficult, given the amazing number of good choices out there. I'd like to list a few more here to give you the option of further exploring which UI framework(s) may work best for you. Bear in mind that these are *web-based* UI frameworks for mobile web or hybrid mobile solutions that make use of web-based assets (like PhoneGap):
 
@@ -125,7 +125,9 @@ This post can't possibly cover all the UI framework options available - and choo
 Have you used any of these options? If so, we'd love to hear about your experience. Feel like one is missing? Let us know! We'd love to hear what you've been using.
 
 
-
+<blockquote style="font-size: small;">
+* <em>I've used Raphael and D3.js - and love both (not to mention, both are free frameworks). I think very highly of Kendo UI Dataviz primarily because of the wide browser support (it uses canvas, SVG and VML, depending on the browser) and because of the accessible/intuitive API.</em> 
+</blockquote>
 
 
 
