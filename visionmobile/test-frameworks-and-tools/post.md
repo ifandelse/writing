@@ -1,4 +1,6 @@
-Over the last decade, application testing has continually proved itself to be an important concern. When done well, testing can drastically reduce the number of bugs that make it into your release code (and thus actually affect your users). In addition, good testing approaches will help your team catch bugs *earlier* in the development lifecycle – resulting in a savings of both time and money (not to mention reputation with your users). The word "Testing" is a large umbrella, and is usually better understood when you break it down to specific *types* of testing. For example:
+Over the last decade, application testing has continually proved itself to be an important concern. When done well, testing can drastically reduce the number of bugs that make it into your release code (and thus actually affect your users). In addition, good testing approaches will help your team catch bugs *earlier* in the development lifecycle – resulting in a savings of both time and money (not to mention reputation with your users). Code that has good test coverage enables you and your team to make changes and introduce new features to your app without the fear of it breaking existing functionality.
+
+The word "Testing" is a large umbrella, and is usually better understood when you break it down to specific *types* of testing. For example:
 
 * Unit Testing - automated tests written by developers, with each test targeting a narrow slice of application behavior.
 * Functional & Acceptance Testing - typically performed by QA personnel or automated UI testing frameworks.
