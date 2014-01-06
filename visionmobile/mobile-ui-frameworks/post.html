@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+*{margin:0;padding:0;}
+body {
+	font:13.34px helvetica,arial,freesans,clean,sans-serif;
+	color:black;
+	line-height:1.4em;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+}
+p {
+	margin:1em 0;
+	line-height:1.5em;
+}
+table {
+	font-size:inherit;
+	font:100%;
+	margin:1em;
+}
+table th{border-bottom:1px solid #bbb;padding:.2em 1em;}
+table td{border-bottom:1px solid #ddd;padding:.2em 1em;}
+input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}
+select,option{padding:0 .25em;}
+optgroup{margin-top:.5em;}
+pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
+pre {
+	margin:1em 0;
+	font-size:12px;
+	background-color:#eee;
+	border:1px solid #ddd;
+	padding:5px;
+	line-height:1.5em;
+	color:#444;
+	overflow:auto;
+	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;border-radius:3px;
+}
+pre code {
+	padding:0;
+	font-size:12px;
+	background-color:#eee;
+	border:none;
+}
+code {
+	font-size:12px;
+	background-color:#f8f8ff;
+	color:#444;
+	padding:0 .2em;
+	border:1px solid #dedede;
+}
+img{border:0;max-width:100%;}
+abbr{border-bottom:none;}
+a{color:#4183c4;text-decoration:none;}
+a:hover{text-decoration:underline;}
+a code,a:link code,a:visited code{color:#4183c4;}
+h2,h3{margin:1em 0;}
+h1,h2,h3,h4,h5,h6{border:0;}
+h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
+h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
+h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
+h3{margin-top:1em;}
+hr{border:1px solid #ddd;}
+ul{margin:1em 0 1em 2em;}
+ol{margin:1em 0 1em 2em;}
+ul li,ol li{margin-top:.5em;margin-bottom:.5em;}
+ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}
+blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}
+dt{font-weight:bold;margin-left:1em;}
+dd{margin-left:2em;margin-bottom:1em;}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+<title>Mobile UI Frameworks</title>
+
+</head>
+<body>
+<h1>Mobile UI Frameworks</h1>
+
+<p>Deciding on a cross-platform tool (CPT) when developing mobile applications is really only the first step of a larger journey. When you choose a web-based CPT (PhoneGap, for example), you're typically faced with the decision of what UI framework to choose as well. The good news is that there are number of powerful options available. We'll take a brief look at a few of these in this post. There's a wide range of what's available in a UI framework – some focus entirely on widgets (UI components), others provide light app framework functionality and still others provide a more comprehensive set of behaviors covering widgets and application framework concerns. The "right" choice for your project will depend largely on what you need, your team's background and what kind of control you want to retain over certain aspects of the application architecture.</p>
+
+<blockquote><p>Really - there are SO many interesting options, it can feel overwhelming even if you're a veteran of HTML5-based mobile development. I will include a list of additional frameworks at the end in case you'd like to explore beyond the few we cover in this post.</p></blockquote>
+
+<h2>
+<img width="200" src="http://jquerymobile.com/wp-content/uploads/2012/09/jquery-mobile-logo_positive.png" />
+<div>jQuery Mobile</div>
+</h2>
+
+
+<p><a href="http://jquerymobile.com/">jQuery Mobile</a> is arguably the most widely used mobile framework - benefiting from association with the nearly ubiquitous jQuery project. Due to its recognition and association with jQuery-based open source development, jQuery Mobile boasts a huge number of 3rd party plugins, extensions, tools, themes and more.</p>
+
+<h3>High Level Overview</h3>
+
+<p>Developers writing mobile and hybrid mobile apps using jQuery Mobile will encounter the following:</p>
+
+<ul>
+<li>Heavy use of HTML <code>data-*</code> attributes. For example, a "page" in a jQuery Mobile application is simply a DOM element with <code>data-role="page"</code> attribute/value on it. Experienced web developers will pick up these kinds of framework conventions quickly.</li>
+<li>jQuery Mobile provides a <em>light</em> application framework – primarily covering navigation, &amp; transitions between views. This can be extended via plugins, or through integration with more comprehensive frameworks. If your "app framework" needs extend beyond transitions and navigations (for example, templating, two-way binding and more), jQuery Mobile <em>alone</em> may not be a good fit.</li>
+<li>It's designed to work within a Responsive Web Design (RWD) context - enabling developers to target a wide range of devices.</li>
+<li>A wide array of device and browser support as well as a helpful <a href="http://jquerymobile.com/themeroller/">theme roller</a> to help with quickly customizing the otherwise "clone" look and feel.</li>
+</ul>
+
+
+<blockquote><p>Despite its popularity, jQuery Mobile has been criticized for performing poorly in mobile browsers. The jQuery Mobile team continues to work to <a href="http://jquerymobile.com/blog/2013/10/24/jquery-mobile-1-4-0-rc1-released/">improve the framework</a>, including performance issues. If your team opts for jQuery Mobile, avoiding deeply nested DOM structures &amp; unnecessary reflows and investigating the use of libraries like <a href="https://github.com/ftlabs/fastclick">FastClick</a> can help you avoid some of the typical pitfalls that have earned jQuery Mobile the "slow" label.</p></blockquote>
+
+<h3>Widgets</h3>
+
+<p>jQuery Mobile's site currently lists 22 built-in widgets (though the number of custom/3rd party widgets is much higher). Among them are header, footer, navbar, listview, slider popup and more (all the basics you would expect). Creating customized widgets is likely a moderate amount of effort for most developers. jQuery Mobile's good documentation and examples will be helpful for any team. You can view a list of demos <a href="http://view.jquerymobile.com/1.3.2/dist/demos/examples/">here</a>.</p>
+
+<p>The screen capture below demonstrates one of jQuery Mobile's widgets: the responsive grid listview:</p>
+
+<p><img src="jQueryMobile.gif" alt="" /></p>
+
+<h3>Licensing</h3>
+
+<p>jQuery mobile is free and open source (MIT licensed).</p>
+
+<h2>
+<img width="200" src="http://www.kendoui.com/images/default-source/images-folder/kendologo-big.png?sfvrsn=0" />
+<div>Kendo UI Mobile</div>
+</h2>
+
+
+<p>Telerik's <a href="http://www.kendoui.com/">Kendo UI Mobile</a> framework has emerged as a powerful and performance-minded framework for mobile web and hybrid mobile applications. Kendo UI Mobile provides both UI widgets and app framework functionality. Kendo UI Mobile is part of a larger Kendo UI framework that can target both desktop and mobile devices. In addition, Kendo UI Dataviz is arguably one of the best data visualization libraries available for both desktop and mobile web clients*.</p>
+
+<h3>High Level Overview</h3>
+
+<p>Developers writing mobile and hybrid mobile apps will encounter the following:</p>
+
+<ul>
+<li>Theming that matches the 'native' look and feel of iOS, Android, Blackberry and Windows Phone 8, as well as a "flat" theme that looks nice across multiple devices.</li>
+<li>Similar to jQuery Mobile, Kendo UI Mobile makes use of HTML5 <code>data-*</code> attributes. For example, a "view" in a Kendo UI Mobile application is a DOM element with <code>data-role="view"</code>. This naturally extends to Kendo UI Mobile's widgets as well, since (for example) an unordered list element can be made into a "listview" element simply by adding <code>data-role="listview"</code> to the element.</li>
+<li>Two-way binding, with a declarative syntax. Kendo UI Mobile provides some fairly sophisticated application framework features, with MVVM (model-view-viewmodel) infrastructure included. Application state is typically maintained in 'view models', which are bound to views (DOM templates). As data in views change, the view models are automatically updated (and vice versa). By "declarative" we mean that the metadata necessary to enable two-way binding can be provided in the actual markup. For example, to bind the text content of a <code>span</code> to the <code>firstName</code> value of a view model, developers simply include this in the markup: <code>&lt;span data-bind="text: firstName"&gt;&lt;/span&gt;</code>. Frameworks supporting two-way binding often help eliminate the same tired boilerplate code necessary in traversing DOM structures to retrieve state (user input, etc.). This can be a big productivity boost for your team.</li>
+<li>Also included in the application framework features: view transitions, navigation &amp; layout templates (which can be highly customized) as well as "DataSources" - an abstraction over retrieving data from multiple kinds of sources (for example, simple HTTP services, local data or even some Back-end-as-a-Service offerings). The Kendo UI team has gone quite a ways further than primarily UI/widget focused frameworks like jQuery Mobile in providing more substantial application architectural help.</li>
+</ul>
+
+
+<h3>Widgets</h3>
+
+<p>Kendo UI Mobile's site lists 13 built-in widgets, ranging from ListView, ModalView, and TabStrip to Navbar (including support for header &amp; footer), Drawer and Scroller (and more). Kendo UI Mobile supports creating custom widgets as well.</p>
+
+<p>The screen capture below demonstrates a couple of Kendo UI Mobile's adaptive widgets: the Grid and Scheduler. You can view additional Kendo UI Mobile demos <a href="http://demos.kendoui.com/mobile/overview/index.html">here</a>.</p>
+
+<p><img src="kendoui.gif" alt="" /></p>
+
+<h3>Licensing</h3>
+
+<p>Kendo UI mobile is a paid framework which starts at $199 (includes support for 1 year).</p>
+
+<h2>
+<img width="200" src="http://www.sencha.com/img/sencha-large.png" />
+<div>Sencha Touch</div>
+</h2>
+
+
+<p>Sencha will be a recognizable name to many web &amp; mobile developers - likely due to their <a href="http://www.sencha.com/blog/the-making-of-fastbook-an-html5-love-story/">response</a> to Mark Zuckerberg's <a href="http://techcrunch.com/2012/09/11/mark-zuckerberg-our-biggest-mistake-with-mobile-was-betting-too-much-on-html5/">assertion</a> that "HTML5 Wasn't Ready". Sencha went on to prove that HTML5 is, indeed, ready for many complex use cases in mobile applications. <a href="http://www.sencha.com/products/touch/">Sencha Touch</a> - Sencha's mobile focused HTML5 development platform – goes much further than providing only widget-focused features.</p>
+
+<h3>High Level Overview</h3>
+
+<p>Sencha recently updated Sencha Touch so that their device APIs fully support Apache Cordova (i.e. - PhoneGap). Similar to Kendo UI Mobile, Sencha Touch makes use of HTML5 and CSS3 (taking advantage of hardware acceleration where possible) to create web-based UIs for mobile apps that aim to rival native UI performance. Developers building projects with Sencha Touch can expect the following:</p>
+
+<ul>
+<li>Sencha Touch leans more heavily towards "full app framework" than many other popular options. It provides an MVC style architecture, complete with storage, device profile and top-level application abstractions.</li>
+<li>Sencha Touch ships with 50 built-in components (and developers can create their own as well).</li>
+<li>It's my understanding that Touch shares some common code with ExtJS (and common conceptual paradigms), so developers familiar with ExtJS will pick things up quickly. I would also argue that developers used to frameworks like Backbone.js will also pick up the concepts more readily than developers used to UI frameworks that focus on declarative bindings in markup.</li>
+<li>Sencha Touch provides its own abstractions for things like history management and XHR - which is in line with expectations of any framework seeking to be a more "one stop/full-stack" option.</li>
+</ul>
+
+
+<h3>Widgets</h3>
+
+<p>Components are a key part of Sencha Touch's architecture. Among the 50 built-in components are ones such as Carousel, Slider, DataView, List, DatePicker and more. In other words - like the frameworks we've looked at so far, the essential things you'd expect plus a bit more. The screen capture below is showing some of the animation demos in the <a href="http://dev.sencha.com/deploy/touch/examples/production/kitchensink/">"Kitchen Sink"</a> demo application, which highlights <em>many</em> features available in Touch:</p>
+
+<p><img src="sencha.gif" alt="" /></p>
+
+<h3>Licensing</h3>
+
+<p>Sencha Touch has a wide array of licensing options (which can be seen <a href="http://www.sencha.com/products/touch/license/">here</a>). It's free for commercial use (and a GPLv3 option is also available). Sencha offers paid support options for Sencha Touch, starting at $1395 for a 5-developer package.</p>
+
+<h2>
+<img height="100" src="https://pbs.twimg.com/profile_images/378800000376718815/968092011718d6ae94886081887c8f7f.png" />
+<div>Chocolate Chip UI</div>
+</h2>
+
+
+<p>Chocolate Chip UI's beta debuted on Github roughly 3 years ago. Currently at version 3.0.6, the project has been gaining recognition as a powerful and performance-minded option for both mobile web and hybrid mobile applications targeting iOS, Android and Windows Phone 8. Chocolate Chip UI's site lists 12 widgets, but simply skimming the documentation will reveal many more. Chocolate Chip UI provides a substantial amount of UI/widget focused features, but also ventures somewhat into "application framework" territory by providing a number of utility methods &amp; view transition features – though it stops short of client-side routing (though there's nothing preventing you from integrating any number of routing libraries).</p>
+
+<h3>High Level Overview</h3>
+
+<p>Developers using Chocolate Chip UI will encounter the following:</p>
+
+<ul>
+<li>Chocolate Chip UI makes use of <a href="http://chocolatechip-ui.com/documentation">semantic HTML5 elements</a> to drive its widgets. Your team may find overtime that this aids markup readability.</li>
+<li>Chocolate Chip UI encourages the use of their own JavaScript library (ChocolateChip.js) in lieu of jQuery. They maintain that it was created specifically for mobile use and that it is both faster and smaller. It <em>is</em> possible to use jQuery 2.0.3 on Chocolate Chip UI version 3.0.3 and newer. This may prove useful if your team has jQuery plugins which are essential to the project.</li>
+<li>Chocolate Chip UI provides API hooks to create your own widgets which follow the same paradigm as creating jQuery plugins. This will aid your team's transition from jQuery to ChocolateChip.js.</li>
+<li>Chocolate Chip UI uses OS-specific theming, allowing you to target a specific mobile platform (currently iOS, Android and Windows Phone 8) simply by sourcing the appropriate CSS file.</li>
+<li>Chocolate Chip UI provides layout behaviors to help organize your DOM structure, as well as a number of utility methods including script loading, type testing, string utilities, AJAX communications and more.</li>
+</ul>
+
+
+<h3>Widgets</h3>
+
+<p>As mentioned above, Chocolate Chip UI's home page lists 12 widgets – among them things like Popup, Paging, Range, Switch and multiple types of Lists. However, as you review the documentation, you'll notice mention of additional widgets such as slide out menus, masks (semi-transparent overlays), split layouts (for tablets) and more. You can see a few of these in the screen capture below (specifically, range/slider and pop-over):</p>
+
+<p><img src="chui.gif" alt="" /></p>
+
+<h3>Licensing</h3>
+
+<p>Chocolate Chip UI can be licensed either under BSD or commercially. For commercial terms, you need to <a href="http://www.sourcebits.com/#!/contact">contact Sourcebits</a> to get a quote. I reached out to Sourcebits to get more information on commercial licensing, and they were very prompt &amp; friendly in replying:</p>
+
+<blockquote><p>"...our terms for commercial use are an acknowledgment that Sourcebits’ Chocolate Chip UI was used in the creation of the app, something along the lines of "Powered by Chocolate Chip UI”, either in the app’s splash screen or ‘About’ page with tap/link back to ChUI’s awesome landing page, as well as permission to use the brand’s name/logo on our website. In addition we might also wish to collaborate with the brand to create a case study around their use of ChUI. We’d have the same asks if a ChUI web app were being deployed for internal use by an enterprise, too."</p></blockquote>
+
+<h2>Further Resources</h2>
+
+<p>Markus Falk has a fantastic <a href="http://www.markus-falk.com/mobile-frameworks-comparison-chart/">mobile frameworks comparison tool</a> which you may find quite useful in evaluating which options will work for your team. One thing to bear in mind: this comparison chart doesn't differentiate between UI frameworks and cross-platform tools (like PhoneGap), so it's useful if you're looking up supported features for a given framework <em>or</em> comparing two frameworks of the same type (i.e. – apples-to-apples comparison of two or more UI libraries, or CPTs, etc).</p>
+
+<p>This post can't possibly cover all the UI framework options available - and choosing which ones to write about was extremely difficult, given the amazing number of good choices out there. I'd like to list a few more here to give you the option of further exploring which UI framework(s) may work best for you. Bear in mind that these are <em>web-based</em> UI frameworks for mobile web or hybrid mobile solutions that make use of web-based assets (like PhoneGap):</p>
+
+<ul>
+<li><a href="http://phonejs.devexpress.com/">PhoneJS</a></li>
+<li><a href="http://enyojs.com/">EnyoJS</a></li>
+<li><a href="http://wijmo.com/">Wijmo</a></li>
+<li><a href="http://www.iui-js.org/">iUI</a></li>
+<li><a href="http://getbootstrap.com/">Twitter Bootstrap</a></li>
+<li><a href="http://the-m-project.net/en/">The-M-Project</a></li>
+<li><a href="http://joapp.com/">Jo</a></li>
+<li><a href="http://uxebu.github.io/embedjs/">EmbedJS</a></li>
+<li><a href="http://justspamjustin.github.io/junior/#home">Junior</a></li>
+<li><a href="http://moobilejs.com/">moobile</a></li>
+</ul>
+
+
+<p>Have you used any of these options? If so, we'd love to hear about your experience. Feel like one is missing? Let us know! We'd love to hear what you've been using.</p>
+
+<blockquote style="font-size: small;">
+* <em>I've used Raphael and D3.js - and love both (not to mention, both are free frameworks). I think very highly of Kendo UI Dataviz primarily because of the wide browser support (it uses canvas, SVG and VML, depending on the browser) and because of the accessible/intuitive API.</em> 
+</blockquote>
+
+
+
+</body>
+</html>
