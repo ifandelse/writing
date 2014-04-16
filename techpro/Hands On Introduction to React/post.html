@@ -1,0 +1,699 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+*{margin:0;padding:0;}
+body {
+	font:13.34px helvetica,arial,freesans,clean,sans-serif;
+	color:black;
+	line-height:1.4em;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+}
+p {
+	margin:1em 0;
+	line-height:1.5em;
+}
+table {
+	font-size:inherit;
+	font:100%;
+	margin:1em;
+}
+table th{border-bottom:1px solid #bbb;padding:.2em 1em;}
+table td{border-bottom:1px solid #ddd;padding:.2em 1em;}
+input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}
+select,option{padding:0 .25em;}
+optgroup{margin-top:.5em;}
+pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
+pre {
+	margin:1em 0;
+	font-size:12px;
+	background-color:#eee;
+	border:1px solid #ddd;
+	padding:5px;
+	line-height:1.5em;
+	color:#444;
+	overflow:auto;
+	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;border-radius:3px;
+}
+pre code {
+	padding:0;
+	font-size:12px;
+	background-color:#eee;
+	border:none;
+}
+code {
+	font-size:12px;
+	background-color:#f8f8ff;
+	color:#444;
+	padding:0 .2em;
+	border:1px solid #dedede;
+}
+img{border:0;max-width:100%;}
+abbr{border-bottom:none;}
+a{color:#4183c4;text-decoration:none;}
+a:hover{text-decoration:underline;}
+a code,a:link code,a:visited code{color:#4183c4;}
+h2,h3{margin:1em 0;}
+h1,h2,h3,h4,h5,h6{border:0;}
+h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
+h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
+h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
+h3{margin-top:1em;}
+hr{border:1px solid #ddd;}
+ul{margin:1em 0 1em 2em;}
+ol{margin:1em 0 1em 2em;}
+ul li,ol li{margin-top:.5em;margin-bottom:.5em;}
+ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}
+blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}
+dt{font-weight:bold;margin-left:1em;}
+dd{margin-left:2em;margin-bottom:1em;}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+<title>A Thrown-to-the-Wolves-Hands-On Introduction to React</title>
+
+</head>
+<body>
+<h1>A Thrown-to-the-Wolves-Hands-On Introduction to React</h1>
+
+<p>There are some great <a href="http://facebook.github.io/react/">React</a> overview posts (which I will link to at the bottom of this post), so I wanted to try something a bit different. Having used other MV* frameworks, I wanted to dive right into React and see what it took to get up and running, and how it felt <em>in the trenches</em> getting from ideas to DOM. So, up front, we're going to focus on turning an app concept into a React-based implementation – we'll chat more about the philosophy and opinion behind React at the end. All you need to know for the moment is that React is "a JavaScript library for building user interfaces".</p>
+
+<blockquote><p>Note: Even though I already know a decent amount about how React works, I'm going document my <strong>initial</strong> thought process and impressions of it when I first picked it up. Why? Because it's always fun learning new things, and my internal dialogue during those times might sound familiar to your own. These sidebar quotes are my internal dialogue. I'll try to edit out my own insanity and/or profanity. :-)</p></blockquote>
+
+<p><em>NOTE: The code snippets that are in-line in this post have been trimmed of any Bootstrap-related fluff (yay for <code>div</code> and class explosion). I took my friend <a href="https://twitter.com/tjvantoll">TJ Van Toll</a>'s suggestion to remove the bootstrap class names and some of the div nesting to make them easier to read. However, the embedded fiddle examples have all of that, so if you prefer to swim in div/class soup, feel free.</em></p>
+
+<h2>The Concept</h2>
+
+<p>Years ago I wrote budget tracking app, where each month had a fairly typical worksheet of income and expenses. Let's see what it would take to create a single (scaled-down) budget worksheet using React to manage our UI.</p>
+
+<h3>A Budget Worksheet</h3>
+
+<p>A single <code>Worksheet</code> will apply to a defined date range (for example - May 2014) and contain a list of budget <code>Items</code>. Each budget <code>Item</code> will have a <code>description</code>, <code>budget</code> amount, <code>actual</code> amount and an expense <code>type</code> (e.g. - "income" or "expense"). The <code>Worksheet</code> will also have an aggregate total for <code>budgetExpenses</code>, <code>budgetIncome</code>, <code>budgetRemainder</code>, <code>actualExpenses</code>, <code>actualIncome</code> and <code>actualRemainder</code>. A simplified JSON representation of a worksheet might look something like this:</p>
+
+<pre><code>{
+    "period" : "May 2014"
+    "items"  : [
+        { 
+            "description" : "Rent",
+            "type"        : "expense",
+            "budget"      : 1600,
+            "actual"      : 1600
+        },
+        {
+            "description" : "Salary",
+            "type"        : "income",
+            "budget"      : 5300,
+            "actual"      : 4875
+        },
+        { 
+            "description" : "Groceries",
+            "type"        : "expense",
+            "budget"      : 800,
+            "actual"      : 650
+        }
+    ],
+    "budgetExpenses"  : 2400,
+    "budgetIncome"    : 5300,
+    "budgetRemainder" : 2900,
+    "actualExpenses"  : 2250,
+    "actualIncome"    : 4875,
+    "actualRemainder" : 2625
+}
+</code></pre>
+
+<blockquote><p>Me, to myself: This is <em>not</em> a complicated data structure - much simpler than the real thing. I can already picture how this would be done in KnockoutJS or Backbone. *cracks knuckles*</p></blockquote>
+
+<h2>Getting a Raw Page Set Up</h2>
+
+<p>I'm using Sublime Text 3, so I've thrown together a simple <code>index.html</code> that, for the moment, looks like this:</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;React Budget Worksheet&lt;/title&gt;   
+    &lt;link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"&gt;
+    &lt;link rel="stylesheet" href="main.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"&gt;&lt;/script&gt;
+    &lt;script src="http://fb.me/react-0.10.0.min.js"&gt;&lt;/script&gt;
+    &lt;script src="http://fb.me/JSXTransformer-0.10.0.js"&gt;&lt;/script&gt;
+    &lt;script src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"&gt;&lt;/script&gt;
+    &lt;script src="main.js" type="text/jsx"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>What's with the <code>JSXTransformer-0.10.0.js</code> file? React's documentation shows an XML-based-yet-HTML-like syntax for templates called JSX, or an imperative approach to creating DOM elements. My internal dialogue sums up how I feel about this:</p>
+
+<blockquote><p>While, on one hand, I can imagine some of the benefits of imperatively creating elements, I'd rather eat brussel sprouts every meal for a year (*<em>chokes back vomit</em>*) than abandon markup entirely. I'm wary of the fact that JSX is actually an XML syntax, but willing to give it a go.</p></blockquote>
+
+<p>You might have also noticed that the <code>main.js</code> file is coming in with a type of <code>text/jsx</code>. This will keep it from being evaluated as JavaScript, so that React can parse it for JSX and 'compile' it to JavaScript. To opt into JSX parsing, I've included the <code>/** @jsx React.DOM */</code> pragma at the top of my <code>main.js</code> file.</p>
+
+<p> Now - what do I need to put in that <code>main.js</code> file to get things rolling?</p>
+
+<h2>Rendering a Single Line Item</h2>
+
+<p>First, let's start with what it takes to render a single budget item. I know that I want to render the description, budget and actual amounts on a single line.
+If I had a static template (i.e. - no data to bind), I know I could do something along these lines after looking at React's first few getting started examples:</p>
+
+<pre><code>/** @jsx React.DOM */
+var Item = React.createClass({
+    render: function() {
+        return &lt;div className="budget-item"&gt;
+                  &lt;span className="desc"&gt;Rent&lt;/span&gt;
+                  &lt;input type="text" placeholder="budget" value="1600" /&gt;
+                  &lt;input type="text" placeholder="actual" value="1600" /&gt;
+               &lt;/div&gt;;
+    }
+});
+
+React.renderComponent( &lt;Item /&gt; , document.body);
+</code></pre>
+
+<p>The <a href="http://jsfiddle.net/ifandelse/KX4XE">result</a>:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/KX4XE/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<blockquote><p>Apparently, I've just created a simple React component. See how I'm passing <code>&lt;Item /&gt;</code> as the first arg to <code>renderComponent</code>? This actually looks promising, since I can already envision the compositional advantages this can bring to bear when I start introducing parent-child relationships down the road.</p></blockquote>
+
+<p>That's fine - but I need to be able to pass <em>data</em> to my component. It appears that I can pass initial state into my component as attribute/value pairs - but I need to make a change to my Item's JSX markup first:</p>
+
+<pre><code>/** @jsx React.DOM */
+var Item = React.createClass({
+    render: function() {
+        return &lt;div className="budget-item"&gt;
+                  &lt;span className="desc"&gt;{ this.props.description }&lt;/span&gt;
+                  &lt;input type="text" placeholder="budget" value={ this.props.budget } /&gt;
+                  &lt;input type="text" placeholder="actual" value={ this.props.actual } /&gt;
+               &lt;/div&gt;;
+    }
+});
+</code></pre>
+
+<p>I've replaced the hard-coded values with JavaScript expressions wrapped in curly braces. These expressions will be evaluated for their actual values at runtime.</p>
+
+<blockquote><p>For what it's worth, I'm using "props" for these values because I don't expect them to change once the view has been rendered (<code>props</code> are intended to be immutable). Later on I'll have need of mutable data, and will store that as <code>state</code> instead. I'm also a bit surprised that I don't actually <em>hate</em> having JSX inline with my code. Everything I thought I knew is wrong...</p></blockquote>
+
+<p>So - to pass data in &amp; render our Item component, we can now do this:</p>
+
+<pre><code>var rent = {
+  description : "Rent",
+  type        : "expense",
+  budget      : 1600,
+  actual      : 1600
+}
+
+React.renderComponent(
+    &lt;Item description={rent.description} budget={rent.budget} actual={rent.actual} /&gt;,
+    document.body
+);
+</code></pre>
+
+<p>In the <code>renderComponent</code> call I'm passing the <code>description</code>, <code>budget</code> and <code>actual</code> amount values in as attribute/value pairs. Remember, though, this is JSX so my values need to be wrapped in curly braces since they are, in this example, JavaScript expressions that need to be evaluated. These attribute values will be stored under the component's <code>props</code> member.</p>
+
+<p>The <a href="http://jsfiddle.net/ifandelse/j6fCC">result</a>:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/j6fCC/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<blockquote><p>I can already see what I need to do to iterate over a worksheet's list of items and render an Item component for each one. The worksheet component shouldn't be that hard.... *<em>crosses fingers</em>*</p></blockquote>
+
+<h2>Creating a Worksheet Component</h2>
+
+<p>First, let's get our Worksheet rendering everything <em>except</em> our budget <code>Items</code> <em>and</em> let's also create a real worksheet state object we can pass into the <code>Worksheet</code> component:</p>
+
+<pre><code>var may2014 = {
+    period : "May 2014",
+    items  : [
+        { 
+            description : "Rent",
+            type        : "expense",
+            budget      : 1600,
+            actual      : 1600
+        },
+        {
+            description : "Salary",
+            type        : "income",
+            budget      : 5300,
+            actual      : 4875
+        },
+        { 
+            description : "Groceries",
+            type        : "expense",
+            budget      : 800,
+            actual      : 650
+        }
+    ]
+};
+
+var Worksheet = React.createClass({
+        getInitialState: function(){
+            return {
+                period : "",
+                items  : [],
+                budgetExpense  : function() {
+                    return this.items.reduce(function(accum, val){
+                      return val.type === "expense" ? accum + val.budget : accum;
+                    }, 0);
+                },
+                budgetIncome    : function() {
+                    return this.items.reduce(function(accum, val){
+                      return val.type === "income" ? accum + val.budget : accum;
+                    }, 0);
+                },
+                budgetRemainder : function() {
+                    return this.budgetIncome() - this.budgetExpense()
+                },
+                actualExpense  : function() {
+                    return this.items.reduce(function(accum, val){
+                      return val.type === "expense" ? accum + val.actual : accum;
+                    }, 0);
+                },
+                actualIncome    : function() {
+                    return this.items.reduce(function(accum, val){
+                      return val.type === "income" ? accum + val.actual : accum;
+                    }, 0);
+                },
+                actualRemainder : function() {
+                    return this.actualIncome() - this.actualExpense()
+                }
+            };
+        },
+        render: function() {
+            return  &lt;div&gt;
+                        &lt;form&gt;
+                            &lt;div&gt;
+                                &lt;h1&gt;{ this.state.period }&lt;/h1&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;div className="items"&gt;
+                                    &lt;em&gt;(No Budget Items Yet)&lt;/em&gt;
+                                &lt;/div&gt;
+                                &lt;div&gt;
+                                    &lt;div className="summary budget"&gt;
+                                        &lt;div className="summary-header"&gt;
+                                            &lt;h3&gt;Budget&lt;/h3&gt;
+                                        &lt;/div&gt;
+                                        &lt;div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Income:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.budgetIncome()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Expense:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.budgetExpense()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Remainder:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.budgetRemainder()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                        &lt;/div&gt;
+                                    &lt;/div&gt;
+                                    &lt;div className="summary actual"&gt;
+                                        &lt;div className="summary-header"&gt;
+                                            &lt;h3&gt;Actual&lt;/h3&gt;
+                                        &lt;/div&gt;  
+                                        &lt;div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Income:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.actualIncome()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Expense:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.actualExpense()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                            &lt;div&gt;
+                                                &lt;div&gt;Remainder:&lt;/div&gt;
+                                                &lt;div&gt;{ accounting.formatMoney(this.state.actualRemainder()) }&lt;/div&gt;
+                                            &lt;/div&gt;
+                                        &lt;/div&gt;                                  &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;;
+        }
+    });
+
+var worksheet = &lt;Worksheet /&gt;;
+
+React.renderComponent(
+    worksheet,
+    document.body
+);
+
+worksheet.setState(may2014);
+</code></pre>
+
+<p>You'll notice I'm using the <code>state</code> property of the component this time - instead of <code>props</code>. Why? The worksheet's data needs to be mutable - otherwise, editing a budget would be a bit difficult. By using <code>state</code>, I can use a component's <code>setState</code> method to update data (or add new budget items), and React will cause the component to re-render after the change. React actually renders components to an 'intermediate' DOM (effectively an in-memory JavaScript instance), which is then used to compare to the real DOM so that only the changed elements get re-rendered. I &lt;3 that behavior. I've also implemented the <code>getInitialState</code> method - not only setting initial state, but some "computed state" methods allowing me to get aggregate values for the worksheet as well.</p>
+
+<p>This should land us reasonably close to <a href="http://jsfiddle.net/ifandelse/VCc5e">this</a>:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/VCc5e/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<blockquote><p>I have a feeling component approach is probably going to pay off well.</p></blockquote>
+
+<h2>Rendering the Child Collection of Budget Items</h2>
+
+<p>Since I'm using Bootstrap's fluid grid system, I'll make a few tweaks to our item template's markup first:</p>
+
+<pre><code>/** @jsx React.DOM */
+var Item = React.createClass({
+    render: function() {
+        return  &lt;div className="budget-item"&gt;
+                    &lt;div className="desc"&gt; 
+                        { this.props.description }
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;input type="text" value={ this.props.budget } /&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;input type="text" value={ this.props.actual } /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;;
+    }
+});
+</code></pre>
+
+<p>Next I just need to swap out this div from our <code>Worksheet</code>'s <code>render</code> method:</p>
+
+<pre><code> &lt;div className="items"&gt;
+    &lt;em&gt;(No Budget Items Yet)&lt;/em&gt;
+ &lt;/div&gt;
+</code></pre>
+
+<p>With this:</p>
+
+<pre><code> &lt;div className="items"&gt;
+     &lt;div className="row budget-item"&gt;
+         &lt;div className="header"&gt;Description&lt;/div&gt;
+         &lt;div className="header amount "&gt;Budget&lt;/div&gt;
+         &lt;div className="header amount"&gt;Actual&lt;/div&gt;
+     &lt;/div&gt;
+     {
+         this.state.items.map(function(i) {
+             return &lt;Item description={i.description} budget={i.budget} actual={i.actual} /&gt;;
+         })
+     }
+&lt;/div&gt;
+</code></pre>
+
+<p>The relevant bit above is the expression wrapped in curly braces. We're calling <code>map</code> on our <code>items</code> array, and for each budget item, we're returning an <code>Item</code> component instance, passing in the initial state as attribute values (which become "immutable" <code>props</code> on the component). These <code>Item</code> component instances will become children of the <code>div</code> that contains them.</p>
+
+<blockquote><p>I love the easy separation between <code>Worksheet</code> and <code>Item</code> - components feel great. However, that <code>Worksheet</code> component seems a bit bloated. What if I could better separate and organize it?</p></blockquote>
+
+<p>Now that we're rendering <code>Item</code> components, our worksheet is <a href="http://jsfiddle.net/ifandelse/qj3PX">taking shape</a>:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/qj3PX/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<h2>Extracting More Components</h2>
+
+<p>The two "summary" tables ("Budget" and "Actual"), are ideal candidates to be their own components. In fact - they could both utilize the <em>same</em> component. Let's create a summary component:</p>
+
+<pre><code>var Summary = React.createClass({
+    render: function() {
+        return &lt;div className={ "summary " + this.props.type }&gt;
+            &lt;div&gt;
+                &lt;div className="summary-header"&gt;
+                    &lt;h3&gt;{ this.props.type.charAt(0).toUpperCase() + this.props.type.slice(1) } &lt;/h3&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;div&gt;
+                        &lt;div&gt;Income:&lt;/div&gt;
+                        &lt;div className="amount"&gt;{ accounting.formatMoney(this.props.income) }&lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;div&gt;Expense:&lt;/div&gt;
+                        &lt;div className="amount"&gt;{ accounting.formatMoney(this.props.expense) }&lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div className="remainder"&gt;
+                        &lt;div&gt;Remainder:&lt;/div&gt;
+                        &lt;div className="amount"&gt;{ accounting.formatMoney(this.props.remainder) }&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    }
+});
+</code></pre>
+
+<blockquote><p>I love deleting code. The only thing better is deleting code while eating cheesecake. Or cannolis.</p></blockquote>
+
+<p>Now that we have a <code>Summary</code> component, we can rip out the manual creation of the summary tables in the <code>Worksheet</code>, leaving us with a <code>render</code> method that looks like this:</p>
+
+<pre><code>var Worksheet = React.createClass({
+    // just showing the changes to render.
+    render: function() {
+        return  &lt;div&gt;
+                    &lt;form&gt;
+                        &lt;div className="worksheet-title"&gt;
+                            &lt;h1&gt;{ this.state.period }&lt;/h1&gt;
+                        &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;div className="items"&gt;
+                            &lt;div className="budget-item"&gt;
+                                &lt;div className="header"&gt;Description&lt;/div&gt;
+                                &lt;div className="header amount "&gt;Budget&lt;/div&gt;
+                                &lt;div className="header amount"&gt;Actual&lt;/div&gt;
+                            &lt;/div&gt;
+                            {
+                                this.state.items.map(function(i) {
+                                    return &lt;Item description={i.description} budget={i.budget} actual={i.actual} /&gt;;
+                                })
+                            }
+                        &lt;/div&gt;
+                        &lt;div&gt;
+                            &lt;Summary type="budget"
+                                     income={ this.state.budgetIncome() }
+                                     expense={ this.state.budgetExpense() }
+                                     remainder={ this.state.budgetRemainder() } /&gt;
+                            &lt;Summary type="actual"
+                                     income={ this.state.actualIncome() }
+                                     expense={ this.state.actualExpense() }
+                                     remainder={ this.state.actualRemainder() } /&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;/form&gt;
+                &lt;/div&gt;;
+}});
+</code></pre>
+
+<blockquote><p>Now that's better. I'm resisting the urge to further 'componentize' <code>Worksheet</code> for now. I really want to be able to add new budget <code>Item</code>s, and I'm thinking that could be its own component as well.</p></blockquote>
+
+<h2>A Component for Adding Items</h2>
+
+<p>Creating a component dedicated to allowing you to add a budget item to a worksheet isn't hard at all. You may find the tricky part is deciding how to communicate from "child" components up to the parent. To quote <a href="http://code.tutsplus.com/tutorials/intro-to-the-react-framework--net-35660">Pavan Podila</a>, "<em>Within a component-tree, data should always flow down.</em>" This is super easy with React (as we've seen in the <code>Worksheet</code> setting child <code>Item</code> components' <code>props</code> values). But if a child component needs to communicate back up to the parent, what's the best option? In my own opinion &amp; experience, this is where some sort of de-coupled messaging (or eventing) approach fits well. In my case, I'm going to use <a href="https://github.com/postaljs/postal.js">postal.js</a> to publish a message from the <code>ItemAdd</code> component, and our <code>Worksheet</code> component will need to be updated to subscribe to the message and alter the component's state when an item is added. First, the <code>ItemAdd</code> component:</p>
+
+<pre><code>var ItemAdd = React.createClass({
+        addItem: function(e) {
+            e.preventDefault();
+            postal.publish({
+                channel: "worksheet",
+                topic: "item.add",
+                data: {
+                    description : $("#item_desc").val(),
+                    type        : $("#item_type").val(),
+                    budget      : Number.parseFloat($("#item_budget").val()),
+                    actual      : Number.parseFloat($("#item_actual").val())
+                }
+            });
+        },
+
+        render: function() {
+            return  &lt;div className="budget-item-add"&gt;
+                        &lt;div className="budget-item"&gt;
+                            &lt;div className="desc"&gt;
+                                &lt;input type="text" id="item_desc" placeholder="description" /&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;input type="text" id="item_budget" placeholder="budget"/&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;input type="text" id="item_actual" placeholder="actual"/&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div className="budget-item ctrls"&gt;
+                            &lt;div className="desc"&gt;
+                                &lt;select id="item_type"&gt;
+                                    &lt;option value="expense"&gt;Expense&lt;/option&gt;
+                                    &lt;option value="income"&gt;Income&lt;/option&gt;
+                                &lt;/select&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;button name="addItem" onClick={this.addItem}&gt;Add&lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;;
+        }
+    });
+</code></pre>
+
+<p>In our <code>render</code> method, you'll notice we've provided an <code>onClick</code> attribute, and set the value to the component's <code>addItem</code> method. This works because React supports you providing an event handler as a camel cased property. In our <code>onClick</code> handler – the <code>addItem</code> method – we're publishing a message containing the form data the user filled out. Our <code>Worksheet</code> component will receive this message and add the item. In the <code>Worksheet</code> component, I implemented the <code>componentWillMount</code> method (which is fired as the component is "mounted" – more on that in a bit), and I'm wiring our subscription inside it:</p>
+
+<pre><code>var Worksheet = React.createClass({
+    // other methods, etc.
+    // only showing relevant bits here...
+    componentWillMount: function() {
+        postal.subscribe({
+            channel: "worksheet",
+            topic : "item.add",
+            callback: function(d, e) {
+                this.addNewItem(d);
+            }
+        }).withContext(this);
+    },
+    addNewItem: function(item) {
+        var items = this.state.items.concat([item]);
+        this.setState({ items: items });
+    },    
+</code></pre>
+
+<p>You can see that if our <code>Worksheet</code> component receives an <code>item.add</code> message, it will invoke <code>addNewItem</code>, which will trigger a re-render of the component, since the state will have changed.</p>
+
+<blockquote><p>I've seen other React examples where parent controls pass method references into child controls in order to facilitate child-to-parent communication. While that's certainly do-able, it's not my preferred approach in any framework.</p></blockquote>
+
+<p>At this point, our worksheet looks something like this:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/bBfLM/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<h2>Plot Twist</h2>
+
+<p>As I was getting up to speed on React, one thing threw me for a loop: <em><a href="http://facebook.github.io/react/docs/forms.html#controlled-components">controlled components</a></em>. In our worksheet, the <code>ItemAdd</code> component works just fine to add items to the budget. However, if we attempted to change the value in any of our rendered <code>Item</code> components' text inputs, it wouldn't let us. According to the React docs: "<em>An &lt;input&gt; with value set is a controlled component. In a controlled &lt;input&gt;, the value of the rendered element will always reflect the value prop.</em>" This is why our <code>ItemAdd</code> component works (none of its text inputs were rendered with a value assigned), and our <code>Item</code> components do not (each was rendered with a <code>budget</code> or <code>actual</code> value). To get around this, we can utilize an <code>onChange</code> event in our <code>Item</code> component:</p>
+
+<pre><code>var Item = React.createClass({
+        onChange : function(e) {
+            var $el = $(e.currentTarget);
+            var type = $el.parent().hasClass("actual") ? "actual" : "budget";
+            postal.publish({
+                channel: "worksheet",
+                topic: "item.change",
+                data : {
+                    index: this.props.index,
+                    type : type,
+                    val  : Number.parseFloat($el.val())
+                }
+            });
+        },
+        render: function() {
+            return  &lt;div className="budget-item"&gt;
+                        &lt;div className="desc"&gt; { this.props.description }&lt;/div&gt;
+                        &lt;div className="budget"&gt;
+                            &lt;input type="text" value={ this.props.budget } onChange={ this.onChange }/&gt;
+                        &lt;/div&gt;
+                        &lt;div className="actual"&gt;
+                            &lt;input type="text" value={ this.props.actual } onChange={ this.onChange } /&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;;
+        }
+    });
+</code></pre>
+
+<p>In this case I've chosen, once again, to use messaging to communicate the changes back to the <code>Worksheet</code> component. While this might seem foreign to you if you hail from other frameworks, I have to say that having my child components be as immutable as possible (i.e. - they're fed <code>props</code>) and eventing any changes up to the parent that actually <em>owns</em> the state has been very helpful in isolating complexity and avoiding any sort of parent-child state synchronization issues.</p>
+
+<p>I also updated the <code>Worksheet</code> component to listen for the <code>item.change</code> message published above:</p>
+
+<pre><code>var Worksheet = React.createClass({
+        // other methods, etc.
+        // only showing the relevant bits
+        componentWillMount: function() {
+            postal.subscribe({
+                channel: "worksheet",
+                topic : "item.add",
+                callback: function(d, e) {
+                    this.addNewItem(d);
+                }
+            }).withContext(this);
+            postal.subscribe({
+                channel: "worksheet",
+                topic: "item.change",
+                callback: function(d, e) {
+                    this.updateItem(d.index, d.type, d.val);
+                }
+            }).withContext(this);
+        },
+        updateItem: function(index, type, val) {
+            var items = this.state.items.slice(0);
+            items[index][type] = val;
+            this.setState({ items: items });
+        },
+        /* render was also updated to pass the index of the budget item to the
+           Item component: 
+           {
+               this.state.items.map(function(i, idx) {
+                   return &lt;Item index={idx} description={i.description} budget={i.budget} actual={i.actual} /&gt;;
+               })
+           }
+        */
+});
+</code></pre>
+
+<p>The <a href="http://jsfiddle.net/ifandelse/62EN7">result</a>:</p>
+
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/62EN7/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<h2>Taking Stock</h2>
+
+<p>While this code certainly isn't the prettiest code I've ever written, in a short time we've managed to dive into the following:</p>
+
+<ul>
+<li>how to create multiple React components</li>
+<li>grasp the beginnings of how to use <code>props</code> and <code>state</code></li>
+<li>how to pass data from parent to child components</li>
+<li>how to listen to DOM events and how to communicate from a child component up to the parent.</li>
+</ul>
+
+
+<p>There's a lot that can be done just to clean up the current code, not to mention adding real data retrieval &amp; persistence, validation, supporting multiple worksheets, pre-compiling our JSX and much <em>much</em> more. Nevertheless, this is a good point to stop and talk more about React from a higher level.</p>
+
+<h2>Why React?</h2>
+
+<p>Normally you might expect this section to be at the beginning of a post! Now that you've gotten to see a bit of React in action, though, some of this might make more sense. React is <em>not</em> intending to be a full stack MV* framework like Ember or AngularJS. To quote their docs: "Many people choose to think of React as the V in MVC." While I'd argue that it's a bit more than just the "V" (given the facilities for <code>props</code> and <code>state</code>), how React handles UI certainly differentiates it from other popular frameworks. As I mentioned earlier, React constructs an intermediate DOM, to which components initially render. This intermediate DOM is then compared to the real DOM, and React calculates the minimum set of DOM mutations that are needed to update the real DOM. Using this approach, React is capable of very fast DOM manipulations. In fact - Pete Hunt mentioned recently on JavaScript Jabber that React is capable of 60 fps on <em>a mobile device</em>.</p>
+
+<p>Overall - I find the focus on components, the simplicity of composing the UI with those components, the intelligent and highly optimized approach to rendering and UI lifecycle as well as the "plays-well-with-other-popular-libraries" to be compelling factors in React's favor. I was <em>highly</em> skeptical of JSX, but found that I truly enjoyed it after getting into the groove.</p>
+
+<p>Comparing React to other frameworks (which is inevitable) should not be done without comparing the specific feature overlap – since React doesn't provide opinions on transports (http, websockets, etc.), routing, etc. If you prefer a one-stop-shop approach, then odds are you will prefer Angular, Ember or something comparable. However, if you are comfortable assembling your own 'stack', I'd wager that you'll find React a welcome part of your tool set.</p>
+
+<h2>Where to Go From Here</h2>
+
+<p>Stay tuned for future posts that will continue to evolve this rough implementation - by the end of which you should get a clearer picture of what it's <em>really</em> like to use React. In the meantime, I highly recommend the following links:</p>
+
+<ul>
+<li><a href="http://code.tutsplus.com/tutorials/intro-to-the-react-framework--net-35660">Intro to the React Framework</a> by Pavan Podila</li>
+<li><a href="http://webdesignporto.com/react-js-in-pure-javascript-facebook-library/">React.js in pure JavaScript</a></li>
+<li><a href="http://facebook.github.io/react/docs/getting-started.html">React Docs - Getting Started</a></li>
+<li><a href="http://dailyjs.com/2013/08/15/react/">A Look at Facebook's React</a></li>
+</ul>
+
+</body>
+</html>
