@@ -1,6 +1,6 @@
 #A Thrown-to-the-Wolves-Hands-On Introduction to React
 
-There are some great [React](http://facebook.github.io/react/) overview posts (which I will link to at the bottom of this post), so I wanted to try something a bit different. Having used other MV\* frameworks, I wanted to dive right into React and see what it took to get up and running, and how it felt *in the trenches* getting from ideas to DOM. So, up front, we're going to focus on turning an app concept into a React-based implementation – we'll chat more about the philsophy and opinon behind React at the end. All you need to know for the moment is that React is "a JavaScript library for building user interfaces".
+There are some great [React](http://facebook.github.io/react/) overview posts (which I will link to at the bottom of this post), so I wanted to try something a bit different. Having used other MV\* frameworks, I wanted to dive right into React and see what it took to get up and running, and how it felt *in the trenches* getting from ideas to DOM. So, up front, we're going to focus on turning an app concept into a React-based implementation – we'll chat more about the philosophy and opinion behind React at the end. All you need to know for the moment is that React is "a JavaScript library for building user interfaces".
 
 > Note: Even though I already know a decent amount about how React works, I'm going document my __initial__ thought process and impressions of it when I first picked it up. Why? Because it's always fun learning new things, and my internal dialogue during those times might sound familiar to your own. These sidebar quotes are my internal dialogue. I'll try to edit out my own insanity and/or profanity. :-)
 
@@ -8,7 +8,7 @@ There are some great [React](http://facebook.github.io/react/) overview posts (w
 Years ago I wrote budget tracking app, where each month had a fairly typical worksheet of income and expenses. Let's see what it would take to create a single (scaled-down) budget worksheet using React to manage our UI.
 
 ###A Budget Worksheet
-A single `Worksheet` will apply to a defined date range (for example - May 2014) and contain a list of budget `Items`. Each budget `Item` will have a `description`, `budget` amount, `actual` amount and an expense `type` (e.g. - "income" or "expense"). The `Worksheet` will also have an aggregate total for `budgetExpenses`, `budgetIncome`, `budgetRemainder`, `actualExpenses`, `actualIncome` and `actualRemainder`. A simplfied JSON representation of a worksheet might look something like this:
+A single `Worksheet` will apply to a defined date range (for example - May 2014) and contain a list of budget `Items`. Each budget `Item` will have a `description`, `budget` amount, `actual` amount and an expense `type` (e.g. - "income" or "expense"). The `Worksheet` will also have an aggregate total for `budgetExpenses`, `budgetIncome`, `budgetRemainder`, `actualExpenses`, `actualIncome` and `actualRemainder`. A simplified JSON representation of a worksheet might look something like this:
 
 ```
 {
@@ -100,7 +100,7 @@ The result?
 
 > Apparently, I've just created a simple React component. See how I'm passing `<Item />` as the first arg to `renderComponent`? This actually looks promising, since I can already envision the compositional advantages this can bring to bear when I start introducing parent-child relationships down the road.
 
-That's fine - but I need to be able to pass *data* to my component. It appears that I can pass intial state into my component as attribute/value pairs - but I need to make a change to my Item's JSX markup first:
+That's fine - but I need to be able to pass *data* to my component. It appears that I can pass initial state into my component as attribute/value pairs - but I need to make a change to my Item's JSX markup first:
 
 ```
 /** @jsx React.DOM */
@@ -413,7 +413,7 @@ var Worksheet = React.createClass({
 }});
 ```
 
-> Now that's better. I'm resisting the urge to futher 'componentize' `Worksheet` for now. I really want to be able to add new budget `Item`s, and I'm thinking that could be its own component as well.
+> Now that's better. I'm resisting the urge to further 'componentize' `Worksheet` for now. I really want to be able to add new budget `Item`s, and I'm thinking that could be its own component as well.
 
 ##A Component for Adding Items
 Creating a component dedicated to allowing you to add a budget item to a worksheet isn't hard at all. You may find the tricky part is deciding how to communicate from "child" components up to the parent. To quote [Pavan Podila](http://code.tutsplus.com/tutorials/intro-to-the-react-framework--net-35660), "*Within a component-tree, data should always flow down.*" This is super easy with React (as we've seen in the `Worksheet` setting child `Item` components' `props` values). But if a child component needs to communicate back up to the parent, what's the best option? In my own opinion & experience, this is where some sort of de-coupled messaging (or eventing) approach fits well. In my case, I'm going to use [postal.js](https://github.com/postaljs/postal.js) to publish a message from the `ItemAdd` component, and our `Worksheet` component will need to be updated to subscribe to the message and alter the component's state when an item is added. First, the `ItemAdd` component:
@@ -486,14 +486,14 @@ var Worksheet = React.createClass({
 
 You can see that if our `Worksheet` component receives an `item.add` message, it will invoke `addNewItem`, which will trigger a re-render of the component, since the state will have changed.
 
-> I've seen other React examples where parent controls pass method references into child controls in order to faciliate child-to-parent communication. While that's certainly do-able, it's not my preferred approach in any framework.
+> I've seen other React examples where parent controls pass method references into child controls in order to facilitate child-to-parent communication. While that's certainly do-able, it's not my preferred approach in any framework.
 
 At this point, our worksheet looks something like this:
 
 ![](react4.png)
 
 ##Plot Twist
-As I was getting up to speed on React, one thing threw me for a loop: *[controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components)*. In our worksheet, the `ItemAdd` component works just fine to add items to the budget. However, if we attempted to change the value in any of our rendered `Item` components' text inputs, it wouldn't let us. According to the React docs: "*An &lt;input&gt; with value set is a controlled component. In a controlled &lt;input&gt;, the value of the rendered element will always reflect the value prop.*" This is why our `ItemAdd` component works (none of it's text inputs were rendered with a value assigned), and our `Item` components do not (each was rendered with a `budget` or `actual` value). To get around this, we can utilize an `onChange` event in our `Item` component:
+As I was getting up to speed on React, one thing threw me for a loop: *[controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components)*. In our worksheet, the `ItemAdd` component works just fine to add items to the budget. However, if we attempted to change the value in any of our rendered `Item` components' text inputs, it wouldn't let us. According to the React docs: "*An &lt;input&gt; with value set is a controlled component. In a controlled &lt;input&gt;, the value of the rendered element will always reflect the value prop.*" This is why our `ItemAdd` component works (none of its text inputs were rendered with a value assigned), and our `Item` components do not (each was rendered with a `budget` or `actual` value). To get around this, we can utilize an `onChange` event in our `Item` component:
 
 ```
 var Item = React.createClass({
@@ -576,7 +576,7 @@ There's a lot that can be done just to clean up the current code, not to mention
 
 
 ##Why React?
-Normally you might expect this section to be at the beginning of a post! Now that you've gotten to see a bit of React in action, though, some of this might make more sense. React is *not* intending to be a full stack MV\* framework like Ember or AngularJS. To quote their docs: "Many people choose to think of React as the V in MVC." While I'd argue that it's a bit more than just the "V" (given the facilities for `props` and `state`), how React handles UI certainly differentiates it from other popular frameworks. As I mentioned earlier, React constructs an intermediate DOM, to which components intially render. This intermediate DOM is then compared to the real DOM, and React calculates the minimum set of DOM mutations that are needed to update the real DOM. Using this approach, React is capable of very fast DOM manipulations. In fact - Pete Hunt mentioned recently on JavaScript Jabber that React is capable of 60 fps on *a mobile device*.
+Normally you might expect this section to be at the beginning of a post! Now that you've gotten to see a bit of React in action, though, some of this might make more sense. React is *not* intending to be a full stack MV\* framework like Ember or AngularJS. To quote their docs: "Many people choose to think of React as the V in MVC." While I'd argue that it's a bit more than just the "V" (given the facilities for `props` and `state`), how React handles UI certainly differentiates it from other popular frameworks. As I mentioned earlier, React constructs an intermediate DOM, to which components initially render. This intermediate DOM is then compared to the real DOM, and React calculates the minimum set of DOM mutations that are needed to update the real DOM. Using this approach, React is capable of very fast DOM manipulations. In fact - Pete Hunt mentioned recently on JavaScript Jabber that React is capable of 60 fps on *a mobile device*.
 
 Overall - I find the focus on components, the simplicity of composing the UI with those components, the intelligent and highly optimized approach to rendering and UI lifecycle as well as the "plays-well-with-other-popular-libraries" to be compelling factors in React's favor. I was *highly* skeptical of JSX, but found that I truly enjoyed it after getting into the groove.
 
