@@ -4,6 +4,9 @@ There are some great [React](http://facebook.github.io/react/) overview posts (w
 
 > Note: Even though I already know a decent amount about how React works, I'm going document my __initial__ thought process and impressions of it when I first picked it up. Why? Because it's always fun learning new things, and my internal dialogue during those times might sound familiar to your own. These sidebar quotes are my internal dialogue. I'll try to edit out my own insanity and/or profanity. :-)
 
+*NOTE: The code snippets that are in-line in this post have been trimmed of any Bootstrap-related fluff (yay for `div` and class explosion). I took my friend [TJ Van Toll](https://twitter.com/tjvantoll)'s suggestion to remove the bootstrap class names and some of the div nesting to make them easier to read. However, the embedded fiddle examples have all of that, so if you prefer to swim in div/class soup, feel free.*
+
+
 ##The Concept
 Years ago I wrote budget tracking app, where each month had a fairly typical worksheet of income and expenses. Let's see what it would take to create a single (scaled-down) budget worksheet using React to manage our UI.
 
@@ -93,9 +96,9 @@ var Item = React.createClass({
 React.renderComponent( <Item /> , document.body);
 ```
 
-The result?
+The [result](http://jsfiddle.net/ifandelse/KX4XE):
 
-![](react1.png)
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/KX4XE/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 
 > Apparently, I've just created a simple React component. See how I'm passing `<Item />` as the first arg to `renderComponent`? This actually looks promising, since I can already envision the compositional advantages this can bring to bear when I start introducing parent-child relationships down the road.
@@ -135,6 +138,9 @@ React.renderComponent(
 ```
 
 In the `renderComponent` call I'm passing the `description`, `budget` and `actual` amount values in as attribute/value pairs. Remember, though, this is JSX so my values need to be wrapped in curly braces since they are, in this example, JavaScript expressions that need to be evaluated. These attribute values will be stored under the component's `props` member.
+
+The [result](http://jsfiddle.net/ifandelse/j6fCC):
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/j6fCC/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 > I can already see what I need to do to iterate over a worksheet's list of items and render an Item component for each one. The worksheet component shouldn't be that hard.... \**crosses fingers*\*
 
@@ -200,60 +206,53 @@ var Worksheet = React.createClass({
             };
         },
         render: function() {
-            return  <div className="container-fluid">
+            return  <div>
                         <form>
-	                        <div className="row">
-	                            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 page-header worksheet-title">
-	                                <h1>{ this.state.period }</h1>
-	                            </div>
-	                        </div> 
-	                        <div className="row">
-	                            <div className="items col-xs-10 col-sm-6 col-md-4 col-lg-3">
+	                        <div>
+                                <h1>{ this.state.period }</h1>
+                            </div>
+	                        <div>
+	                            <div className="items">
 		                            <em>(No Budget Items Yet)</em>
 		                        </div>
-		                        <div className="col-xs-10 col-sm-3 col-md-3 col-lg-2">
-		                            <div className="summary budget panel panel-default">
-		                                <div className="row">
-		                                    <div className="col-xs-12 summary-header">
-		                                        <h3>Budget</h3>
-		                                    </div>
-		                                    <div className="panel-body">
-		                                        <div className="row">
-		                                            <div className="col-xs-6">Income:</div>
-		                                            <div className="col-xs-6 amount">{ accounting.formatMoney(this.state.budgetIncome()) }</div>
-		                                        </div>
-		                                        <div className="row">
-		                                            <div className="col-xs-6">Expense:</div>
-		                                                <div className="col-xs-6 amount">{ accounting.formatMoney(this.state.budgetExpense()) }</div>
-		                                        </div>
-		                                        <div className="row remainder">
-		                                            <div className="col-xs-6">Remainder:</div>
-		                                            <div className="amount col-xs-6">{ accounting.formatMoney(this.state.budgetRemainder()) }</div>
-		                                        </div>
-		                                    </div>
-		                                </div>
-		                            </div>
-		                            <div className="summary actual panel panel-default">
-		                                <div className="row">
-		                                    <div className="col-xs-12 summary-header">
-		                                        <h3>Actual</h3>
-		                                    </div>
-		                                    <div className="panel-body">
-		                                        <div className="row">
-		                                            <div className="col-xs-6">Income:</div>
-		                                            <div className="col-xs-6 amount">{ accounting.formatMoney(this.state.actualIncome()) }</div>
-		                                        </div>
-		                                        <div className="row">
-		                                            <div className="col-xs-6">Expense:</div>
-		                                            <div className="col-xs-6 amount">{ accounting.formatMoney(this.state.actualExpense()) }</div>
-		                                        </div>
-		                                        <div className="row remainder">
-		                                            <div className="col-xs-6">Remainder:</div>
-		                                            <div className="col-xs-6 amount">{ accounting.formatMoney(this.state.actualRemainder()) }</div>
-		                                        </div>
-		                                    </div>
-		                                </div>
-		                            </div>
+		                        <div>
+		                            <div className="summary budget">
+	                                    <div className="summary-header">
+	                                        <h3>Budget</h3>
+	                                    </div>
+	                                    <div>
+	                                        <div>
+	                                            <div>Income:</div>
+	                                            <div>{ accounting.formatMoney(this.state.budgetIncome()) }</div>
+	                                        </div>
+	                                        <div>
+	                                            <div>Expense:</div>
+	                                            <div>{ accounting.formatMoney(this.state.budgetExpense()) }</div>
+	                                        </div>
+	                                        <div>
+	                                            <div>Remainder:</div>
+	                                            <div>{ accounting.formatMoney(this.state.budgetRemainder()) }</div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+		                            <div className="summary actual">
+		                                <div className="summary-header">
+	                                        <h3>Actual</h3>
+	                                    </div>	
+	                                    <div>
+	                                        <div>
+	                                            <div>Income:</div>
+	                                            <div>{ accounting.formatMoney(this.state.actualIncome()) }</div>
+	                                        </div>
+	                                        <div>
+	                                            <div>Expense:</div>
+	                                            <div>{ accounting.formatMoney(this.state.actualExpense()) }</div>
+	                                        </div>
+	                                        <div>
+	                                            <div>Remainder:</div>
+	                                            <div>{ accounting.formatMoney(this.state.actualRemainder()) }</div>
+	                                        </div>
+	                                    </div>		                            </div>
 		                        </div>
 	                        </div>
                         </form>
@@ -274,28 +273,28 @@ worksheet.setState(may2014);
 
 You'll notice I'm using the `state` property of the component this time - instead of `props`. Why? The worksheet's data needs to be mutable - otherwise, editing a budget would be a bit difficult. By using `state`, I can use a component's `setState` method to update data (or add new budget items), and React will cause the component to re-render after the change. React actually renders components to an 'intermediate' DOM (effectively an in-memory JavaScript instance), which is then used to compare to the real DOM so that only the changed elements get re-rendered. I &lt;3 that behavior. I've also implemented the `getInitialState` method - not only setting initial state, but some "computed state" methods allowing me to get aggregate values for the worksheet as well.
 
-This should land us reasonably close to this:
+This should land us reasonably close to [this](http://jsfiddle.net/ifandelse/VCc5e):
 
-![](react2.png)
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/VCc5e/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 > I have a feeling component approach is probably going to pay off well.
 
 ## Rendering the Child Collection of Budget Items
 
-Since I'm using Bootstrap's fluid grid system, I'll make a few tweaks to our item template first:
+Since I'm using Bootstrap's fluid grid system, I'll make a few tweaks to our item template's markup first:
 
 ```
 /** @jsx React.DOM */
 var Item = React.createClass({
     render: function() {
-        return  <div className="row budget-item">
-                    <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4 desc"> 
+        return  <div className="budget-item">
+                    <div className="desc"> 
                     	{ this.props.description }
                     </div>
-                    <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    <div>
                         <input type="text" value={ this.props.budget } />
                     </div>
-                    <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    <div>
                         <input type="text" value={ this.props.actual } />
                     </div>
                 </div>;
@@ -307,7 +306,7 @@ Next I just need to swap out this div from our `Worksheet`'s `render` method:
 
 
 ```
- <div className="items col-xs-10 col-sm-6 col-md-4 col-lg-3">
+ <div className="items">
  	<em>(No Budget Items Yet)</em>
  </div>
 ```
@@ -315,11 +314,11 @@ Next I just need to swap out this div from our `Worksheet`'s `render` method:
 With this:
 
 ```
- <div className="items col-xs-10 col-sm-6 col-md-4 col-lg-4">
+ <div className="items">
 	 <div className="row budget-item">
-	     <div className="col-xs-4 col-sm-4 col-md-4 col-lg-6 header">Description</div>
-	     <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 header amount ">Budget</div>
-	     <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 header amount">Actual</div>
+	     <div className="header">Description</div>
+	     <div className="header amount ">Budget</div>
+	     <div className="header amount">Actual</div>
 	 </div>
 	 {
 	     this.state.items.map(function(i) {
@@ -333,9 +332,9 @@ The relevant bit above is the expression wrapped in curly braces. We're calling 
 
 > I love the easy separation between `Worksheet` and `Item` - components feel great. However, that `Worksheet` component seems a bit bloated. What if I could better separate and organize it?
 
-Now that we're rendering `Item` components, our worksheet is taking shape:
+Now that we're rendering `Item` components, our worksheet is [taking shape](http://jsfiddle.net/ifandelse/qj3PX):
 
-![](react3.png)
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/qj3PX/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 
 ##Extracting More Components
@@ -344,23 +343,23 @@ The two "summary" tables ("Budget" and "Actual"), are ideal candidates to be the
 ```
 var Summary = React.createClass({
     render: function() {
-        return <div className={ "summary " + this.props.type + " panel panel-default" }>
-            <div className="row">
-                <div className="col-xs-12 summary-header">
+        return <div className={ "summary " + this.props.type }>
+            <div>
+                <div className="summary-header">
                     <h3>{ this.props.type.charAt(0).toUpperCase() + this.props.type.slice(1) } </h3>
                 </div>
-                <div className="panel-body">
-                    <div className="row">
-                        <div className="col-xs-6">Income:</div>
-                        <div className="col-xs-6 amount">{ accounting.formatMoney(this.props.income) }</div>
+                <div>
+                    <div>
+                        <div>Income:</div>
+                        <div className="amount">{ accounting.formatMoney(this.props.income) }</div>
                     </div>
-                    <div className="row">
-                        <div className="col-xs-6">Expense:</div>
-                        <div className="col-xs-6 amount">{ accounting.formatMoney(this.props.expense) }</div>
+                    <div>
+                        <div>Expense:</div>
+                        <div className="amount">{ accounting.formatMoney(this.props.expense) }</div>
                     </div>
-                    <div className="row remainder">
-                        <div className="col-xs-6">Remainder:</div>
-                        <div className="col-xs-6 amount">{ accounting.formatMoney(this.props.remainder) }</div>
+                    <div className="remainder">
+                        <div>Remainder:</div>
+                        <div className="amount">{ accounting.formatMoney(this.props.remainder) }</div>
                     </div>
                 </div>
             </div>
@@ -369,7 +368,7 @@ var Summary = React.createClass({
 });
 ```
 
-> I love deleting code.
+> I love deleting code. The only thing better is deleting code while eating cheesecake. Or cannolis.
 
 Now that we have a `Summary` component, we can rip out the manual creation of the summary tables in the `Worksheet`, leaving us with a `render` method that looks like this:
 
@@ -377,19 +376,17 @@ Now that we have a `Summary` component, we can rip out the manual creation of th
 var Worksheet = React.createClass({
     // just showing the changes to render.
     render: function() {
-		return  <div className="container-fluid">
+		return  <div>
 		            <form>
-		            <div className="row">
-		                <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 page-header worksheet-title">
+		            	<div className="worksheet-title">
 		                    <h1>{ this.state.period }</h1>
 		                </div>
-		            </div> 
-		            <div className="row">
-		                <div className="items col-xs-10 col-sm-6 col-md-4 col-lg-4">
-		                    <div className="row budget-item">
-		                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-6 header">Description</div>
-		                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 header amount ">Budget</div>
-		                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 header amount">Actual</div>
+		            <div>
+		                <div className="items">
+		                    <div className="budget-item">
+		                        <div className="header">Description</div>
+		                        <div className="header amount ">Budget</div>
+		                        <div className="header amount">Actual</div>
 		                    </div>
 		                    {
 		                        this.state.items.map(function(i) {
@@ -397,7 +394,7 @@ var Worksheet = React.createClass({
 		                        })
 		                    }
 		                </div>
-		                <div className="col-xs-10 col-sm-3 col-md-3 col-lg-2">
+		                <div>
 		                    <Summary type="budget"
 		                             income={ this.state.budgetIncome() }
 		                             expense={ this.state.budgetExpense() }
@@ -436,26 +433,26 @@ var ItemAdd = React.createClass({
 
         render: function() {
             return  <div className="budget-item-add">
-                        <div className="row budget-item">
-                            <div className="col-xs-4 col-sm-4 col-md-4 col-lg-6 desc">
+                        <div className="budget-item">
+                            <div className="desc">
                                 <input type="text" id="item_desc" placeholder="description" />
                             </div>
-                            <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3">
+                            <div>
                                 <input type="text" id="item_budget" placeholder="budget"/>
                             </div>
-                            <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3">
+                            <div>
                                 <input type="text" id="item_actual" placeholder="actual"/>
                             </div>
                         </div>
-                        <div className="row budget-item ctrls">
-                            <div className="col-xs-4 col-sm-4 col-md-4 col-lg-6 desc">
+                        <div className="budget-item ctrls">
+                            <div className="desc">
                                 <select id="item_type">
                                     <option value="expense">Expense</option>
                                     <option value="income">Income</option>
                                 </select>
                             </div>
-                            <div className="col-xs-8 col-sm-8 col-md-8 col-lg-6">
-                                <button name="addItem" className="btn btn-default" onClick={this.addItem}>Add</button>
+                            <div>
+                                <button name="addItem" onClick={this.addItem}>Add</button>
                             </div>
                         </div>
                     </div>;
@@ -490,7 +487,7 @@ You can see that if our `Worksheet` component receives an `item.add` message, it
 
 At this point, our worksheet looks something like this:
 
-![](react4.png)
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/bBfLM/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ##Plot Twist
 As I was getting up to speed on React, one thing threw me for a loop: *[controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components)*. In our worksheet, the `ItemAdd` component works just fine to add items to the budget. However, if we attempted to change the value in any of our rendered `Item` components' text inputs, it wouldn't let us. According to the React docs: "*An &lt;input&gt; with value set is a controlled component. In a controlled &lt;input&gt;, the value of the rendered element will always reflect the value prop.*" This is why our `ItemAdd` component works (none of its text inputs were rendered with a value assigned), and our `Item` components do not (each was rendered with a `budget` or `actual` value). To get around this, we can utilize an `onChange` event in our `Item` component:
@@ -511,12 +508,12 @@ var Item = React.createClass({
             });
         },
         render: function() {
-            return  <div className="row budget-item">
-                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-6 desc"> { this.props.description }</div>
-                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 budget">
+            return  <div className="budget-item">
+                        <div className="desc"> { this.props.description }</div>
+                        <div className="budget">
                             <input type="text" value={ this.props.budget } onChange={ this.onChange }/>
                         </div>
-                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-3 actual">
+                        <div className="actual">
                             <input type="text" value={ this.props.actual } onChange={ this.onChange } />
                         </div>
                     </div>;
@@ -553,16 +550,19 @@ var Worksheet = React.createClass({
             items[index][type] = val;
             this.setState({ items: items });
         },
-        // render, etc.
-        // render was also updated to pass the index of the budget item to the
-        // Item component: 
-        // {
-        //     this.state.items.map(function(i, idx) {
-        //         return <Item index={idx} description={i.description} budget={i.budget} actual={i.actual} />;
-        //     })
-        // }
+        /* render was also updated to pass the index of the budget item to the
+           Item component: 
+           {
+               this.state.items.map(function(i, idx) {
+                   return <Item index={idx} description={i.description} budget={i.budget} actual={i.actual} />;
+               })
+           }
+        */
 });
 ```
+
+The [result](http://jsfiddle.net/ifandelse/62EN7): 
+<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/62EN7/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ##Taking Stock
 While this code certainly isn't the prettiest code I've ever written, in a short time we've managed to dive into the following:
@@ -572,7 +572,7 @@ While this code certainly isn't the prettiest code I've ever written, in a short
 * how to pass data from parent to child components
 * how to listen to DOM events and how to communicate from a child component up to the parent. 
 
-There's a lot that can be done just to clean up the current code, not to mention adding real data retrieval & persistence, supporting multiple worksheets, pre-compiling our JSX and much *much* more. Nevertheless, this is a good point to stop and talk more about React from a higher level.
+There's a lot that can be done just to clean up the current code, not to mention adding real data retrieval & persistence, validation, supporting multiple worksheets, pre-compiling our JSX and much *much* more. Nevertheless, this is a good point to stop and talk more about React from a higher level.
 
 
 ##Why React?
