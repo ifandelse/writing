@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+*{margin:0;padding:0;}
+body {
+	font:13.34px helvetica,arial,freesans,clean,sans-serif;
+	color:black;
+	line-height:1.4em;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+}
+p {
+	margin:1em 0;
+	line-height:1.5em;
+}
+table {
+	font-size:inherit;
+	font:100%;
+	margin:1em;
+}
+table th{border-bottom:1px solid #bbb;padding:.2em 1em;}
+table td{border-bottom:1px solid #ddd;padding:.2em 1em;}
+input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}
+select,option{padding:0 .25em;}
+optgroup{margin-top:.5em;}
+pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
+pre {
+	margin:1em 0;
+	font-size:12px;
+	background-color:#eee;
+	border:1px solid #ddd;
+	padding:5px;
+	line-height:1.5em;
+	color:#444;
+	overflow:auto;
+	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;border-radius:3px;
+}
+pre code {
+	padding:0;
+	font-size:12px;
+	background-color:#eee;
+	border:none;
+}
+code {
+	font-size:12px;
+	background-color:#f8f8ff;
+	color:#444;
+	padding:0 .2em;
+	border:1px solid #dedede;
+}
+img{border:0;max-width:100%;}
+abbr{border-bottom:none;}
+a{color:#4183c4;text-decoration:none;}
+a:hover{text-decoration:underline;}
+a code,a:link code,a:visited code{color:#4183c4;}
+h2,h3{margin:1em 0;}
+h1,h2,h3,h4,h5,h6{border:0;}
+h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
+h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
+h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
+h3{margin-top:1em;}
+hr{border:1px solid #ddd;}
+ul{margin:1em 0 1em 2em;}
+ol{margin:1em 0 1em 2em;}
+ul li,ol li{margin-top:.5em;margin-bottom:.5em;}
+ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}
+blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}
+dt{font-weight:bold;margin-left:1em;}
+dd{margin-left:2em;margin-bottom:1em;}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+<title>Unit Testing</title>
+
+</head>
+<body>
+<p>Over the last decade, application testing has continually proved itself to be an important concern. When done well, testing can drastically reduce the number of bugs that make it into your release code (and thus actually affect your users). In addition, good testing approaches will help your team catch bugs <em>earlier</em> in the development lifecycle – resulting in a savings of both time and money (not to mention reputation with your users). Code that has good test coverage enables you and your team to make changes and introduce new features to your app without the fear of it breaking existing functionality.</p>
+
+<p>The word "Testing" is a large umbrella, and is usually better understood when you break it down to specific <em>types</em> of testing. For example:</p>
+
+<ul>
+<li>Unit Testing - automated tests written by developers, with each test targeting a narrow slice of application behavior.</li>
+<li>Functional &amp; Acceptance Testing - typically performed by QA personnel or automated UI testing frameworks.</li>
+<li>Performance Testing - often performed manually with profiling tools (for example - heap and CPU profiling tools), though many mobile app developers are moving towards integrating app analytics to gather this data from real usage as well.</li>
+</ul>
+
+
+<p>That's certainly not an exhaustive list of the types of testing, but enough to make an important point: mobile applications face several challenges when it comes to testing. Key among those challenges are:</p>
+
+<ul>
+<li>Platform &amp; Device Diversity</li>
+<li>Immature Tooling</li>
+<li>Lack of Awareness</li>
+</ul>
+
+
+<p>If you opt to write native applications for each target platform, then any code-level testing (i.e. - Unit Tests) will not be transportable as you move from Objective-C (iOS) to Java (Android). In addition, any scripted UI-Automation testing tools may not work for multiple platforms (or at the very least require separate scripts for each platform). Hybrid solutions like PhoneGap, or cross-compiled solutions like Xamarin can offer a single approach to unit testing (given a single codebase for multiple platforms) - but do not always offer the same level of quality as native tooling when it comes to performance profiling. Despite the trade offs involved, I've found in my own experience that the biggest barrier to entry in mobile app testing is often a <em>lack of awareness of what tools are available</em>. <em>That</em> is the barrier which I hope to address in this post.</p>
+
+<h2>Unit Testing</h2>
+
+<p>Unit testing for specific platforms or cross-platform tools is not difficult, and your options abound. Let's look at a sample of some of these choices.</p>
+
+<h3>iOS</h3>
+
+<p>iOS developers who've been writing Objective-C for a while may be familiar with <a href="http://www.sente.ch/software/ocunit/">OCUnit</a>, which shipped with XCode prior to the XCTest framework. It's still supported in XCode 5, but the understanding is that new and future projects should focus on using XCTest.</p>
+
+<p>Don't let Apple's <a href="https://developer.apple.com/library/ios/documentation/ToolsLanguages/Conceptual/Xcode_Overview/UnitTestYourApp/UnitTestYourApp.html#//apple_ref/doc/uid/TP40010215-CH21-SW1">sparse documentation</a> on unit testing deter you from checking out the XCTest framework. If you're running an OS X Server, you can also take advantage of the <a href="https://developer.apple.com/library/ios/documentation/ToolsLanguages/Conceptual/Xcode_Overview/UnitTestYourApp/UnitTestYourApp.html#//apple_ref/doc/uid/TP40010215-CH21-SW3">XCode service's continuous integration features</a>. As part of a continuous integration workflow, you can create "bots", which can continually build and test your app.</p>
+
+<p>Many developers prefer a Behavior-Driven-Development (BDD) style syntax for unit testing. If this describes you, be sure to check out <a href="https://github.com/allending/Kiwi">Kiwi</a> - a BDD style unit testing framework for iOS.</p>
+
+<p>One other important mention is <a href="http://ocmock.org/ios/">OCMock</a> a mocking framework for iOS. Mocks are an indispensable part of writing adequate tests around your application's behavior!</p>
+
+<h3>Android</h3>
+
+<p><a href="http://junit.org/">JUnit</a> is perhaps by far the most well known (and officially recommended by Google) testing framework for Android. The JUnit Android extensions allow you to mock Android components, but I've also seen quite a number of Android developers use JUnit with <a href="https://code.google.com/p/mockito/">Mockito</a>, another Android mocking framework.</p>
+
+<p><a href="http://robolectric.org/">Robolectric</a> takes a different - and very interesting - approach by allowing you to run your Android unit tests in the normal JVM (Java Virtual Machine), without the need for an emulator. This enables your tests to not only run from within your IDE, but also as part of a continuous integration workflow.</p>
+
+<h3>Qt</h3>
+
+<p>Qt made the top 5 most used CPTs in 2013. If you're building mobile applications with Qt, you'll be happy to know about <a href="http://qt-project.org/doc/qt-4.8/qtestlib-manual.html">QTestLib</a>, a unit testing framework built by Nokia. Based on my research, it appears that QTestLib can be integrated with a 3rd party continuous integration workflow - enabling very helpful testing automation.</p>
+
+<h3>PhoneGap/Apache Cordova</h3>
+
+<p>Web-based hybrid approaches to mobile apps can take advantage of a host of testing and mocking frameworks, not to mention scripted UI/acceptance testing tools as well (more on that in a moment). When it comes to unit testing JavaScript, three of the biggest names are <a href="http://qunitjs.com/">QUnit</a>, <a href="http://visionmedia.github.io/mocha/">Mocha</a> and <a href="http://pivotal.github.io/jasmine/">Jasmine</a>. I've personally used all three, with my favorite setup including Mocha and <a href="https://github.com/LearnBoost/expect.js/">expect.js</a> (which provides a BDD style test syntax). Mocking and "spy" frameworks abound in JavaScript as well, with <a href="http://sinonjs.org/">Sinon.js</a> and <a href="http://jsmockito.org/">JsMockito</a> among the more popular stand-alone mocking options.</p>
+
+<p>Many PhoneGap developers take advantage of tools like <a href="http://phantomjs.org/">PhantomJS</a> - which is a "headless" (no UI) WebKit browser, with a JavaScript API. PhantomJS can be easily integrated into a continuous integration workflow to automatically run unit tests against your hybrid mobile application's codebase.</p>
+
+<h3>Xamarin</h3>
+
+<p>Xamarin uses a customized version of <a href="http://nunit.org/">NUnit</a> (ported from JUnit), called <a href="http://www.nunitlite.com/">NUnitLite</a> which enables you to write unit tests against your Xamarin iOS &amp; Android projects. For any shared codebase, you can use the unit testing framework of your choice.</p>
+
+<h2>Scripted UI Testing</h2>
+
+<p>Not every team can afford to hire an army of manual QA testers, despite how valuable that can be. Automated tooling can bridge the gap.</p>
+
+<p>If you're writing native iOS and Android apps, you're in luck. Apple provides an <a href="https://developer.apple.com/library/ios/documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/UsingtheAutomationInstrument/UsingtheAutomationInstrument.html">"Automation instrument"</a> that will automate UI tests against your iOS mobile application. The Android SDK provides the <a href="http://developer.android.com/tools/testing/testing_ui.html">"uiautomator" library</a>, described as "<em>A Java library containing APIs to create customized functional UI tests, and an execution engine to automate and run the tests.</em>" In addition to these, you can use third party tools like <a href="http://www.froglogic.com/squish/gui-testing/index.php">Squish</a>, <a href="http://www.ranorex.com/">Ranorex</a> and <a href="http://www.perfectomobile.com/Products/MobileCloud_Automation">Perfecto Mobile's MobileCloud Automation</a> to automate UI tests against Android and iOS apps, web apps and more. It's worth mentioning that Perfecto Mobile's <a href="http://www.perfectomobile.com/Products/MobileCloud_Automation">MobileCloud Automation</a> exposes an API to better facilitate integration with existing build/continuous integration tools. Perfecto Mobile also offers <a href="http://www.perfectomobile.com/Products/MobileCloud_Interactive">MobileCloud Interactive</a>, which enables you to "<em>perform remote manual testing on real smartphones and tablets regardless of where you are</em>" – who wouldn't want to have a "testing army" of <em>real</em> mobile device users at their disposal?</p>
+
+<p>Among the more interesting developments in mobile UI automated testing is the emergence of an open source project named <a href="http://appium.io/">Appium</a>. Appium uses the <a href="https://code.google.com/p/selenium/wiki/JsonWireProtocol">WebDriver</a> JsonWireProtocol to interact with iOS, Android and Firefox OS apps and gives you the choice of writing your UI tests in <em>any WebDriver-compatible language</em> (Java, Objective-C, JavaScript, PHP, Python, Ruby, C#, Clojure, Perl and others).</p>
+
+<h2>Performance &amp; Profiling</h2>
+
+<p>Apple's <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/Introduction/Introduction.html">Instruments</a> is one of the more impressive native toolsets I've seen recently. With Instruments, it's possible to profile how your app executes, run stress tests, record and replay user actions, create custom instruments and <em>a lot</em> more. If you're writing native iOS apps &amp; not using Instruments, I recommend reading through the <a href="https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/InstrumentsQuickStart/InstrumentsQuickStart.html#//apple_ref/doc/uid/TP40004652-CH19-SW1">Quick Start</a> to get up to speed.</p>
+
+<p>With Android apps, you have several (albeit, lower-level) tools available: <a href="http://developer.android.com/tools/debugging/systrace.html">Systrace</a> &amp; <a href="http://developer.android.com/tools/debugging/debugging-tracing.html">Traceview</a>. You can also use the Device Monitor to view memory usage based on <a href="http://developer.android.com/tools/help/logcat.html">logcat</a> messages.</p>
+
+<p>For hybrid mobile apps, you have a host of mature desktop browser tools (<a href="https://developers.google.com/chrome-developer-tools/">Chrome Developer Tools</a>, <a href="https://developer.mozilla.org/en-US/docs/Tools">Firefox</a>/<a href="http://getfirebug.com/">Firebug</a>, etc.), which you can bring to bear on your app to profile CPU usage, memory, DOM manipulation and much more.</p>
+
+<p>Many mobile developers have started taking advantage of third party analytics services such as <a href="http://www.google.com/analytics/mobile/">Google Mobile Analytics</a>, <a href="https://count.ly/">Countly</a>, <a href="http://www.telerik.com/analytics">EQATEC</a>, <a href="http://www.flurry.com/flurry-analytics.html">Flurry</a>, <a href="http://www.perfectomobile.com/Products/MobileCloud_Monitoring">Perfecto Mobile's MobileCloud Monitoring</a> and many others. The focus of these kind of analytics is usually more about how your app is actually used, user engagement, demographics, feature popularity, etc. However, it provides an opportunity to measure certain pieces of application performance <em>from within real-world usage</em>. While I wouldn't recommend this being your first line-of-defense in performance testing, having the ability to track real world performance metrics can be a powerful tool in tuning your application to your users' needs.</p>
+
+<p>We've only scratched the surface of the various testing options available for mobile app development. What testing approaches &amp; tools are you using when writing mobile apps? If you're not currently testing your application, what are some factors that would change your mind?</p>
+</body>
+</html>
