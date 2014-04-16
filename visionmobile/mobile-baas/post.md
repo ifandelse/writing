@@ -13,6 +13,7 @@ To determine which BaaS can work for you, you need to start with *at least* aski
 	* Storage (should be a given)
 	* Push notifications
 	* Usage analytics
+	* Dashboard/UI
 	* Social integration
 	* User Administration
 	* Custom Code Integration 
@@ -28,6 +29,9 @@ If you've used a mobile app, odds are you are familiar with push notifications. 
 
 ####Usage Analytics
 Does the service enable you to track the number of API calls, storage quota or other feature usage? Since many BaaS pricing plans can vary based on usage, having a means to view analytics is a vital part of wisely (& economically) using the service. Depending on what metrics are tracked, usage analytics may also give you insight into *how* your app is being used. Does the service support custom "events" which you can provide to track either feature usage, performance data and/or campaign response(s)? Does the provider give you the ability to query the usage over time, filter the data and export reports?
+
+####Dashboard/UI
+Does the provider give you an option to browse/search your data through some sort of portal or dashboard interface? Can you manage users or use a form to generate push notifications? Most BaaS providers have a web-based interface which you can use to manage your data, services and view reports.
 
 ####User Administration & Social Integration
 Many BaaS options provide built-in user management features. Does the service allow you to create users? Does it focus on role-based user permissions, or allow granular claims-based permissions? At what level can you restrict information — schemas/tables, records, fields? Your target users may not care to create yet another login in order to use your app. Does the BaaS provide integration with 3rd party authentication with sites like Facebook, Twitter, Google and others? 
