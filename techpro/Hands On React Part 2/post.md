@@ -40,7 +40,7 @@ In the previous post, we managed to implement the basic behavior of a single bud
 
 Let's see [this in action](http://jsfiddle.net/ifandelse/Z2FLA/):
 
-<iframe width="100%" height="300" src="http://jsfiddle.net/ifandelse/Z2FLA/embedded/result,js,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe style="width: 100%; height: 665px" src="http://jsfiddle.net/ifandelse/Z2FLA/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 > Heads up - I'm using [jquery-mockjax](https://github.com/appendto/jquery-mockjax) to mock HTTP endpoints in all of the fiddles for this post. However, as far as the components go, they're think they're making AJAX calls (and they are, we're just intercepting them with mockjax).
  
@@ -164,6 +164,8 @@ Another area where a mixin could help us in this code is in abstracting away the
 ```
 
 This mixin helps out on at least two fronts. First, it keeps extra boilerplate code out of our components. Second, it's general enough that I could potentially swap it out for a different messaging/eventing mix-in approach down the road. Let's see what our components looks like with this in place (see the runnable version [here](http://jsfiddle.net/ifandelse/DV4yC/)):
+
+<iframe style="width: 100%; height: 665px" src="http://jsfiddle.net/ifandelse/DV4yC/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ###The `Item` Component
 
