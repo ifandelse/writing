@@ -207,56 +207,57 @@ var Worksheet = React.createClass({
         },
         render: function() {
             return  <div>
-                        <form>
-	                        <div>
-                                <h1>{ this.state.period }</h1>
-                            </div>
-	                        <div>
-	                            <div className="items">
-		                            <em>(No Budget Items Yet)</em>
-		                        </div>
-		                        <div>
-		                            <div className="summary budget">
-	                                    <div className="summary-header">
-	                                        <h3>Budget</h3>
-	                                    </div>
-	                                    <div>
-	                                        <div>
-	                                            <div>Income:</div>
-	                                            <div>{ accounting.formatMoney(this.state.budgetIncome()) }</div>
-	                                        </div>
-	                                        <div>
-	                                            <div>Expense:</div>
-	                                            <div>{ accounting.formatMoney(this.state.budgetExpense()) }</div>
-	                                        </div>
-	                                        <div>
-	                                            <div>Remainder:</div>
-	                                            <div>{ accounting.formatMoney(this.state.budgetRemainder()) }</div>
-	                                        </div>
-	                                    </div>
-	                                </div>
-		                            <div className="summary actual">
-		                                <div className="summary-header">
-	                                        <h3>Actual</h3>
-	                                    </div>	
-	                                    <div>
-	                                        <div>
-	                                            <div>Income:</div>
-	                                            <div>{ accounting.formatMoney(this.state.actualIncome()) }</div>
-	                                        </div>
-	                                        <div>
-	                                            <div>Expense:</div>
-	                                            <div>{ accounting.formatMoney(this.state.actualExpense()) }</div>
-	                                        </div>
-	                                        <div>
-	                                            <div>Remainder:</div>
-	                                            <div>{ accounting.formatMoney(this.state.actualRemainder()) }</div>
-	                                        </div>
-	                                    </div>		                            </div>
-		                        </div>
-	                        </div>
-                        </form>
-                    </div>;
+					  <form>
+					    <div>
+					      <h1>{ this.state.period }</h1>
+					    </div>
+					    <div>
+					      <div className="items">
+					        <em>(No Budget Items Yet)</em>
+					      </div>
+					      <div>
+					        <div className="summary budget">
+					          <div className="summary-header">
+					            <h3>Budget</h3>
+					          </div>
+					          <div>
+					            <div>
+					              <div>Income:</div>
+					              <div>{ accounting.formatMoney(this.state.budgetIncome()) }</div>
+					            </div>
+					            <div>
+					              <div>Expense:</div>
+					              <div>{ accounting.formatMoney(this.state.budgetExpense()) }</div>
+					            </div>
+					            <div>
+					              <div>Remainder:</div>
+					              <div>{ accounting.formatMoney(this.state.budgetRemainder()) }</div>
+					            </div>
+					          </div>
+					        </div>
+					        <div className="summary actual">
+					          <div className="summary-header">
+					            <h3>Actual</h3>
+					          </div>
+					          <div>
+					            <div>
+					              <div>Income:</div>
+					              <div>{ accounting.formatMoney(this.state.actualIncome()) }</div>
+					            </div>
+					            <div>
+					              <div>Expense:</div>
+					              <div>{ accounting.formatMoney(this.state.actualExpense()) }</div>
+					            </div>
+					            <div>
+					              <div>Remainder:</div>
+					              <div>{ accounting.formatMoney(this.state.actualRemainder()) }</div>
+					            </div>
+					          </div>
+					        </div>
+					      </div>
+					    </div>
+					  </form>
+					</div>;
         }
     });
     
