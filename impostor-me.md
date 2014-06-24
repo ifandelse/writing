@@ -1,3 +1,5 @@
+#I'm Not Good Enough To Be An Impostor
+
 ##Are We Alike?
 
 Most of my life, I've had a knack to pick things up - a new subject, a new instrument, a hobby. Whether it was making our logistics team more efficient in one of my college jobs, eeking the best quality out of some of the early (and terrible) recording software in versions of Windows I've blocked out, lest I need therapy again, or writing web applications like I do today...I savor the challenge of new things. I love to create from scratch, but I also love making exising things *better*...realizing their potential.
