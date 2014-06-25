@@ -8,7 +8,7 @@ This knack of mine is loaded with inexpressible joy and sheer terror - and extri
 
 When I do my best to objectively analyze this *knack* of mine, I come away with this ugly "truth": In most situations, I feel I've only been able to "pick up" the new skill at a rate moderately faster than those who happened to be around me at the time. Combine that with the fact that I was the undercover introvert in a mostly-extrovert-dominated upbringing, I learned how to navigate the social politics of life, and focus the comparisons of how quickly I assimilated new skills and knowledge with those it would most contrast against. The dark side of loving to learn new things all the time is the irrational, but entirely real, fear that this knowledge would steal away in the night, leaving me to wake up with the sense that something's missing....but never being able to put my finger on *what*. 
 
-**In other words - I live with the constant background fear that I will be found out. I'm not that good. I'm not that smart. I have conceptual gaps in what is, at best, a vintage-block-of-swiss-cheese-knowledge. I've gotten lucky. Been at the right place at the right time.**
+**In other words - I live with the constant background fear that I will be found out. I'm not that good. I'm not that smart. I have conceptual gaps in what is, at best, a vintage-block-of-swiss-cheese-knowledge. I can trace the borders around what I don't know, but the chasm within seems impossible to adequately fill. I consider the positions of influence and leadership I've found myself in over my life, and all I can think is that I've gotten lucky. Been at the right place at the right time.**
 
 **I'm a *fraud*.**
 
