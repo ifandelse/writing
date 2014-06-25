@@ -30,9 +30,9 @@ Impostor Syndrome is that supporting character in a story who's acidic cynicism 
 
 How many times have I proven myself right? "See, I didn't really understand that concept."
 
-How many times do I involuntarily re-live those embarassing moments? The embarrassing break-up, the time I forgot to check for global variables, the time I aimed AOP right at both feet and blew them clean off....
+How many times do I involuntarily re-live those embarassing moments? The embarrassing break-up, the time I forgot to check for global variables, the time I aimed [AOP](http://en.wikipedia.org/wiki/Aspect-oriented_programming) right at both feet and blew them clean off....
 
-When we - as developers - face problems, I often feel we fall into two camps. They're best described by these reactions:
+When software developers face problems, I often feel we fall into two camps. They're best described by these reactions:
 
 >"I hate this 3rd party library. It sucks. The API doesn't make sense. The documentation is awful..."
 
