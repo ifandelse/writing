@@ -113,7 +113,7 @@ Either approach is valid - though we feel the second approach is more "out of Re
 * Some controller views don't need to be ActionCreators. The second approach means we could only pass the `store` mixin in those cases, keeping concerns focused. The first approach always gives the component both mixins, even if not used.
 * There's no need to explicitly pass the React instance to lux (done via `lux.initReact( React )`) so that it knows how to create components.
 
------
+-------
 ## 2.) Boilerplate Elimination
 In our experience, adopting React & Flux has moved infrastructure/framework concerns into the background so that we can focus on *actually creating features for our app*. Still, though, there are annoying bits of code that tend to crop up a lot. For example, consider this common approach to wiring/un-wiring components to listen to Store change events:
 
@@ -256,7 +256,7 @@ var ProductItemContainer = React.createClass({
 
 As with any convention, there are trade-offs. Composition is important aspect of ActionCreator APIs. They should be modeled separate from the component(s) that use them. So far we believe this approach upholds that, while trading some of the explicit nature (e.g. – keeping ActionCreators in their own module) for flexibility & terseness.
 
------
+-------
 ## 3.) Everything is an Action
 Since this behavior of "providing action creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs (we're using a hypermedia client called [halon]()). Our client-side wrapper for halon uses lux's `actionCreator` and `actionListener` mixins so that it can not only publish actions, but also handle them. 
 
@@ -276,6 +276,7 @@ Another benefit about treating every input as an Action: It makes it easy to see
 
 ![](lux.utils.printactions.png)
 
+-------
 ## 4.) Stores & Synchronicity
 
 ### Actions, Stores & Remote Data I/O
@@ -353,7 +354,7 @@ You can also set initial state on the store, as we're doing above, and provide t
 
 lux Stores also provide `setState` and `replaceState` methods - but if you attempt to invoke them directly, an exception will be thrown. Those methods can only be invoked during a dispatch cycle - we put this rather heavy-handed opinion in place to reinforce the guideline that only stores mutate their own state, and that's done in a handler.
 
------
+-------
 ## 5.) Plays Well With Others
 
 Another key lesson for our team - lux needs to make it easy for non-React/non-lux (external) instances to play well with together. To that end, lux provides mixins that can be used by external instances.
