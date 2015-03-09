@@ -340,7 +340,11 @@ The above module listens for the `cartCheckout` and `getAllProducts` actions. As
 In addition to building an amazing library, the React team has gone above and beyond in providing great performance tools, helpful error messages and more. We took a cue from the perf add-on, and created some utility methods that print information to the console for you:
 
 #### printActions
+Calling `lux.utils.printActions` in your browser's console will print a list of Action that can occur in your app:
+
+![](lux.utils.printactions.png)
 
 #### printStoreDepTree
+Calling `lux.utils.printStoreDepTree()` (or `lux.utils.printStoreDepTree( actionName )`) will show the list of stores participating in handling an action, and the order in which they will do so:
 
-### Testing
+![](lux.utils.printstoredeptree.png)
