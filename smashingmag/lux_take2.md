@@ -1,5 +1,5 @@
 # Five Qualities of Good Flux Implementations
-It's been an exciting year for my team at LeanKit. Last May we kicked off a project using ReactJS, and over the course of the project, we've learned a lot about React and Flux - Facebook's recommended architectural principles for React apps. Today we'll take a look at some of the key lessons we've learned. Whether you're new to React & Flux, or going as far as building your own Flux implementation, I think you'll not only enjoy this journey with us, but find some thought-provoking questions and wisdom you can apply in your own endeavors.
+It has been an exciting year for my team at LeanKit. Last May we kicked off a project using ReactJS, and over the course of the project, we've learned a lot about React and Flux - Facebook's recommended architectural principles for React apps. Today we'll take a look at some of the key lessons we've learned. Whether you're new to React & Flux, or going as far as building your own Flux implementation, I think you'll not only enjoy this journey with us, but find some thought-provoking questions and wisdom you can apply in your own endeavors.
 
 ## Helpful Background
 This post assumes you have some level of familiarity with React and Flux. Already familiar with them? Feel free to skip to "What is Lux?". Otherwise, I recommend reading through the links below.
@@ -42,7 +42,9 @@ Over time, we've found these qualities to be the drivers of success in our own f
 
 ### Examples
 
-Dmitri Voronianski created [flux-comparison](https://github.com/voronianski/flux-comparison), which lets you see a side-by-side comparison of several flux variants (using a basic shopping cart example). I've implemented the same example using lux to help illustrate the explanations along the way.
+Dmitri Voronianski created [flux-comparison](https://github.com/voronianski/flux-comparison), which lets you see a side-by-side comparison of several flux variants (using a basic shopping cart example). I've implemented the same example using lux to help illustrate the explanations along the way. I highly recommend checking this project out - it's a great way to quickly familiarize yourself with several leading Flux implementations.
+
+OK - with all that out of the way, let's look at the "why" behind the qualities I mentioned above.
 
 -------
 ## 1.) Staying Out of the Way
