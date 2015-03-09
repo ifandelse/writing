@@ -48,12 +48,12 @@ OK - with all that out of the way, let's look at the "why" behind the qualities 
 
 -------
 ## 1.) Staying Out of the Way
-React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (http, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework. For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.
+React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (http, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework behind your own API. (Note: this isn't always a bad thing!) For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.
 
 ### Controller Views 
 You will often hear React developers refer to "controller views" – a React component that typically sits at or near the top of a section of the page, which listens to one or more stores for changes in their state. As stores emit change events, the controller view updates with the new state and passes changes down to its children via props.
 
-lux provides a `controllerView` method that gives you back a component capable of listening to lux Stores (and it's also an ActionCreator), for example: 
+lux provides a `controllerView` method that gives you back a React component capable of listening to lux Stores (and it's also an ActionCreator), for example: 
 
 ```
 var CartContainer = lux.controllerView({
@@ -356,7 +356,7 @@ lux Stores also provide `setState` and `replaceState` methods - but if you attem
 -----
 ## 5.) Plays Well With Others
 
-Another key lesson for our team - lux needs to make it easy for non-React/lux instances to play well with together. To that end, lux provides mixins that can be used by something other than React components and Stores.
+Another key lesson for our team - lux needs to make it easy for non-React/non-lux (external) instances to play well with together. To that end, lux provides mixins that can be used by external instances.
 
 ### Store Mixin
 The `store` mixin enables you to listen for store change events. For example, this snippet shows an instance that's wired to listen to our ProductStore and CartStore:
@@ -366,7 +366,7 @@ var storeLogger = lux.mixin({
     stores: {
         listenTo: [ "products", "cart" ],
         onChange: function() {
-            console.log( "STORE LOGGER", "Received new state" );
+            console.log( "STORE LOGGER: Received state change event" );
         },
     }
 }, lux.mixin.store);
@@ -399,7 +399,7 @@ var listener = lux.actionListener({
 ```
 
 ### Why Not Both?
-It's not uncommon – especially if remote data API wrappers are involved – to need both the actionCreator and actionListener mixins. lux provides a convenience method for this, unsurprisingly named `actionCreatorListener`. In the flux-comparison example, the wrapper around the mock remote data API uses this:
+It's not uncommon – especially if remote data API wrappers are involved – to need both actionCreator and actionListener mixins. lux provides a convenience method for this, unsurprisingly named `actionCreatorListener`. In the flux-comparison example, the wrapper around the mock remote data API uses this:
 
 ```
 // WebAPIUtils.js
