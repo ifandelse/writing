@@ -51,7 +51,7 @@ OK - with all that out of the way, let's look at the "why" behind the qualities 
 React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (http, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework behind your own API. (Note: this isn't always a bad thing!) For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.
 
 ### Controller Views 
-You will often hear React developers refer to "controller views" – a React component that typically sits at or near the top of a section of the page, which listens to one or more stores for changes in their state. As stores emit change events, the controller view updates with the new state and passes changes down to its children via props.
+You will often hear React developers refer to "Controller Views" – a React component that typically sits at or near the top of a section of the page, which listens to one or more stores for changes in their state. As stores emit change events, the Controller View updates with the new state and passes changes down to its children via props.
 
 lux provides a `controllerView` method that gives you back a React component capable of listening to lux Stores (and it's also an ActionCreator), for example: 
 
@@ -110,7 +110,7 @@ var CartContainer = React.createClass({
 Either approach is valid - though we feel the second approach is more "out of React's way". Why?
 
 * We get a component's `displayName` for free (as the JSX transformer will use our var name when it sees `React.createClass`).
-* Some controller views don't need to be ActionCreators. The second approach means we could only pass the `store` mixin in those cases, keeping concerns focused. The first approach always gives the component both mixins, even if not used.
+* Some Controller Views don't need to be ActionCreators. The second approach means we could only pass the `store` mixin in those cases, keeping concerns focused. The first approach always gives the component both mixins, even if not used.
 * There's no need to explicitly pass the React instance to lux (done via `lux.initReact( React )`) so that it knows how to create components.
 
 -------
@@ -209,7 +209,7 @@ var ActionCreators = lux.actionCreator({
 
 You'll notice two things in the above code: first, the use of `lux.actionCreator`, which mixes `lux.mixin.actionCreator` into the target and second, the `publishAction` method (provided by the mixin).
 
-At the same time we were using the above mixin approach, we'd fallen into the practice of having matching handler names on our Stores (the handler method name matched the action type). For example, here's a lux Store that handles the `addToCart` Action:
+At the same time we were using the above mixin approach, we'd fallen into the practice of having matching handler names on our Stores (the handler method name matched the Action type). For example, here's a lux Store that handles the `addToCart` Action:
 
 ```
 var ProductStore = new lux.Store( {
@@ -258,7 +258,7 @@ As with any convention, there are trade-offs. Composition is important aspect of
 
 -------
 ## 3.) Everything is an Action
-Since this behavior of "providing action creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs (we're using a hypermedia client called [halon]()). Our client-side wrapper for halon uses lux's `actionCreator` and `actionListener` mixins so that it can not only publish actions, but also handle them. 
+Since this behavior of "providing Action Creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs (we're using a hypermedia client called [halon]()). Our client-side wrapper for halon uses lux's `actionCreator` and `actionListener` mixins so that it can not only publish Actions, but also handle them. 
 
 We approach it this way because we believe *every input* - whether it be user input or queued async execution (via AJAX, postMessage, WebSockets, etc.) - *should be fed into the client as an Action*. If you've kept up with any of the React discussions over time, you might be thinking "Jim, Facebook is OK with calling dispatch directly on an XHR response, rather than use another Action Creator". Absolutely - and that makes perfect sense when your implementation gives your "util" modules (like remote data APIs) a handle to the Dispatcher. With lux, we opted for the gateway to the Dispatcher to be via message contract, and removed the need for the Dispatcher to be a dependency of any module.
 
@@ -266,9 +266,9 @@ So if every "input" is an Action, this means we might have Actions in our system
 
 ![](luxdataflow1.png)
 
-In the above scenario, a user clicked a button on the page that resulted in a server request. When the server responds, the response is published as a new Action. While we *know* that the two actions are related, modeling things this way reinforces the avoidance of cascading updates, *and* it means your app's behavior will be capable of handling data being *pushed* to it, not just *pulled* through http requests.
+In the above scenario, a user clicked a button on the page that resulted in a server request. When the server responds, the response is published as a new Action. While we *know* that the two Actions are related, modeling things this way reinforces the avoidance of cascading updates, *and* it means your app's behavior will be capable of handling data being *pushed* to it, not just *pulled* through http requests.
 
-What if we wanted to update the UI to reflect that data is loading? It's as easy as having the appropriate store handle the same action:
+What if we wanted to update the UI to reflect that data is loading? It's as easy as having the appropriate store handle the same Action:
 
 ![](luxdataflow2.png)
 
@@ -282,13 +282,13 @@ Another benefit about treating every input as an Action: It makes it easy to see
 ### Actions, Stores & Remote Data I/O
 I believe a classic pitfall to those rolling their own Flux implementations is putting remote data i/o in stores. In the first version of lux, I not only fell into this pit, I pulled out a golden shovel and dug even deeper. Our stores had the ability to make http calls - and as a result, the need for Action dispatch cycles to be asynchronous was unavoidable. This introduced a ripple of bad side effects:
 
-* Retrieving data from a store was an asynchronous operation, so it wasn't possible to synchronously use a store's state in a controller view's `getInitialState` method.
+* Retrieving data from a store was an asynchronous operation, so it wasn't possible to synchronously use a store's state in a Controller View's `getInitialState` method.
 * We found that requiring asynchronous reads of store state discouraged the use of "read only" helper methods on Stores.
-* Putting i/o in stores led to actions being intiated by stores (e.g. - on XHR responses or WebSocket events). This was quickly undermining the gains from uni-directional data flow. Flux Stores publishing their own actions could lead to cascading updates - the very thing we wanted to avoid!
+* Putting i/o in stores led to Actions being intiated by stores (e.g. - on XHR responses or WebSocket events). This was quickly undermining the gains from uni-directional data flow. Flux Stores publishing their own Actions could lead to cascading updates - the very thing we wanted to avoid!
 
 I think the temptation to fall into this pit has to do with the trend of client-side frameworks to-date. Client-side models are often treated as write-through-caches for server-side data. Complex server/client synchronization tools have sprung up, effectively encouraging a sort of two-way binding across the server/client divide. Yoda said it best: You must unlearn what you have learned.
 
-About the time I was realizing I'd be better off making lux Stores synchronous, I read Reto Schläpfer's post ["Async requests with React.js and Flux, revisited."](http://www.code-experience.com/async-requests-with-react-js-and-flux-revisited/). He had experienced the same pain, and the same realization. Making lux Stores synchronous from the moment the Dispatcher begins handling an Action to the moment Stores emit change events made our app more deterministic and enabled our controller views to synchronously read Store state as they intialized. We finally felt like we'd found the droids we were looking for.
+About the time I was realizing I'd be better off making lux Stores synchronous, I read Reto Schläpfer's post ["Async requests with React.js and Flux, revisited."](http://www.code-experience.com/async-requests-with-react-js-and-flux-revisited/). He had experienced the same pain, and the same realization. Making lux Stores synchronous from the moment the Dispatcher begins handling an Action to the moment Stores emit change events made our app more deterministic and enabled our Controller Views to synchronously read Store state as they intialized. We finally felt like we'd found the droids we were looking for.
 
 Let's take a look at one of the lux Stores in the flux-comparison example:
 
@@ -348,7 +348,7 @@ var CartStore = new lux.Store( {
 } );
 ```
 
-A lux Store contains (at least) a `handlers` property and a `namespace`. The names of the keys on the `handlers` property match the Action type that they handle. In keeping with Flux principles, it's possible for lux Stores to wait on other stores before executing their handler. The stores you need to wait on can be specified on a per-action basis. The `addToCart` handler above is a good example. In the `waitFor` array, you specify the namespaces of any other store you need to wait on - this handler waits on the "products" store. The Dispatcher determines the order in which stores need to execute their handlers at runtime, so there's no need to worry about managing the order yourself in your Store logic. (Note that if you don't need to wait on any other stores, the handler value can be just the handler function itself rather than the object literal representation on `addToCart` above.)
+A lux Store contains (at least) a `handlers` property and a `namespace`. The names of the keys on the `handlers` property match the Action type that they handle. In keeping with Flux principles, it's possible for lux Stores to wait on other stores before executing their handler. The stores you need to wait on can be specified on a per-Action basis. The `addToCart` handler above is a good example. In the `waitFor` array, you specify the namespaces of any other store you need to wait on - this handler waits on the "products" store. The Dispatcher determines the order in which stores need to execute their handlers at runtime, so there's no need to worry about managing the order yourself in your Store logic. (Note that if you don't need to wait on any other stores, the handler value can be just the handler function itself rather than the object literal representation on `addToCart` above.)
 
 You can also set initial state on the store, as we're doing above, and provide top-level methods that are used for reading data (the lux Store prototype provides the `getState()` method). Since Store handlers execute synchronously, you can safely read a Store's state from any component's getInitialState method, and you can be assured that no other Action will interrupt or mutate Store state while another Action is being handled.
 
@@ -374,7 +374,7 @@ var storeLogger = lux.mixin({
 ```
 
 ### Action Creator Mixin
-The actionCreator mixin gives the instance a `publishAction( actionName, arg1, arg2...)` method. This method handles packaging the metadata about the Action into a message payload and then publishes it (if you've created a custom action creator that does more than just publish the action message, it will invoke that behavior):
+The actionCreator mixin gives the instance a `publishAction( actionName, arg1, arg2...)` method. This method handles packaging the metadata about the Action into a message payload and then publishes it (if you've created a custom Action Creator that does more than just publish the Action message, it will invoke that behavior):
 
 ```
 // calling lux.actionCreator is a convenience wrapper around
@@ -387,7 +387,7 @@ var creator = lux.actionCreator( {
 ```
 
 ### Action Listener Mixin
-The actionListener mixin wires the instance into postal, so that it listens for any lux action messages. When a message arrives, it checks the `handlers` property for a matching handler and invokes it:
+The actionListener mixin wires the instance into postal, so that it listens for any lux Action messages. When a message arrives, it checks the `handlers` property for a matching handler and invokes it:
 
 ```
 var listener = lux.actionListener({
