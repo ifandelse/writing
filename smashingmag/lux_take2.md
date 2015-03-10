@@ -272,7 +272,7 @@ What if we wanted to update the UI to reflect that data is loading? It's as easy
 
 ![](luxdataflow2.png)
 
-Another benefit about treating every input as an Action: It makes it easy to see what behaviors are possible your app. For example, here's the output of calling `lux.utils.printActions()`:
+Another benefit about treating every input as an Action: It makes it easy to see what behaviors are possible in your app. For example, here's the output of calling `lux.utils.printActions()`:
 
 ![](lux.utils.printactions.png)
 
@@ -357,7 +357,7 @@ lux Stores also provide `setState` and `replaceState` methods - but if you attem
 -------
 ## 5.) Plays Well With Others
 
-Another key lesson for our team - lux needs to make it easy for non-React/non-lux (external) instances to play well with together. To that end, lux provides mixins that can be used by external instances.
+Another key lesson for our team - it needs to be simple for lux and non-React/non-lux (external) instances to play well together. To that end, lux provides mixins that can be used by external instances.
 
 ### Store Mixin
 The `store` mixin enables you to listen for store change events. For example, this snippet shows an instance that's wired to listen to our ProductStore and CartStore:
