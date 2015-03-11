@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<!-- Please do not change this code -->
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel='stylesheet' href='styles-please-dont-delete/style.css'>
+	<title>Smashing Magazine article template</title>
+</head>
+
+<body>
+<header class="site-header">
+	<div class="flag">
+		<div class="table-cell">
+			<a href="http://www.smashingmagazine.com/"><h1 class="logo">Smashing Magazine</h1></a>
+		</div>
+		<div class="table-cell text-right">
+			<h1>Author's Article Template</h1>
+		</div>
+	</div>
+</header>
+
+<div class="page">
+
+<!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	START editing here
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+<h2>Five Qualities of Good Flux Implementations</h2>
+
+<p>It has been an exciting year for my team at <a href="http://leankit.com/" target="_blank">LeanKit</a>. Last May we kicked off a project using <a href="http://facebook.github.io/react/" target="_blank">ReactJS</a>, and over the course of the project, we've learned a lot about React and <a href="http://facebook.github.io/react/blog/2014/05/06/flux.html" target="_blank">Flux</a> - Facebook's recommended architectural principles for React apps. Today we'll take a look at some of the key lessons we've learned. Whether you're new to React &amp; Flux, or going as far as building your own Flux implementation, I think you'll not only enjoy this journey with us, but find some thought-provoking questions and wisdom you can apply in your own endeavors.</p>
+
+<h3>
+<a id="user-content-helpful-background" class="anchor" href="#helpful-background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helpful Background</h3>
+
+<p>This post assumes you have some level of familiarity with React and Flux. Already familiar with them? Feel free to skip to "What is Lux?". Otherwise, I recommend reading through the links below.</p>
+
+<h4>React</h4>
+
+<p><a href="http://developer.telerik.com/featured/introduction-to-the-react-javascript-framework/" target="_blank">Telerik</a> recently called 2015 "the year of React". Here's a high level summary of React:</p>
+
+<ul>
+    <li>React focuses on view concerns, and does not attempt to be an "everything framework"</li>
+    <li>React UIs are built out of components.</li>
+    <li>React components can be written using <a href="http://facebook.github.io/react/docs/jsx-in-depth.html" target="_blank">JSX</a> - an XML-based extension to JavaScript, or with plain JavaScript.</li>
+    <li>React components render to a "virtual DOM". Subsequent renders are diffed with the previous render, and the minimum number of DOM mutations are executed to effectively "patch" the DOM to bring it up to date.</li>
+</ul>
+
+<p>Check out Facebook's <a href="http://facebook.github.io/react/docs/getting-started.html" target="_blank">Getting Started</a> guide.</p>
+
+<h4>Flux</h4>
+
+<p>Flux is an architectural pattern Facebook recommends for building apps with React. Where React's opinions <em>nudge</em> you towards uni-directional data flow, Flux provides a fuller picture as to what that <em>actually</em> looks like. Several Flux implementations have arisen (LeanKit's lux.js, included), providing a fascinating view into how different teams are tackling the challenges they face. A high level summary of Flux would include:</p>
+
+<ul>
+    <li>Flux apps have three main abstractions: Views (React components), Stores and the Dispatcher.</li>
+    <li>Views "propagate" Actions (e.g. - user interaction) through the Dispatcher.</li>
+    <li>The Dispatcher handles notifying the various Stores of the Action.</li>
+    <li>If a Store's state changes, it emits a change event, and Views depending on that Store for state will re-render.</li>
+</ul>
+
+<p>Check out Facebook's <a href="http://facebook.github.io/flux/docs/overview.html#content" target="_blank">overview</a> of Flux.</p>
+
+<h3>What is Lux?</h3>
+
+<figure>
+    <a href="images-in-article/lux-large.png"><img src="images-in-article/lux500px.png" alt="Lux.js logo." title="Lux.js logo." /></a>
+    <figcaption>(<a href="images-in-article/lux-large.png">View large version</a>)</figcaption>
+</figure>
+
+<p>JavaScript developers crank out new frameworks as fast as a politician making promises at a campaign rally. Why, then, write another framework? I love this subject, though it falls outside the scope of this article. It's sufficient to say that our team has a specific set of needs, skills and goals that we've tailored <a href="https://github.com/LeanKit-Labs/lux.js" target="_blank">lux</a> to fit. We believe that a "stack" is superior to a "framework". Our work with lux attempts to strike a delicate balance between consistent opinions and flexibility to include other libraries that best solve for the concern at hand.</p>
+
+<p>Over time, we've found these qualities to be the drivers of success in our own flux implementation:</p>
+
+<ul>
+    <li>Don't get in React's way.</li>
+    <li>Continously eliminate boilerplate.</li>
+    <li>Treat every input as an Action.</li>
+    <li>Store operations <em>must</em> be synchronous.</li>
+    <li>Make it easy to "play well" with non-lux/non-React instances.</li>
+</ul>
+
+<h4>Examples</h4>
+
+<p>Dmitri Voronianski created <a href="https://github.com/voronianski/flux-comparison">flux-comparison</a>, which lets you see a side-by-side comparison of several flux variants (using a basic shopping cart example). I've implemented the same example using lux to help illustrate the explanations along the way. I highly recommend checking this project out - it's a great way to quickly familiarize yourself with several leading Flux implementations.</p>
+
+<p>OK - with all that out of the way, let's look at the "why" behind the qualities I mentioned above.</p>
+
+<hr>
+
+<h3>1.) Staying Out of the Way</h3>
+
+<p>React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (http, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework behind your own API. (Note: this isn't always a bad thing!) For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.</p>
+
+<h4>Controller Views</h4>
+
+<p>You will often hear React developers refer to "Controller Views" – a React component that typically sits at or near the top of a section of the page, which listens to one or more stores for changes in their state. As stores emit change events, the Controller View updates with the new state and passes changes down to its children via props.</p>
+
+<p>lux provides a <code>controllerView</code> method that gives you back a React component capable of listening to lux Stores (and it's also an ActionCreator), for example: </p>
+
+<pre><code class="language-javascript">var CartContainer = lux.controllerView({
+
+    getActions: [ "cartCheckout" ],
+
+    stores: {
+        listenTo: [ "cart" ],
+        onChange: function() {
+            this.setState(getStateFromStores());
+        }
+    },
+
+    getInitialState: function () {
+        return getStateFromStores();
+    },
+
+    onCheckoutClicked: function () {
+        var products = this.state.products;
+        if (!products.length) {
+            return;
+        }
+        this.cartCheckout(products);
+    },
+
+    render: function () {
+        return (
+            &lt;Cart products={this.state.products} total={this.state.total} onCheckoutClicked={this.onCheckoutClicked} /&gt;
+        );
+    }
+});
+</code></pre>
+
+<p>While we still like this convenient approach, we've found ourselves moving to the alternative approach of standing up a plain React Component, and passing the lux mixins necessary to achieve the same result. Note that, here, we're calling <code>React.createClass</code> and using the <code>mixins</code> option:</p>
+
+<pre><code class="language-javascript">var CartContainer = React.createClass({
+
+    mixins: [ lux.reactMixin.store, lux.reactMixin.actionCreator ],
+
+    getActions: [ "cartCheckout" ],
+
+    stores: {
+        listenTo: [ "cart" ],
+        onChange: function() {
+            this.setState(getStateFromStores());
+        }
+    },
+
+    // other methods, etc.
+});
+</code></pre>
+
+<p>Either approach is valid - though we feel the second approach is more "out of React's way". Why?</p>
+
+<ul>
+    <li>We get a component's <code>displayName</code> for free (as the JSX transformer will use our var name when it sees <code>React.createClass</code>).</li>
+    <li>Some Controller Views don't need to be ActionCreators. The second approach means we could only pass the <code>store</code> mixin in those cases, keeping concerns focused. The first approach always gives the component both mixins, even if not used.</li>
+    <li>There's no need to explicitly pass the React instance to lux (done via <code>lux.initReact( React )</code>) so that it knows how to create components.</li>
+</ul>
+
+<hr>
+
+<h3>2.) Boilerplate Elimination</h3>
+
+<p>In our experience, adopting React &amp; Flux has moved infrastructure/framework concerns into the background so that we can focus on <em>actually creating features for our app</em>. Still, though, there are annoying bits of code that tend to crop up a lot. For example, consider this common approach to wiring/un-wiring components to listen to Store change events:</p>
+
+<pre><code class="language-javascript">// Taken from the facebook-flux example:
+// https://github.com/voronianski/flux-comparison/blob/master/facebook-flux/js/components/CartContainer.jsx
+var CartContainer = React.createClass({
+    // only showing the methods we're interested in
+
+    componentDidMount: function () {
+        CartStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function () {
+        CartStore.removeChangeListener(this._onChange);
+    },
+
+    // more methods, etc.
+});
+</code></pre>
+
+<p>Honestly - the boilerplate tax isn't high here, but it's still present. Since mixins can provider component lifecycle methods, we made this automatic when you include lux mixins:</p>
+
+<pre><code class="language-javascript">
+var ProductsListContainer = React.createClass({
+
+    mixins: [ lux.reactMixin.store ],
+
+    stores: {
+        listenTo: [ "products" ],
+        onChange: function() {
+            this.setState(getAllProducts());
+        }
+    },
+
+    // more methods, etc.
+});
+</code></pre>
+
+<p>When our ProductsListContainer stands up, it will be wired up to listen to any of the store namespaces provided in the <code>stores.listenTo</code> array, and those subscriptions will be removed if the component unmounts. Goodbye boilerplate!</p>
+
+<h4>ActionCreator Boilerplate</h4>
+
+<p>In Flux apps, you'll usually see dedicated ActionCreator modules like this: </p>
+
+<pre><code class="language-javascript">// snippet from: https://github.com/voronianski/flux-comparison/blob/master/facebook-flux/js/actions/ActionCreators.js
+var ActionsCreators = exports;
+
+ActionsCreators.receiveProducts = function (products) {
+    AppDispatcher.handleServerAction({
+        type: ActionTypes.RECEIVE_PRODUCTS,
+        products: products
+    });
+};
+
+ActionsCreators.addToCart = function (product) {
+    AppDispatcher.handleViewAction({
+        type: ActionTypes.ADD_TO_CART,
+        product: product
+    });
+};
+</code></pre>
+
+<p>As we continually asked "what repeated code can we eliminate and replace with convention?", ActionCreator APIs kept coming up. In our case, we use postal.js for communication between ActionCreators and the Dispatcher. 99.9% of the time, an ActionCreator method published an Action message with no additional behavior. Things evolved over time like this:</p>
+
+<pre><code class="language-javascript">// The very early days
+// `actionChannel` is a ref to a postal channel dedicated to lux Actions
+var ActionCreators = {
+    addToCart: function() {
+        actionChannel.publish( {
+            topic: "execute.addToCart",
+            data: {
+                actionType: ActionTypes.ADD_TO_CART,
+                actionArgs: arguments
+            }
+        } );
+    }
+};
+</code></pre>
+
+<p>That was very quickly abstracted into an ActionCreator mixin to enable this:</p>
+
+<pre><code class="language-javascript">// The early-ish days
+var ActionCreators = lux.actionCreator({
+    addToCart: function( product ) {
+        this.publishAction( ActionTypes.ADD_TO_CART, product );
+    }
+});
+</code></pre>
+
+<p>You'll notice two things in the above code: first, the use of <code>lux.actionCreator</code>, which mixes <code>lux.mixin.actionCreator</code> into the target and second, the <code>publishAction</code> method (provided by the mixin).</p>
+
+<p>At the same time we were using the above mixin approach, we'd fallen into the practice of having matching handler names on our Stores (the handler method name matched the Action type). For example, here's a lux Store that handles the <code>addToCart</code> Action:</p>
+
+<pre><code class="language-javascript">var ProductStore = new lux.Store( {
+
+    state: { products: [] },
+
+    namespace: "products",
+
+    handlers: {
+        addToCart: function( product ) {
+            var prod = this.getState().products.find( function( p ) {
+                return p.id === product.id;
+            } );
+            prod.inventory = prod.inventory &gt; 0 ? prod.inventory - 1 : 0;
+        }
+    },
+
+    // other methods, etc.
+} );
+</code></pre>
+
+<p>Matching Action type names and Store handler names made conventional wire-up very simple, but we saw another area we could eliminate boilerplate: if 99% of our ActionCreator API implementations just published a message, why not infer creation of ActionCreator APIs based on what gets handled by Stores? So we did, while still allowing custom implementations of ActionCreator methods where needed. For example, when the Store instance in the snippet above is created, lux will see that it handles an <code>addToCart</code> Action. If an ActionCreator API hasn't already been defined for this Action under <code>lux.actions</code>, lux will create one, with the default behavior of publishing the Action message.</p>
+
+<p>Taking this approach means our components can specify what ActionCreator methods they want in an "a la carte" style. In this next snippet, our ProductItemContainer is using the <code>lux.reactMixin.actionCreator</code> mixin, which looks for a <code>getActions</code> array, and provides the specified Actions as top level methods on the component. You can see we're using the <code>addToCart</code> ActionCreator method in the <code>onAddToCartClicked</code> handler method.</p>
+
+<pre><code class="language-javascript">var ProductItemContainer = React.createClass({
+
+    mixins: [ lux.reactMixin.actionCreator ],
+
+    getActions: [ "addToCart" ],
+
+    onAddToCartClicked: function () {
+        this.addToCart(this.props.product);
+    },
+
+    render: function () {
+        return (
+            &lt;ProductItem product={this.props.product} onAddToCartClicked={this.onAddToCartClicked} /&gt;
+        );
+    }
+});
+</code></pre>
+
+<p>As with any convention, there are trade-offs. Composition is important aspect of ActionCreator APIs. They should be modeled separate from the component(s) that use them. So far we believe this approach upholds that, while trading some of the explicit nature (e.g. – keeping ActionCreators in their own module) for flexibility &amp; terseness.</p>
+
+<hr>
+
+<h3>3.) Everything is an Action</h3>
+
+<p>Since this behavior of "providing Action Creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs (we're using a hypermedia client called <a href="https://github.com/LeanKit-Labs/halon" target="_blank">halon</a>). Our client-side wrapper for halon uses lux's <code>actionCreator</code> and <code>actionListener</code> mixins so that it can not only publish Actions, but also handle them. </p>
+
+<p>We approach it this way because we believe <em>every input</em> - whether it be user input or queued async execution (via AJAX, postMessage, WebSockets, etc.) - <em>should be fed into the client as an Action</em>. If you've kept up with any of the React discussions over time, you might be thinking "Jim, Facebook is OK with calling dispatch directly on an XHR response, rather than use another Action Creator". Absolutely - and that makes perfect sense when your implementation gives your "util" modules (like remote data APIs) a handle to the Dispatcher. With lux, we opted for the gateway to the Dispatcher to be via message contract, and removed the need for the Dispatcher to be a dependency of any module.</p>
+
+<p>So if every "input" is an Action, this means we might have Actions in our system that none of our stores care about. Other Actions might be of interest to both a store as well as our remote data API. The value of how this complements and forces you into the "pit of uni-directional data flow success" can be illustrated in this image:</p>
+
+<figure>
+    <a href="images-in-article/luxdataflow1_large.png"><img src="images-in-article/luxdataflow1_500px.png" alt="Uni-directional data flow in lux.js" title="Uni-directional data flow in lux.js." /></a>
+    <figcaption>(<a href="images-in-article/luxdataflow1_large.png">View large version</a>)</figcaption>
+</figure>
+
+<p>In the above scenario, a user clicked a button on the page that resulted in a server request. When the server responds, the response is published as a new Action. While we <em>know</em> that the two Actions are related, modeling things this way reinforces the avoidance of cascading updates, <em>and</em> it means your app's behavior will be capable of handling data being <em>pushed</em> to it, not just <em>pulled</em> through http requests.</p>
+
+<p>What if we wanted to update the UI to reflect that data is loading? It's as easy as having the appropriate store handle the same Action:</p>
+
+<figure>
+    <a href="images-in-article/luxdataflow2_large.png"><img src="images-in-article/luxdataflow2_500px.png" alt="Uni-directional data flow in lux.js" title="Uni-directional data flow in lux.js." /></a>
+    <figcaption>(<a href="images-in-article/luxdataflow2_large.png">View large version</a>)</figcaption>
+</figure>
+
+<p>Another benefit about treating every input as an Action: It makes it easy to see what behaviors are possible in your app. For example, here's the output of calling <code>lux.utils.printActions()</code>:</p>
+
+<figure>
+    <a href="images-in-article/luxPrintActions_large.png"><img src="images-in-article/luxPrintActions500px.png" alt="Uni-directional data flow in lux.js" title="Uni-directional data flow in lux.js." /></a>
+    <figcaption>(<a href="images-in-article/luxPrintActions_large.png">View large version</a>)</figcaption>
+</figure>
+
+<p>Lux also provides a utility method to view what stores would participate in handling an action, and in what order: <code>lux.utils.printStoreDepTree(actionName)</code>:</p>
+
+<figure>
+    <a href="images-in-article/luxPrintStoreDepTree_large.png"><img src="images-in-article/luxPrintStoreDepTree500px.png" alt="Uni-directional data flow in lux.js" title="Uni-directional data flow in lux.js." /></a>
+    <figcaption>(<a href="images-in-article/luxPrintStoreDepTree_large.png">View large version</a>)</figcaption>
+</figure>
+
+<hr>
+
+<h3>4.) Stores &amp; Synchronicity</h3>
+
+<h4>Actions, Stores &amp; Remote Data I/O</h4>
+
+<p>I believe a classic pitfall to those rolling their own Flux implementations is putting remote data i/o in stores. In the first version of lux, I not only fell into this pit, I pulled out a golden shovel and dug even deeper. Our stores had the ability to make http calls - and as a result, the need for Action dispatch cycles to be asynchronous was unavoidable. This introduced a ripple of bad side effects:</p>
+
+<ul>
+    <li>Retrieving data from a store was an asynchronous operation, so it wasn't possible to synchronously use a store's state in a Controller View's <code>getInitialState</code> method.</li>
+    <li>We found that requiring asynchronous reads of store state discouraged the use of "read only" helper methods on Stores.</li>
+    <li>Putting i/o in stores led to Actions being intiated by stores (e.g. - on XHR responses or WebSocket events). This was quickly undermining the gains from uni-directional data flow. Flux Stores publishing their own Actions could lead to cascading updates - the very thing we wanted to avoid!</li>
+</ul>
+
+<p>I think the temptation to fall into this pit has to do with the trend of client-side frameworks to-date. Client-side models are often treated as write-through-caches for server-side data. Complex server/client synchronization tools have sprung up, effectively encouraging a sort of two-way binding across the server/client divide. Yoda said it best: You must unlearn what you have learned.</p>
+
+<p>About the time I was realizing I'd be better off making lux Stores synchronous, I read Reto Schläpfer's post <a href="http://www.code-experience.com/async-requests-with-react-js-and-flux-revisited/" target="_blank">"Async requests with React.js and Flux, revisited."</a>. He had experienced the same pain, and the same realization. Making lux Stores synchronous from the moment the Dispatcher begins handling an Action to the moment Stores emit change events made our app more deterministic and enabled our Controller Views to synchronously read Store state as they intialized. We finally felt like we'd found the droids we were looking for.</p>
+
+<p>Let's take a look at one of the lux Stores in the flux-comparison example:</p>
+
+<pre><code class="language-javascript">var CartStore = new lux.Store( {
+    namespace: "cart",
+
+    state: { products: { } },
+
+    handlers: {
+        addToCart: {
+            waitFor: [ 'products' ],
+            handler: function( product ) {
+                var newState = this.getState();
+                newState.products[ product.id ] = (
+                    newState.products[ product.id ] ||
+                    assign( products.getProduct( product.id ), { quantity: 0 } )
+                );
+                newState.products[ product.id ].quantity += 1;
+                this.setState( newState );
+            }
+        },
+        cartCheckout: function() {
+            this.replaceState( { products: {} } );
+        },
+        successCheckout: function( products ) {
+            // this can be used to redirect to success page, etc.
+            console.log( 'YOU BOUGHT:' );
+            if ( typeof console.table === "function" ) {
+                console.table( products );
+            } else {
+                console.log( JSON.stringify( products, null, 2 ) );
+            }
+        }
+    },
+
+    getProduct: function( id ) {
+        return this.getState().products[ id ];
+    },
+
+    getAddedProducts: function() {
+        var state = this.getState();
+        return Object.keys( state.products ).map( function( id ) {
+            return state.products[ id ];
+        } );
+    },
+
+    getTotal: function() {
+        var total = 0;
+        var products = this.getState().products;
+        for (var id in products) {
+            var product = products[ id ];
+            total += product.price * product.quantity;
+        }
+        return total.toFixed( 2 );
+    }
+} );
+</code></pre>
+
+<p>A lux Store contains (at least) a <code>handlers</code> property and a <code>namespace</code>. The names of the keys on the <code>handlers</code> property match the Action type that they handle. In keeping with Flux principles, it's possible for lux Stores to wait on other stores before executing their handler. The stores you need to wait on can be specified on a per-Action basis. The <code>addToCart</code> handler above is a good example. In the <code>waitFor</code> array, you specify the namespaces of any other store you need to wait on - this handler waits on the "products" store. The Dispatcher determines the order in which stores need to execute their handlers at runtime, so there's no need to worry about managing the order yourself in your Store logic. (Note that if you don't need to wait on any other stores, the handler value can be just the handler function itself rather than the object literal representation on <code>addToCart</code> above.)</p>
+
+<p>You can also set initial state on the store, as we're doing above, and provide top-level methods that are used for reading data (the lux Store prototype provides the <code>getState()</code> method). Since Store handlers execute synchronously, you can safely read a Store's state from any component's getInitialState method, and you can be assured that no other Action will interrupt or mutate Store state while another Action is being handled.</p>
+
+<p>lux Stores also provide <code>setState</code> and <code>replaceState</code> methods - but if you attempt to invoke them directly, an exception will be thrown. Those methods can only be invoked during a dispatch cycle - we put this rather heavy-handed opinion in place to reinforce the guideline that only stores mutate their own state, and that's done in a handler.</p>
+<hr>
+<h3>5.) Plays Well With Others</h3>
+
+<p>Another key lesson for our team - it needs to be simple for lux and non-React/non-lux (external) instances to play well together. To that end, lux provides mixins that can be used by external instances.</p>
+
+<h4>Store Mixin</h4>
+
+<p>The <code>store</code> mixin enables you to listen for store change events. For example, this snippet shows an instance that's wired to listen to our ProductStore and CartStore:</p>
+
+<pre><code class="language-javascript">var storeLogger = lux.mixin({
+    stores: {
+        listenTo: [ "products", "cart" ],
+        onChange: function() {
+            console.log( "STORE LOGGER: Received state change event" );
+        },
+    }
+}, lux.mixin.store);
+</code></pre>
+
+<h4>Action Creator Mixin</h4>
+
+<p>The actionCreator mixin gives the instance a <code>publishAction( actionName, arg1, arg2...)</code> method. This method handles packaging the metadata about the Action into a message payload and then publishes it (if you've created a custom Action Creator that does more than just publish the Action message, it will invoke that behavior):</p>
+
+<pre><code class="language-javascript">// calling lux.actionCreator is a convenience wrapper around
+// lux.mixin( target, lux.mixin.actionCreator );
+var creator = lux.actionCreator( {
+    doAThing: function() {
+        this.publishAction( "doJazzHands", "hey, I can lux, too!", true, "story" );
+    }
+} );
+</code></pre>
+
+<h4>Action Listener Mixin</h4>
+
+<p>The actionListener mixin wires the instance into postal, so that it listens for any lux Action messages. When a message arrives, it checks the <code>handlers</code> property for a matching handler and invokes it:</p>
+
+<pre><code class="language-javascript">var listener = lux.actionListener({
+    handlers: {
+        doJazzHands: function(msg, someBool, lastArg) {
+            console.log(msg, someBool, lastArg); // -&gt; hey, I can lux, too! true story
+        }
+    }
+});
+</code></pre>
+
+<h4>Why Not Both?</h4>
+
+<p>It's not uncommon – especially if remote data API wrappers are involved – to need both actionCreator and actionListener mixins. lux provides a convenience method for this, unsurprisingly named <code>actionCreatorListener</code>. In the flux-comparison example, the wrapper around the mock remote data API uses this:</p>
+
+<pre><code class="language-javascript">// WebAPIUtils.js
+var shop = require( '../../../common/api/shop' );
+var lux = require( 'lux.js' );
+
+module.exports = lux.actionCreatorListener( {
+    handlers: {
+        cartCheckout: function( products ) {
+            shop.buyProducts( products, function() {
+                this.publishAction( "successCheckout", products );
+            }.bind( this ) );
+        },
+        getAllProducts: function() {
+            shop.getProducts( function( products ) {
+                this.publishAction( "receiveProducts", products );
+            }.bind( this ) );
+        },
+    }
+} );
+</code></pre>
+
+<p>The above module listens for the <code>cartCheckout</code> and <code>getAllProducts</code> actions. As it handles them, it uses the <code>publishAction</code> method (simulating how a server response would initiate a new Action).</p>
+
+<p>So far, the mixins have covered every need we've had to make non-lux/non-React instances play well with lux. If those weren't enough, though, the underlying message contracts for Actions and Store update notifications are very simple, and could serve as an alternative. In fact, we plan to use those in some future Chrome dev tools extensions for lux.</p>
+
+<h3>Wrapping Up</h3>
+
+<p>As I've looked through other Flux implementations, I've been encouraged to see that these principles are frequently present in them as well. The number of options available can feel overwhelming - but overall I find it an encouraging development. Solid &amp; successful patterns like Flux will, by their very nature, encourage multiple implementations. If our experience is any indication, keeping these principles in mind can help guide you as you select, or write, the Flux implementation you need.</p>
+
+<h3>Jim Cowart</h3>
+
+<p>Jim Cowart is tragically geeky about JavaScript &amp; open source development...but he's not a fan of lists, so we'll stop there. Having journeyed through Cold Fusion, an obscure proprietary JavaScript BI implementation, C#, a smidgeon of Erlang and even some time as a data warehouse architect and developer (apparently he lied to us about not liking lists), he's most passionate about connecting with other developers – learning, sharing and promoting patterns and ideas that will make development more productive, enjoyable and empowering. Jim works at LeanKit as their Front End Architect and lives in Chattanooga with his wife and three sons.</p>
+
+<p><a href="https://twitter.com/ifandelse">@ifandelse on Twitter</a></p>
+<p><a href="http://ifandelse.com">ifandelse.com</a></p>
+
+<p>jim@ifandelse.com</p>
+
+
+<!--
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	STOP editing here
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+
+</div> <!--  .page -->
+<script src='styles-please-dont-delete/prism.js'></script>
+</body>
+</html>
