@@ -97,7 +97,7 @@
 
 <p>You will often hear React developers refer to "Controller Views" – a React component that typically sits at or near the top of a section of the page, which listens to one or more stores for changes in their state. As stores emit change events, the Controller View updates with the new state and passes changes down to its children via props.</p>
 
-<p>lux provides a <code>controllerView</code> method that gives you back a React component capable of listening to lux Stores (and it's also an ActionCreator), for example: </p>
+<p>lux provides a <code>controllerView</code> method that gives you back a React component capable of listening to lux Stores. Under the hood, lux uses mixins to give the React components different behaviors, and the <code>controllerView</code> method gives a component both a <code>store</code> mixin (making it capable of listening to stores) and an <code>actionCreator</code> mixin (making it capable of publishing actions). For example: </p>
 
 <pre><code class="language-javascript">var CartContainer = lux.controllerView({
 
