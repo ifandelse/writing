@@ -44,7 +44,7 @@
     <li>React focuses on view concerns, and does not attempt to be an "everything framework"</li>
     <li>React UIs are built out of components.</li>
     <li>React components can be written using <a href="http://facebook.github.io/react/docs/jsx-in-depth.html" target="_blank">JSX</a> - an XML-based extension to JavaScript, or with plain JavaScript.</li>
-    <li>React components render to a "virtual DOM". Subsequent renders are diffed with the previous render, and the minimum number of DOM mutations are executed to effectively "patch" the DOM to bring it up to date.</li>
+    <li>React components render to a "virtual DOM". Subsequent renders are "diffed" with the previous render, and the minimum number of DOM mutations are executed to effectively "patch" the DOM to bring it up to date.</li>
 </ul>
 
 <p>Check out Facebook's <a href="http://facebook.github.io/react/docs/getting-started.html" target="_blank">Getting Started</a> guide.</p>
@@ -75,7 +75,7 @@
 
 <ul>
     <li>Don't get in React's way.</li>
-    <li>Continously eliminate boilerplate.</li>
+    <li>Continuously eliminate boilerplate.</li>
     <li>Treat every input as an Action.</li>
     <li>Store operations <em>must</em> be synchronous.</li>
     <li>Make it easy to "play well" with non-lux/non-React instances.</li>
@@ -91,7 +91,7 @@
 
 <h3>1.) Staying Out of the Way</h3>
 
-<p>React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (http, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework behind your own API. (Note: this isn't always a bad thing!) For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.</p>
+<p>React does a great job at focusing only on what it aims to solve. By not being prescriptive on broader things like remote data communications (HTTP, WebSockets), and by providing hooks that enable you to incorporate non-React UI libraries, you have the opportunity to assemble the tools that best address the needs of your app. Just as React stays out of the way of concerns it doesn't solve for, we've found it's equally important to stay out of React's way. It's easy to get in the way as you begin abstracting common patterns in how you use another library/framework behind your own API. (Note: this isn't always a bad thing!) For example, let's look at the common component behaviors we've built into lux, and how our usage of them has evolved.</p>
 
 <h4>Controller Views</h4>
 
@@ -311,7 +311,7 @@ var ActionCreators = lux.actionCreator({
     <figcaption>(<a href="images-in-article/luxdataflow1_large.png">View large version</a>)</figcaption>
 </figure>
 
-<p>In the above scenario, a user clicked a button on the page that resulted in a server request. When the server responds, the response is published as a new Action. While we <em>know</em> that the two Actions are related, modeling things this way reinforces the avoidance of cascading updates, <em>and</em> it means your app's behavior will be capable of handling data being <em>pushed</em> to it, not just <em>pulled</em> through http requests.</p>
+<p>In the above scenario, a user clicked a button on the page that resulted in a server request. When the server responds, the response is published as a new Action. While we <em>know</em> that the two Actions are related, modeling things this way reinforces the avoidance of cascading updates, <em>and</em> it means your app's behavior will be capable of handling data being <em>pushed</em> to it, not just <em>pulled</em> through HTTP requests.</p>
 
 <p>What if we wanted to update the UI to reflect that data is loading? It's as easy as having the appropriate store handle the same Action:</p>
 
@@ -340,17 +340,17 @@ var ActionCreators = lux.actionCreator({
 
 <h4>Actions, Stores &amp; Remote Data I/O</h4>
 
-<p>I believe a classic pitfall to those rolling their own Flux implementations is putting remote data i/o in stores. In the first version of lux, I not only fell into this pit, I pulled out a golden shovel and dug even deeper. Our stores had the ability to make http calls - and as a result, the need for Action dispatch cycles to be asynchronous was unavoidable. This introduced a ripple of bad side effects:</p>
+<p>I believe a classic pitfall to those rolling their own Flux implementations is putting remote data i/o in stores. In the first version of lux, I not only fell into this pit, I pulled out a golden shovel and dug even deeper. Our stores had the ability to make HTTP calls - and as a result, the need for Action dispatch cycles to be asynchronous was unavoidable. This introduced a ripple of bad side effects:</p>
 
 <ul>
     <li>Retrieving data from a store was an asynchronous operation, so it wasn't possible to synchronously use a store's state in a Controller View's <code>getInitialState</code> method.</li>
     <li>We found that requiring asynchronous reads of store state discouraged the use of "read only" helper methods on Stores.</li>
-    <li>Putting i/o in stores led to Actions being intiated by stores (e.g. - on XHR responses or WebSocket events). This was quickly undermining the gains from uni-directional data flow. Flux Stores publishing their own Actions could lead to cascading updates - the very thing we wanted to avoid!</li>
+    <li>Putting i/o in stores led to Actions being initiated by stores (e.g. - on XHR responses or WebSocket events). This was quickly undermining the gains from uni-directional data flow. Flux Stores publishing their own Actions could lead to cascading updates - the very thing we wanted to avoid!</li>
 </ul>
 
 <p>I think the temptation to fall into this pit has to do with the trend of client-side frameworks to-date. Client-side models are often treated as write-through-caches for server-side data. Complex server/client synchronization tools have sprung up, effectively encouraging a sort of two-way binding across the server/client divide. Yoda said it best: You must unlearn what you have learned.</p>
 
-<p>About the time I was realizing I'd be better off making lux Stores synchronous, I read Reto Schläpfer's post <a href="http://www.code-experience.com/async-requests-with-react-js-and-flux-revisited/" target="_blank">"Async requests with React.js and Flux, revisited."</a>. He had experienced the same pain, and the same realization. Making lux Stores synchronous from the moment the Dispatcher begins handling an Action to the moment Stores emit change events made our app more deterministic and enabled our Controller Views to synchronously read Store state as they intialized. We finally felt like we'd found the droids we were looking for.</p>
+<p>About the time I was realizing I'd be better off making lux Stores synchronous, I read Reto Schläpfer's post <a href="http://www.code-experience.com/async-requests-with-react-js-and-flux-revisited/" target="_blank">"Async requests with React.js and Flux, revisited."</a>. He had experienced the same pain, and the same realization. Making lux Stores synchronous from the moment the Dispatcher begins handling an Action to the moment Stores emit change events made our app more deterministic and enabled our Controller Views to synchronously read Store state as they initialized. We finally felt like we'd found the droids we were looking for.</p>
 
 <p>Let's take a look at one of the lux Stores in the flux-comparison example:</p>
 
@@ -493,7 +493,7 @@ module.exports = lux.actionCreatorListener( {
 
 <h3>Jim Cowart</h3>
 
-<p>Jim Cowart is tragically geeky about JavaScript &amp; open source development...but he's not a fan of lists, so we'll stop there. Having journeyed through Cold Fusion, an obscure proprietary JavaScript BI implementation, C#, a smidgeon of Erlang and even some time as a data warehouse architect and developer (apparently he lied to us about not liking lists), he's most passionate about connecting with other developers – learning, sharing and promoting patterns and ideas that will make development more productive, enjoyable and empowering. Jim works at LeanKit as their Front End Architect and lives in Chattanooga with his wife and three sons.</p>
+<p>Jim Cowart is tragically geeky about JavaScript &amp; open source development...but he's not a fan of lists, so we'll stop there. Having journeyed through Cold Fusion, an obscure proprietary JavaScript BI implementation, C#, a smidgen of Erlang and even some time as a data warehouse architect and developer (apparently he lied to us about not liking lists), he's most passionate about connecting with other developers – learning, sharing and promoting patterns and ideas that will make development more productive, enjoyable and empowering. Jim works at LeanKit as their Front End Architect and lives in Chattanooga with his wife and three sons.</p>
 
 <p><a href="https://twitter.com/ifandelse">@ifandelse on Twitter</a></p>
 <p><a href="http://ifandelse.com">ifandelse.com</a></p>
