@@ -29,7 +29,7 @@
 
 <h2>Five Qualities of Good Flux Implementations</h2>
 
-<p>It has been an exciting year for my team at <a href="http://leankit.com/" target="_blank">LeanKit</a>. Last year we kicked off a project using <a href="http://facebook.github.io/react/" target="_blank">ReactJS</a>, and over the course of the project, we've learned a lot about React and <a href="http://facebook.github.io/react/blog/2014/05/06/flux.html" target="_blank">Flux</a> - Facebook's recommended architectural principles for React apps. Today we'll take a look at some of the key lessons we've learned. Whether you're new to React &amp; Flux, or going as far as building your own Flux implementation, I think you'll not only enjoy this journey with us, but find some thought-provoking questions and wisdom you can apply in your own endeavors.</p>
+<p>It has been an exciting year for my team at <a href="http://leankit.com/" target="_blank">LeanKit</a>. Last May we kicked off a project using <a href="http://facebook.github.io/react/" target="_blank">ReactJS</a>, and over the course of the project, we've learned a lot about React and <a href="http://facebook.github.io/react/blog/2014/05/06/flux.html" target="_blank">Flux</a> - Facebook's recommended architectural principles for React apps. Today we'll take a look at some of the key lessons we've learned. Whether you're new to React &amp; Flux, or going as far as building your own Flux implementation, I think you'll not only enjoy this journey with us, but find some thought-provoking questions and wisdom you can apply in your own endeavors.</p>
 
 <h3>
 <a id="user-content-helpful-background" class="anchor" href="#helpful-background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Helpful Background</h3>
@@ -51,7 +51,7 @@
 
 <h4>Flux</h4>
 
-<p>Flux is an architectural pattern Facebook recommends for building apps with React. Where React's opinions <em>nudge</em> you towards uni-directional data flow, Flux provides a fuller picture as to what that <em>actually</em> looks like. Several Flux implementations have arisen (LeanKit's <a href="https://github.com/LeanKit-Labs/lux.js" target="_blank">lux.js</a>, included), providing a fascinating view into how different teams are tackling the challenges they face. A high level summary of Flux would include:</p>
+<p>Flux is an architectural pattern Facebook recommends for building apps with React. Where React's opinions <em>nudge</em> you towards uni-directional data flow, Flux provides a fuller picture as to what that <em>actually</em> looks like. Several Flux implementations have arisen (LeanKit's lux.js, included), providing a fascinating view into how different teams are tackling the challenges they face. A high level summary of Flux would include:</p>
 
 <ul>
     <li>Flux apps have three main abstractions: Views (React components), Stores and the Dispatcher.</li>
@@ -130,7 +130,7 @@
 });
 </code></pre>
 
-<p>While we still like this convenient approach, we've found ourselves moving to the alternative approach of setting up a plain React Component, and passing the lux mixins necessary to achieve the same result. Note that, here, we're calling <code>React.createClass</code> and using the <code>mixins</code> option:</p>
+<p>While we still like this convenient approach, we've found ourselves moving to the alternative approach of standing up a plain React Component, and passing the lux mixins necessary to achieve the same result. Note that, here, we're calling <code>React.createClass</code> and using the <code>mixins</code> option:</p>
 
 <pre><code class="language-javascript">var CartContainer = React.createClass({
 
@@ -157,10 +157,6 @@
     <li>There's no need to explicitly pass the React instance to lux (done via <code>lux.initReact( React )</code>) so that it knows how to create components.</li>
 </ul>
 
-<blockquote>
-    <p>Why spend time explaining these two different approaches? It's about saying out of React's way. We can easily fall prey to either over- or under-abstracting, thus we need to give ourselves room to adapt as our understanding improves. The evolution of our approach over time has been informed as we've asked ourselves: "What makes a good flux implementation?" This process of continually questioning & evaluating is a vital part of the life of any library or framework.</p>
-</blockquote>
-
 <hr>
 
 <h3>2.) Boilerplate Elimination</h3>
@@ -184,7 +180,7 @@ var CartContainer = React.createClass({
 });
 </code></pre>
 
-<p>Honestly - the boilerplate tax isn't high here, but it's still present. Since mixins can provide component lifecycle methods, we made this automatic when you include lux mixins:</p>
+<p>Honestly - the boilerplate tax isn't high here, but it's still present. Since mixins can provider component lifecycle methods, we made this automatic when you include lux mixins:</p>
 
 <pre><code class="language-javascript">
 var ProductsListContainer = React.createClass({
@@ -226,7 +222,7 @@ ActionsCreators.addToCart = function (product) {
 };
 </code></pre>
 
-<p>As we regularly asked "what repeated code can we eliminate and replace with convention?", ActionCreator APIs kept coming up. In our case, we use <a href="https://github.com/postaljs/postal.js" target="_blank">postal.js</a> for communication between ActionCreators and the Dispatcher (postal is an in-memory message bus library, providing advanced publish/subscribe functionality). 99.9% of the time, an ActionCreator method published an Action message with no additional behavior. Things evolved over time like this:</p>
+<p>As we continually asked "what repeated code can we eliminate and replace with convention?", ActionCreator APIs kept coming up. In our case, we use postal.js for communication between ActionCreators and the Dispatcher. 99.9% of the time, an ActionCreator method published an Action message with no additional behavior. Things evolved over time like this:</p>
 
 <pre><code class="language-javascript">// The very early days
 // `actionChannel` is a ref to a postal channel dedicated to lux Actions
@@ -276,7 +272,7 @@ var ActionCreators = lux.actionCreator({
 } );
 </code></pre>
 
-<p>Matching Action type names and Store handler names made conventional wire-up very simple, but we saw another area where we could eliminate boilerplate: if 99% of our ActionCreator API implementations just published a message, why not infer creation of ActionCreator APIs based on what gets handled by Stores? So we did, while still allowing custom implementations of ActionCreator methods where needed. For example, when the Store instance in the snippet above is created, lux will see that it handles an <code>addToCart</code> Action. If an ActionCreator API hasn't already been defined for this Action under <code>lux.actions</code>, lux will create one, with the default behavior of publishing the Action message.</p>
+<p>Matching Action type names and Store handler names made conventional wire-up very simple, but we saw another area we could eliminate boilerplate: if 99% of our ActionCreator API implementations just published a message, why not infer creation of ActionCreator APIs based on what gets handled by Stores? So we did, while still allowing custom implementations of ActionCreator methods where needed. For example, when the Store instance in the snippet above is created, lux will see that it handles an <code>addToCart</code> Action. If an ActionCreator API hasn't already been defined for this Action under <code>lux.actions</code>, lux will create one, with the default behavior of publishing the Action message.</p>
 
 <p>Taking this approach means our components can specify what ActionCreator methods they want in an "a la carte" style. In this next snippet, our ProductItemContainer is using the <code>lux.reactMixin.actionCreator</code> mixin, which looks for a <code>getActions</code> array, and provides the specified Actions as top level methods on the component. You can see we're using the <code>addToCart</code> ActionCreator method in the <code>onAddToCartClicked</code> handler method.</p>
 
@@ -304,7 +300,7 @@ var ActionCreators = lux.actionCreator({
 
 <h3>3.) Everything is an Action</h3>
 
-<p>Since this behavior of "providing Action Creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs. We're using a hypermedia client called <a href="https://github.com/LeanKit-Labs/halon" target="_blank">halon</a>, which understands how to consume our hypermedia resources using an extended version of <a href="https://tools.ietf.org/html/draft-kelly-json-hal-06" target="_blank">"HAL"</a> (Hypermedia Application Language, an open specification for defining the structure of HTTP resources). Covering hypermedia is beyond the scope of this article, but a number of <a href="http://timelessrepo.com/haters-gonna-hateoas" target="_blank">good</a> <a href="http://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">resources</a> <a href="http://phlyrestfully.readthedocs.org/en/latest/halprimer.html" target="_blank">exist</a> if you're interested in learning more. Our client-side wrapper for halon uses lux's <code>actionCreator</code> and <code>actionListener</code> mixins so that it can not only publish Actions, but also handle them. </p>
+<p>Since this behavior of "providing Action Creator APIs" was abstracted into a mixin, it made it possible for both React components as well as "non-lux/react" instances to use the mixin. My team has been taking advantage of this when it comes to things like remote data APIs (we're using a hypermedia client called <a href="https://github.com/LeanKit-Labs/halon" target="_blank">halon</a>). Our client-side wrapper for halon uses lux's <code>actionCreator</code> and <code>actionListener</code> mixins so that it can not only publish Actions, but also handle them. </p>
 
 <p>We approach it this way because we believe <em>every input</em> - whether it be user input or queued async execution (via AJAX, postMessage, WebSockets, etc.) - <em>should be fed into the client as an Action</em>. If you've kept up with any of the React discussions over time, you might be thinking "Jim, Facebook is OK with calling dispatch directly on an XHR response, rather than use another Action Creator". Absolutely - and that makes perfect sense when your implementation gives your "util" modules (like remote data APIs) a handle to the Dispatcher. With lux, we opted for the gateway to the Dispatcher to be via message contract, and removed the need for the Dispatcher to be a dependency of any module.</p>
 
@@ -338,79 +334,6 @@ var ActionCreators = lux.actionCreator({
     <figcaption>(<a href="images-in-article/luxPrintStoreDepTree_large.png">View large version</a>)</figcaption>
 </figure>
 
-<h4>Lux + AJAX Examples</h4>
-<p>We've resisted any temptation to be too prescriptive when it comes to how you should interact with remote endpoints in lux. The main guideline we follow is to wrap your remote access in a developer-friendly API in the client (rather than scatter AJAX requests throughout the code base!), and make that API wrapper an ActionListener and ActionCreator. For example, let's look at a couple of conceptual approaches you can take:</p>
-
-<h5>Plain AJAX</h5>
-<p>The below example is only showing the relevant portions of each piece. Our component publishes an Action message for the <code>cartCheckout</code> action, and our <code>WebApi</code> wrapper listens for it. Notice that our response handler for the AJAX call actually publishes a new Action message:</p>
-
-<pre><code class="language-javascript">// in a CartContainer.jsx module
-var CartContainer = React.createClass({
-    // other methods, properties, etc.
-
-    onCheckoutClicked: function() {
-        var products = this.state.products;
-        if (!products.length) {
-            return;
-        }
-        this.cartCheckout(products);
-    }
-});
-
-// In a WebApi.js module
-var webApi = lux.actionCreatorListener({
-    handlers: {
-        cartCheckout: function(products) {
-            $.ajax({
-                url: "cart/checkout",
-                method: "POST",
-                data: products
-            }).then(
-                function(data) {
-                    this.publishAction("successCheckout", data);
-                }.bind(this),
-                cartErrorHandler
-            );
-        }
-    }
-});
-</code></pre>
-
-<h5>How we use halon</h5>
-<p>One of the many things we've grown to love about hypermedia resources is the built-in discoverability. Instead of having to hard-code specific links (like the above example), halon allows us to <em>follow</em> links returned with resources, so the only url we have to know is where we go to get the OPTIONS. In this approach, our WebApi module initializes halon (which results in an OPTIONS request to the server), and the resulting instance will contain the top-level resources we can act on, with their "actions" exposed as methods. In this case we have a <code>cart</code> resource that exposes a <code>checkout</code> action:</p>
-<pre><code class="language-javascript">// in a CartContainer.jsx module
-var CartContainer = React.createClass({
-    // other methods, properties, etc.
-
-    onCheckoutClicked: function() {
-        var products = this.state.products;
-        if (!products.length) {
-            return;
-        }
-        this.cartCheckout(products);
-    }
-});
-
-// In a WebApi.js module
-var hal = halon( {
-        root: "https://some-server.com/api",
-        adapter: halon.jQueryAdapter( $ ),
-        version: 1
-    } );
-var webApi = lux.actionCreatorListener({
-    handlers: {
-        cartCheckout: function(products) {
-            hal.cart.checkout(products)
-                .then(
-                    function(data) {
-                        this.publishAction("successCheckout", data);
-                    }.bind(this),
-                    cartErrorHandler
-                );
-        }
-    }
-});
-</code></pre>
 <hr>
 
 <h3>4.) Stores &amp; Synchronicity</h3>
@@ -570,7 +493,7 @@ module.exports = lux.actionCreatorListener( {
 
 <h3>Jim Cowart</h3>
 
-<p>Jim Cowart is tragically geeky about JavaScript &amp; open source development...but he's not a fan of lists, so we'll stop there. Having journeyed through Cold Fusion, an obscure proprietary JavaScript BI implementation, C#, a smidgen of Erlang and even some time as a data warehouse architect and developer (apparently he lied to us about not liking lists), he's most passionate about connecting with other developers – learning, sharing and promoting patterns and ideas that will make development more productive, enjoyable and empowering. Jim works at <a href="http://leankit.com/" target="_blank">LeanKit</a> as their Web Architect & Web Team Lead and lives in Chattanooga, TN with his wife and three sons.</p>
+<p>Jim Cowart is tragically geeky about JavaScript &amp; open source development...but he's not a fan of lists, so we'll stop there. Having journeyed through Cold Fusion, an obscure proprietary JavaScript BI implementation, C#, a smidgen of Erlang and even some time as a data warehouse architect and developer (apparently he lied to us about not liking lists), he's most passionate about connecting with other developers – learning, sharing and promoting patterns and ideas that will make development more productive, enjoyable and empowering. Jim works at LeanKit as their Front End Architect and lives in Chattanooga with his wife and three sons.</p>
 
 <p><a href="https://twitter.com/ifandelse">@ifandelse on Twitter</a></p>
 <p><a href="http://ifandelse.com">ifandelse.com</a></p>
