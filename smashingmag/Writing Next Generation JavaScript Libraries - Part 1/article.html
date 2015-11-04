@@ -27,9 +27,9 @@
 	START editing here
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-<h2>Writing Next Generation JavaScript Libraries - Part 1</h2>
+<h2>Writing Next Generation Reusable JavaScript Modules - Part 1</h2>
 
-<p>Are you excited to take advantage of new JavaScript language features - but not sure <em>where</em> to start, or <em>how</em>? You're not alone! I've spent the better part of the last year and a half trying to ease this pain. During that time there have been some amazing quantum leaps in JavaScript tooling. These leaps have made it possible for you and I to dive head first into writing fully-ES6 libraries, without compromising on the essentials like testing, linting and (most importantly) the ability for others to consume what we write with ease.</p>
+<p>Are you excited to take advantage of new JavaScript language features - but not sure <em>where</em> to start, or <em>how</em>? You're not alone! I've spent the better part of the last year and a half trying to ease this pain. During that time there have been some amazing quantum leaps in JavaScript tooling. These leaps have made it possible for you and I to dive head first into writing fully-ES6 modules, without compromising on the essentials like testing, linting and (most importantly) the ability for others to consume what we write with ease. Over the course of this post, we're going to focus on how to create a JavaScript package written in ES6 that's usable in a site or app regardless of whether you're using CommonJS, AMD or plain "browser global" modules.</p>
 
 <blockquote><b>Wait, is it ES6 or ES2015?</b> My habits certainly prefer 'ES6', but the name was recently & officially changed to 'ES2015'. However, there's a greater level of awareness of "ES6", which is how I will refer to it in this post.<br/><br/>I'd also like to give special thanks to <a href="https://twitter.com/dougneiner" target="_blank">Doug Neiner</a> and <a href="https://twitter.com/rpniemeyer" target="_blank">Ryan Niemeyer</a> - both have shared this journey into better ES6 tooling. This post wouldn't have been possible without them.</blockquote>
 
@@ -38,24 +38,34 @@
 <p>Over the course of parts 1 and 2 of this series, we'll look at some of the tools that make this possible. Today we'll cover writing, transpiling and packaging our library, and in part 2 we'll focus on linting, formatting and testing (using JSCS, ESLint, mocha, Chai, Karma and Istanbul). Meet your new best friends for part 1:</p>
 
 <ul>
-    <li><a href="http://babeljs.io/" target="_blank">Babel</a> (which is nearing its first birthday) has made the process of transpiling ES6 to ES5 not only simple, but <em>pleasant</em>.</li>
+    <li><a href="http://babeljs.io/" target="_blank">Babel</a> (which just celebrated its first birthday) has made the process of transpiling ES6 to ES5 not only simple, but <em>pleasant</em>.</li>
     <li><a href="http://webpack.github.io/" target="_blank">webpack</a> silenced every aspect of the "module wars" on my team by letting us consume <em>everything</em> (CommonJS, AMD & ES6) with aplomb. It turns out that webpack also does a fantastic job of packaging stand-alone ES6 libraries - a fact we will look heavily at during this post.</li>
     <li><a href="http://gulpjs.com/" target="_blank">Gulp</a> is a powerful tool for automating build-related tasks.</li>
 </ul>
 
-<blockquote>Note: we're going to talk about writing ES6 client-side *libraries*, not bundling entire sites/apps. This is really any re-usable bit of code you'd like to share between projects, whether it's an OSS project or something you use internally at work between applications.</blockquote>
+<h3><a id="user-content-helpful-background" class="anchor" href="#the-goal" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Goal</h3>
+
+<h4>Write in ES6, Use in ES5</h4>
+
+<p>We're going to talk about writing ES6 client-side *libraries*, not bundling entire sites/apps. (This is really any re-usable bit of code you'd like to share between projects, whether it's an OSS project or something you use internally at work between applications.) <em>"Wait a second"</em>, you might be thinking, <em>"but won't it be a while until the browser range I have to support can handle ES6?"</em></p> That's correct! However, I mentioned <a href="http://babeljs.io/" target="_blank">Babel</a> above because we're going to use it to convert our ES6 to ES5, making it a practical option to use today for most situations.
+
+<h4>Make it easy for anyone to consume</h4>
+
+<p>The second part of our goal is to write a module that we could use in most common "module" ecosystems. Die hard AMD fan? You get a module. CommonJS + browserify the only song you sing? And <em>you</em> get a module. Not sure what the AMD vs CommonJS fuss is about, and you just want to drop the <code>script</code> tag on the page and go? <em>You</em> get a module, too! It's a bit like an Oprah module giveaway - where the part of Oprah is played by <a href="http://webpack.github.io/" target="_blank">webpack</a>. Webpack will help package our module in a special wrapper, called a <a href="https://github.com/umdjs/umd">Universal Module Definition (UMD)</a>, making it possible to consume in any of the above scenarios.</p>
 
 <h3><a id="user-content-setting-up-our-project" class="anchor" href="#setting-up-our-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting Up Our Project</h3>
 
-<p>Over the next few minutes, we'll be working towards the resulting code <a href="https://github.com/ifandelse/legoQuotes/releases/tag/v1.0.0" target="_blank">here</a>. I usually start a project off with <code>src/</code>, <code>spec/</code> and <code>lib/</code> folders. In our <code>src/</code> folder, you'll see a contrived, but fun example set of modules that, when used together, let us retrieve a random quote from a <a href="http://www.imdb.com/title/tt1490017/">Lego Movie</a> character. While the behavior is fairly useless, this example is making use of <a href="http://www.2ality.com/2015/02/es6-classes-final.html" target="_blank">classes</a>, <a href="http://www.2ality.com/2014/09/es6-modules-final.html" target="_blank">modules</a>, <a href="http://www.2ality.com/2015/02/es6-scoping.html" target="_blank">const</a>, <a href="http://www.2ality.com/2015/01/es6-destructuring.html" target="_blank">destructuring</a>, a <a href="http://www.2ality.com/2015/03/es6-generators.html" target="_blank">generator</a> and more - all features we'd like to safely transpile to ES5. Let's take a brief look at some of the code.</p>
+<p>Over the next few minutes, we'll be working towards the resulting code <a href="https://github.com/ifandelse/legoQuotes/releases/tag/v1.0.0" target="_blank">here</a>. I usually start a project off with <code>src/</code>, <code>spec/</code> and <code>lib/</code> folders. In our <code>src/</code> folder, you'll see a contrived, but fun example set of modules that, when used together, let us retrieve a random quote from a <a href="http://www.imdb.com/title/tt1490017/">Lego Movie</a> character. While the behavior is fairly useless, this example is making use of <a href="http://www.2ality.com/2015/02/es6-classes-final.html" target="_blank">classes</a>, <a href="http://www.2ality.com/2014/09/es6-modules-final.html" target="_blank">modules</a>, <a href="http://www.2ality.com/2015/02/es6-scoping.html" target="_blank">const</a>, <a href="http://www.2ality.com/2015/01/es6-destructuring.html" target="_blank">destructuring</a>, a <a href="http://www.2ality.com/2015/03/es6-generators.html" target="_blank">generator</a> and more - all features we'd like to safely transpile to ES5.</p>
+<p>The main focus of this post is to discuss how to use Babel and webpack to transpile and package an ES6 library. However, I wanted to take a brief look at our example code so that you can see that we are, indeed, using ES6.</p>
 
 <p><em>Don't worry if you're new to ES6 syntax. These examples are simple enough to follow.</em></p>
 
-<h3><a id="user-content-class" class="anchor" href="#class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Class</h3>
+<h3><a id="user-content-class" class="anchor" href="#class" aria-hidden="true"><span class="octicon octicon-link"></span></a>The LegoCharacter Class</h3>
 
-<p>In our <code>LegoCharacter.js</code> module, we see the following:</p>
+<p>In our <code>LegoCharacter.js</code> module, we see the following (be sure to read the comments for more explanation):</p>
 
-<pre><code class="language-javascript">// Let's import only the getRandom method from utils.js
+<pre><code class="language-javascript">// LegoCharacter.js
+// Let's import only the getRandom method from utils.js
 import { getRandom } from "./utils";
 
 // the LegoCharacter class is the default export of the module, similar
@@ -78,9 +88,10 @@ export default class LegoCharacter {
 }
 </code></pre>
 
-<p>Pretty boring on its own – this class is meant to be extended:</p>
+<p>Pretty boring on its own – this class is meant to be extended, which we do in our <code>Emmet.js</code> module:</p>
 
-<pre><code class="language-javascript">import LegoCharacter from "./LegoCharacter";
+<pre><code class="language-javascript">// emmet.js
+import LegoCharacter from "./LegoCharacter";
 
 // Here we use the extends keyword to make
 // Emmet inherit from LegoCharacter
@@ -99,13 +110,15 @@ export default class Emmet extends LegoCharacter {
 }
 </code></pre>
 
+Both <code>LegoCharacter.js</code> and <code>emmet.js</code> are separate <em>files</em> in our project - this will be case for each module in our example. Depending on how you've been writing JavaScript, this might seem a bit foreign to you. By the time we're done, though, we'll have a "built" version that combines them together.
+
 <h3><a id="user-content-the-index" class="anchor" href="#the-index" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Index.js</h3>
 
-<p>Our index.js – the "main" entry point for our library – imports a few Lego character classes, creates instances of them, and provides a generator function to <code>yield</code> a random quote anytime a caller asks for one:</p>
+<p>Our index.js – another file in our project – is the "main" entry point for our library. It imports a few Lego character classes, creates instances of them, and provides a generator function to <code>yield</code> a random quote anytime a caller asks for one:</p>
 
-<pre><code class="language-javascript">// Notice that lodash isn't being import via
-// relative path but all the other modules are.
-// More on that in a bit :)
+<pre><code class="language-javascript">// index.js
+// Notice that lodash isn't being imported via a relative path
+// but all the other modules are. More on that in a bit :)
 import _ from "lodash";
 import Emmet from "./emmet";
 import Wyldstyle from "./wyldstyle";
@@ -139,11 +152,11 @@ export default {
 };
 </code></pre>
 
-<br/>
+<p>In a nutshell, the <code>index.js</code> module imports lodash, the classes for our three Lego characters and a utility function. It then creates instances of our Lego characters and exports (makes them available to consuming code) them as well as the <code>getRandomQuote</code> method. If all goes well, when this code is transpiled to ES5, it should still do exactly the same thing.</p><br/>
 
 <h2><a id="user-content-now-what" class="anchor" href="#now-what" aria-hidden="true"><span class="octicon octicon-link"></span></a>OK, Now What?</h2>
 
-<p>We have all this shiny new JavaScript, but how do we transpile it to ES5? First, let's install Babel using npm:</p>
+<p>We have all this shiny new JavaScript, but how do we transpile it to ES5? First, let's install Babel using <a href="https://docs.npmjs.com/getting-started/installing-npm-packages-globally" target="_blank">npm</a>:</p>
 
 <pre><code>npm install -g babel</code></pre>
 
@@ -151,49 +164,66 @@ export default {
 
 <pre><code>babel ./src -d ./lib/</code></pre>
 
-<p>A quick glance at these files might tell you a couple of things:
+<p>Looking at our <code>lib</code> folder, we'll see these files listed:</p>
+
+<pre><code>LegoCharacter.js
+benny.js
+emmet.js
+index.js
+utils.js
+wyldstyle.js
+</code></pre>
+
+<p>Remember how I mentioned above that we were putting each of our ES6 modules into their own file? Babel has taken each of those files, converted them to ES5 and written them to the same file structure in our <code>lib</code> folder. A quick glance at these files might tell you a couple of things:
 
 <ul>
-    <li>First, these files could be consumed in node right now, as long as the babel/register runtime dependency was required first. (Yes, transpiling typically involves a runtime dependency even though many – but <em>not all</em> – of these features are now available natively in <a href="https://nodejs.org/en/docs/es6/" target="_blank">node v4</a>.)</li>
-    <li>Second, we still have some work to do so that these files can be packaged into one file and wrapped in a <a href="https://github.com/umdjs/umd">Universal Module Definition (UMD)</a> (a module wrapper that allows the module to be used as a CommonJS, AMD or plain "browser global") and used in a browser.</li>
+    <li>First, these files could be consumed in node right now, as long as the <a href="http://babeljs.io/docs/usage/require/" target="_blank">babel/register</a> runtime dependency was required first. You'll see an example of these running in node before the end of this post. (Transpiling typically involves a runtime dependency even though many – but <em>not all</em> – of these features are now available natively in <a href="https://nodejs.org/en/docs/es6/" target="_blank">node v4</a>.)</li>
+    <li>Second, we still have some work to do so that these files can be packaged into <em>one</em> file and wrapped in a <a href="https://github.com/umdjs/umd">Universal Module Definition (UMD)</a> and used in a browser.</li>
 </ul>
 </p>
 
 <h2><a id="user-content-enter-webpack" class="anchor" href="#enter-webpack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enter Webpack</h2>
 
-<p>Webpack has our UMD needs covered, so let's install it globally:</p>
-
-<pre><code>npm install -g webpack</code></pre>
-
-<p>Before we can use webpack, though, we need to create a webpack configuration file that tells webpack what we want it to do with our source files. We're not going to cover webpack in depth here, but it will help to explain a couple of key points first.</p>
+<p>Odds are you've heard of <a href="http://webpack.github.io/" target="_blank">webpack</a>, whose description calls it "a bundler for JavaScript and friends." The most common use case for webpack is to act as a bundler and loader for a web site – enabling you to bundle your JavaScript, as well as other assets like CSS and templates – into one (or more) files. Webpack has an amazing ecosystem of "loaders", which are transformations applied to files loaded by webpack. While building a UMD isn't the <em>most common</em> use case for webpack, it turns out that we can use a webpack loader to load our ES6 modules & transpile it to ES5, and webpack's bundling process to build out a single output file of our example project.
 
 <h3><a id="user-content-loaders" class="anchor" href="#loaders" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loaders</h3>
 
-<p>Webpack's docs describe loaders as "<em>transformations that are applied on a resource file of your app</em>". Loaders are used extensively in webpack, and they can do things like transpile ES6 to ES5, LESS to CSS, load JSON files, render templates and <em>much</em> more. Loaders take a <code>test</code> pattern to use for matching files that it should transform. Many loaders can take additional configuration options as well, which we'll be making use of. (Curious as to what other loaders exist? Check <a href="http://webpack.github.io/docs/list-of-loaders.html">this list</a> out.)</p>
+<p>Used extensively in webpack, loaders can do things like transpile ES6 to ES5, LESS to CSS, load JSON files, render templates and <em>much</em> more. Loaders take a <code>test</code> pattern to use for matching files that it should transform. Many loaders can take additional configuration options as well, which we'll be making use of. (Curious as to what other loaders exist? Check <a href="http://webpack.github.io/docs/list-of-loaders.html">this list</a> out.)</p>
 
-<p>Lucky for us, <a href="https://www.npmjs.com/package/babel-loader" target="_blank">babel-loader</a> can enable webpack to load our ES6 modules and transpile them to ES5. We can install it, and save it to our package.json's <code>devDependencies</code> by running this:</p>
+<p>Let's go ahead and install webpack globally (which gives us a webpack <a href="http://webpack.github.io/docs/cli.html" target="_blank">CLI</a>):</p>
 
-<pre><code>npm install --save-dev babel-loader</code></pre>
+<pre><code class="language-bash">npm install -g webpack</code></pre>
 
-<h3><a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output</h3>
+<p>Next we can install <a href="https://www.npmjs.com/package/babel-loader" target="_blank">babel-loader</a> to our local project. This loader can enable webpack to load our ES6 modules and transpile them to ES5. We can install it, and save it to our package.json's <code>devDependencies</code> by running this:</p>
 
-<p>A webpack configuration file can be given an <code>output</code> object that describes how webpack should build and package the source. In our case we'll be telling webpack to output a UMD library to our <code>lib/</code> directory.</p>
+<pre><code class="language-bash">npm install --save-dev babel-loader</code></pre>
 
-<h3><a id="user-content-externals" class="anchor" href="#externals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Externals</h3>
+<p>Before we can use webpack, though, we need to create a webpack configuration file that tells webpack what we want it to do with our source files. Usually named <code>webpack.config.js</code>, a webpack configuration file is a node.js module that exports a set of configuration values telling webpack what to do.</p>
 
-<p>You might have noticed our example library uses lodash. We want our built library to be smart enough to require lodash, rather than have to include lodash itself in the output. The <code>externals</code> option in a webpack config file lets you specify the dependencies that should remain external. In the case of lodash, its global property key (<code>_</code>) is not the same as its name ("lodash"), so our configuration (below) tells webpack how to require lodash for each given module scenario (CommonJS, AMD &amp; browser "root").</p>
-
-<p>Here's our initial webpack.config.js file - which is just a plain node.js module:</p>
+<p>Here's our initial <code>webpack.config.js</code> file. I've commented the code heavily, and we'll also discuss some of the important details below:</p>
 
 <pre><code class="language-javascript">module.exports = {
+    // entry is the "main" source file we want to include/import
     entry: "./src/index.js",
+    // output tells webpack where to put the bundle it creates
     output: {
+        // in the case of a "plain global browser library", this
+        // will be used as the reference to our module that is
+        // hung off of the window object.
         library: "legoQuotes",
+        // We want webpack to build a UMD wrapper for our module
         libraryTarget: "umd",
+        // the destination file name
         filename: "lib/legoQuotes.js"
     },
+    // externals let you tell webpack about external dependencies
+    // that shouldn't be resolved by webpack.
     externals: [
         {
+            // We're not only webpack that lodash should be an
+            // external dependency, but we're also specifying how
+            // lodash should be loaded in different scenarios
+            // (more on that below)
             lodash: {
                 root: "_",
                 commonjs: "lodash",
@@ -204,18 +234,32 @@ export default {
     ],
     module: {
         loaders: [
+            // babel loader, testing for files that have a .js extension
+            // (except for files in our node_modules folder!).
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: "babel",
                 query: {
-                    compact: false
+                    compact: false // because I want readable output
                 }
             }
         ]
     }
 };
 </code></pre>
+
+<p>So let's look at a couple of key values in our configuration.</p>
+
+<h3><a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output</h3>
+
+<p>A webpack configuration file can be given an <code>output</code> object that describes how webpack should build and package the source. In our example above, we're telling webpack to output a UMD library to our <code>lib/</code> directory.</p>
+
+<h3><a id="user-content-externals" class="anchor" href="#externals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Externals</h3>
+
+<p>You might have noticed our example library uses lodash. We want our built library to be smart enough to require lodash from an external source, rather than have to include lodash itself in the output. The <code>externals</code> option in a webpack config file lets you specify the dependencies that should remain external. In the case of lodash, its global property key (<code>_</code>) is not the same as its name ("lodash"), so our configuration (above) tells webpack how to require lodash for each given module scenario (CommonJS, AMD &amp; browser "root").</p>
+
+<h3><a id="user-content-externals" class="anchor" href="#externals" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Babel Loader</h3>
 
 <p><em>You'll notice that our babel-loader just calls itself "babel" for the loader name. This is a webpack naming convention – where the module name is "myLoaderName-loader", but webpack treats it as "myLoaderName".</em></p>
 
@@ -232,7 +276,7 @@ lib/legoQuotes.js  12.5 kB       0  [emitted]  main
     + 7 hidden modules
 </code></pre>
 
-<p>If we look in our <code>lib/</code> folder, we'll see a newly minted "legoQuotes.js" file. This time, the contents are wrapped in webpack's UMD:</p>
+<p>If we look in our <code>lib/</code> folder, we'll see a newly minted "legoQuotes.js" file. This time, the contents are wrapped in webpack's UMD, which we can see in this snippet:</p>
 
 <pre><code class="language-javascript">(function webpackUniversalModuleDefinition(root, factory) {
     if(typeof exports === 'object' &amp;&amp; typeof module === 'object')
@@ -252,7 +296,11 @@ lib/legoQuotes.js  12.5 kB       0  [emitted]  main
 
 <p>This UMD performs one kind of CommonJS check, then an AMD check, then another style of CommonJS and finally it falls back to plain "browser globals". You can see how it knew to look for lodash as "lodash" if we were in a CommonJS or AMD environment, and to look for <code>_</code> on the window (root) if we were dealing with plain browser globals.</p>
 
-<p>Looking at the module code you'll see that our ES6 source has been transpiled to ES5. For example, our LegoCharacter class is now an ES5 constructor function:</p>
+<h3><a id="user-content-externals" class="anchor" href="#what-happened" aria-hidden="true"><span class="octicon octicon-link"></span></a>What Happened, Exactly?</h3>
+
+<p> When we ran <code>webpack</code> in our console, it looked for the default name of a configuration file (<code>webpack.config.js</code>), and read the configuration. From there it saw that the <code>src/index.js</code> file was our main entry point, and began loading it and its dependencies (except for lodash, which we told webpack was external). Each of these dependencies is a <code>.js</code> file, so the babel loader would be run on the file, transpiling it from ES6 to ES5 as it was loaded. From there, all files loaded were written to a single output file, <code>legoQuotes.js</code>, which is dropped into the <code>lib</code> folder.</p>
+
+<p>Looking at the module code you'll see that our ES6 source has, indeed, been transpiled to ES5. For example, our <code>LegoCharacter</code> class is now an ES5 constructor function:</p>
 
 <pre><code class="language-javascript">// around line 179
 var LegoCharacter = (function () {
@@ -280,7 +328,7 @@ var LegoCharacter = (function () {
 
 <p>At this point we could include this built file in both a browser (IE9+, as a general rule) and node, and it would work in either, as long as the babel runtime dependency is included.</p>
 
-<p>In the browser, it could look like this:</p>
+<p>If we wanted to use this in the browser, it would look something like this:</p>
 
 <pre><code class="language-markup">&lt;!-- index.html --&gt;
 &lt;!DOCTYPE html&gt;
@@ -303,6 +351,7 @@ var LegoCharacter = (function () {
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
+<p>You can see we've included our <code>legoQuotes.js</code> file (just below babel's <code>browser-polyfill.js</code> file) just like any other <code>script</code> tag (above). Our <code>main.js</code> file, which uses our legoQuotes library, looks like this:</p>
 
 <pre><code class="language-javascript">// main.js
 ( function( legoQuotes ) {
@@ -318,7 +367,7 @@ var LegoCharacter = (function () {
 } )( legoQuotes );
 </code></pre>
 
-<p>In node, like this:</p>
+<p>To use it in node, it would look like this:</p>
 
 <pre><code class="language-javascript">require("babel/polyfill");
 var lego = require("./lib/legoQuotes.js");
@@ -330,15 +379,15 @@ console.log(lego.getRandomQuote());
 
 <h2><a id="user-content-moving-to-gulp" class="anchor" href="#moving-to-gulp" aria-hidden="true"><span class="octicon octicon-link"></span></a>Moving to Gulp</h2>
 
-<p>Did you notice that both babel and webpack have a CLI? You might be wondering if the other tools I mentioned do (mocha, JSCS, ESLint, etc.) – the answer would be <em>yes</em>. You can stick to using the various CLIs, but it's common to use a task runner such as Gulp to handle executing them. This consistency can pay off if you participate in many projects, as the main CLI commands you'll need to remember consist of <code>gulp someTaskName</code>. I don't think there's a right or wrong answer here, for the most part. If you prefer the CLIs, use them. Using Gulp is simply one possible way to go about it.</p>
+<p>Both Babel and webpack's CLIs are very useful, but it's common to use a task runner such as Gulp to handle executing these kinds of tasks. This consistency can pay off if you participate in many projects, as the main CLI commands you'll need to remember consist of <code>gulp someTaskName</code>. I don't think there's a right or wrong answer here, for the most part. If you prefer the CLIs, use them. Using Gulp is simply one possible way to go about it.</p>
 
 <h3><a id="user-content-build-task" class="anchor" href="#build-task" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting Up a Build Task</h3>
 
 <p>First, let's install gulp:</p>
 
-<pre><code>npm install -g gulp</code></pre>
+<pre><code class="language-bash">npm install -g gulp</code></pre>
 
-<p>Next, let's create a gulp file that can run what we have done so far. We'll use the <a href="https://www.npmjs.com/package/webpack-stream" target="_blank">webpack-stream</a> gulp plugin, which can consume our webpack.config.js file.</p>
+<p>Next, let's create a gulp file that can run what we have done so far. We'll use the <a href="https://www.npmjs.com/package/webpack-stream" target="_blank">webpack-stream</a> gulp plugin, which I've installed by running <code>npm install --save-dev webpack-stream</code>. This plugin can consume our webpack.config.js file and allow webpack to play nicely with gulp.</p>
 
 <pre><code class="language-javascript">// gulpfile.js
 var gulp = require( "gulp" );
@@ -351,9 +400,10 @@ gulp.task( "build", function() {
 } );
 </code></pre>
 
-<p>Since I'm using gulp to source our index.js and to write to the output directory, I've tweaked the webpack.config.js file by removing <code>entry</code> and updating the <code>filename</code>. I've also added a <a href="http://webpack.github.io/docs/configuration.html#devtool" target="_blank"><code>devtool</code></a> prop, set to the value of <code>#inline-source-map</code> (this will write a source map at the end of the file in a comment):</p>
+<p>Since I'm using gulp to source our index.js and to write to the output directory, I've tweaked the <code>webpack.config.js</code> file by removing <code>entry</code> and updating the <code>filename</code>. I've also added a <a href="http://webpack.github.io/docs/configuration.html#devtool" target="_blank"><code>devtool</code></a> prop, set to the value of <code>#inline-source-map</code> (this will write a source map at the end of the file in a comment):</p>
 
-<pre><code class="language-javascript">module.exports = {
+<pre><code class="language-javascript">// webpack.config.js
+module.exports = {
     output: {
         library: "legoQuotes",
         libraryTarget: "umd",
@@ -387,9 +437,14 @@ gulp.task( "build", function() {
 
 <h3><a id="user-content-minifying" class="anchor" href="#minifying" aria-hidden="true"><span class="octicon octicon-link"></span></a>What About Minifying?</h3>
 
-<p>I'm glad you asked! One approach to minifying can be done using the <a href="https://www.npmjs.com/package/gulp-uglify" target="_blank">gulp-uglify</a> plugin, along with <a href="https://www.npmjs.com/package/gulp-sourcemaps" target="_blank">gulp-sourcemaps</a> (since we'd like a source map for our min file) and <a href="https://www.npmjs.com/package/gulp-rename" target="_blank">gulp-rename</a> (which lets us target a different file name so we don't overwrite our non-minified build). In this approach, our un-minified source will still have an inline source map, but our usage of gulp-sourcemaps below will cause the minified file's source map to be written as a separate file (with a comment in the minified file pointing to the source map file):</p>
+<p>I'm glad you asked! One approach to minifying can be done using the <a href="https://www.npmjs.com/package/gulp-uglify" target="_blank">gulp-uglify</a> plugin, along with <a href="https://www.npmjs.com/package/gulp-sourcemaps" target="_blank">gulp-sourcemaps</a> (since we'd like a source map for our min file) and <a href="https://www.npmjs.com/package/gulp-rename" target="_blank">gulp-rename</a> (which lets us target a different file name so we don't overwrite our non-minified build). I've added both to our project via:
 
-<pre><code class="language-javascript">var gulp = require( "gulp" );
+<pre><code class="language-bash">npm install --save-dev gulp-uglify gulp-sourcemaps gulp-rename</code></pre>
+
+In this approach, our un-minified source will still have an inline source map, but our usage of gulp-sourcemaps below will cause the minified file's source map to be written as a separate file (with a comment in the minified file pointing to the source map file):</p>
+
+<pre><code class="language-javascript">// gulpfile.js
+var gulp = require( "gulp" );
 var webpack = require( "webpack-stream" );
 var sourcemaps = require( "gulp-sourcemaps" );
 var rename = require( "gulp-rename" );
@@ -418,13 +473,14 @@ legoQuotes.js  23.3 kB       0  [emitted]  main
 [19:08:26] Finished 'build' after 1.28 s
 </code></pre>
 
-<p>Our <code>lib/</code> directory will now contain three files: legoQuotes.js, legoQuotes.min.js and legoQuotes.min.js.map</p>
+<p>Our <code>lib/</code> directory will now contain three files: legoQuotes.js, legoQuotes.min.js and legoQuotes.min.js.map. Not only does everyone attending the <span style="text-decoration:line-through">Oprah</span> webpack show get a module, but they also get a sourcemap to make debugging the minified file a possibility.</p>
 
 <h3><a id="user-content-banner-plugin" class="anchor" href="#banner-plugin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Webpack Banner Plugin</h3>
 
 <p>If you need to include a license comment header at the top of your built files, webpack makes it easy to do so. I've updated our webpack.config.js file to include the <a href="http://webpack.github.io/docs/list-of-plugins.html#bannerplugin" target="_blank"><code>BannerPlugin</code></a>. I don't like hard-coding the banner's information if I don't need to, so I've imported the package.json file to get the library's information. I also converted the webpack.config.js file to ES6, and am using a <a href="http://www.2ality.com/2015/01/template-strings-html.html" target="_blank">template string</a> to render the banner. Towards the bottom of the webpack.config.js file you can see I've added a <code>plugins</code> property, with the <code>BannerPlugin</code> as the only plugin we're currently using:</p>
 
-<pre><code class="language-javascript">import webpack from "webpack";
+<pre><code class="language-javascript">// webpack.config.js
+import webpack from "webpack";
 import pkg from "./package.json";
 var banner = `
     ${pkg.name} - ${pkg.description}
@@ -434,7 +490,7 @@ var banner = `
     License(s): ${pkg.license}
 `;
 
-module.exports = {
+export default {
     output: {
         library: pkg.name,
         libraryTarget: "umd",
@@ -473,7 +529,8 @@ module.exports = {
 
 <p>Our updated <code>gulpfile.js</code> includes two additions: the requiring of the babel register hook (on line 1) and the passing of options to the gulp-uglify plugin:</p>
 
-<pre><code class="language-javascript">require("babel/register");
+<pre><code class="language-javascript">// gulpfile.js
+require("babel/register");
 var gulp = require( "gulp" );
 var webpack = require( "webpack-stream" );
 var sourcemaps = require( "gulp-sourcemaps" );
@@ -502,7 +559,7 @@ gulp.task( "build", function() {
 <h2><a id="user-content-whats-next" class="anchor" href="#whats-next" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's Next?</h2>
 
 <p>
-We're halfway through our journey! So far we've stepped through a quick evolution of using babel and webpack's CLI(s) to build our library, then moving on to use gulp (and related plugins) to handle the build for us. The <a href="https://github.com/ifandelse/legoQuotes/releases/tag/v1.0.0" target="_blank">code</a> related to this post includes an <code>example/</code> directory with both a browser and node-based example of our working transpiled module. In our next post, we'll look at using ESLint and JSCS for linting & formatting, mocha & chai to write tests, Karma to run those tests and istanbul to measure our test coverage.
+We're a good ways into our journey! So far we've stepped through a quick evolution of using babel and webpack's CLI(s) to build our library, then moving on to use gulp (and related plugins) to handle the build for us. The <a href="https://github.com/ifandelse/legoQuotes/releases/tag/v1.0.0" target="_blank">code</a> related to this post includes an <code>example/</code> directory with both a browser and node-based example of our working transpiled module. In our next post, we'll look at using ESLint and JSCS for linting & formatting, mocha & chai to write tests, Karma to run those tests and istanbul to measure our test coverage. In the meantime, you might want to check out <a href="http://www.smashingmagazine.com/2012/10/designing-javascript-apis-usability/" target="_blank">Designing Better JavaScript APIs</a> - a fantastic article that can help guide you in writing better modules.
 </p>
 
 <h3>Jim Cowart</h3>
